@@ -97,3 +97,27 @@ export const deleteBoard = async (token, boardId) => {
         throw error;
     }
 };
+
+export const getBoard = async (token, boardId) => {
+    try {
+        const config = {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        };
+
+        const response = await fetch(BOARDS_API + `${boardId}`, config);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Login failed");
+        }
+
+        const board = await response.json();
+        return { board };
+    } catch (error) {
+        throw error;
+    }
+};

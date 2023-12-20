@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     getUserBoards,
+    getBoard,
     updateBoard,
     createBoard,
     deleteBoard,
@@ -63,8 +64,22 @@ export const deleteBoardAsync = createAsyncThunk(
     }
 );
 
+export const getBoardAsync = createAsyncThunk(
+    "boards/getBoardAsync",
+    async (boardId, thunkAPI) => {
+        try {
+            const token = localStorage.getItem("authToken");
+            const { board } = await getBoard(token, boardId);
+            return { board };
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
+
 const initialState = {
     boards: [],
+    boardId: null,
     status: "idle",
     error: null,
 };
@@ -133,6 +148,19 @@ const boardsSlice = createSlice({
             .addCase(deleteBoardAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+            })
+            .addCase(getBoardAsync.pending, (state, action) => {
+                state.status = "pending";
+                state.error = null;
+            })
+            .addCase(getBoardAsync.fulfilled, (state, action) => {
+                state.status = "fulfilled";
+                console.log(action.payload);
+                state.boardId = action.payload.board.id;
+            })
+            .addCase(getBoardAsync.rejected, (state, action) => {
+                state.status = "rejected";
+                state.error = action.payload;
             });
     },
 });
@@ -140,5 +168,6 @@ const boardsSlice = createSlice({
 export const {} = boardsSlice.actions;
 
 export const selectBoards = (state) => state.boards.boards;
+export const selectCurrentBoardId = (state) => state.boards.boardId;
 
 export default boardsSlice.reducer;

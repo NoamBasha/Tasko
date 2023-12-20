@@ -1,18 +1,22 @@
 import React, { useRef } from "react";
 import "./BoardTab.css";
-import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
+    selectCurrentBoardId,
     updateBoardAsync,
     deleteBoardAsync,
+    getBoardAsync,
 } from "../../features/boards/boardsSlice";
 import TrashIcon from "../../icons/TrashIcon/TrashIcon";
+import { current } from "@reduxjs/toolkit";
 
 const BoardTab = ({ name, id }) => {
     const [editMode, setEditMode] = useState(false);
     const prevName = useRef(name);
     const [newName, setNewName] = useState(name);
     const dispatch = useDispatch();
+    const currentBoardId = useSelector(selectCurrentBoardId);
 
     const handleDoubleClick = () => {
         setEditMode(true);
@@ -52,7 +56,10 @@ const BoardTab = ({ name, id }) => {
     };
 
     const handleClick = async () => {
+        console.log(id, currentBoardId);
+        if (id === currentBoardId) return;
         //TODO get board from backend, initizlize board (put it in boards?) columns and tasks with the data.
+        await dispatch(getBoardAsync(id));
     };
 
     const deleteBoard = async (id) => {

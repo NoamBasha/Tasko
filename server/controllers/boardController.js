@@ -18,7 +18,7 @@ const getBoards = async function (req, res) {
 const getBoard = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = req.params.boardId;
+        const boardId = +req.params.boardId;
 
         const board = await prisma.board.findUnique({
             where: { userId: userId, id: boardId },
@@ -44,9 +44,6 @@ const getBoard = async function (req, res) {
 
 const createBoard = async function (req, res) {
     try {
-        //TODO remove console.log
-        console.log("Creating a new board...");
-
         const userId = req.user.id;
         const { name } = req.body;
 
