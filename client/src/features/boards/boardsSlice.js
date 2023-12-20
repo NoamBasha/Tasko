@@ -6,6 +6,7 @@ import {
     createBoard,
     deleteBoard,
 } from "./boardsService.js";
+import { setColumns } from "../columns/columnsSlice.js";
 
 export const getUserBoardsAsync = createAsyncThunk(
     "boards/getUserBoardsAsync",
@@ -70,6 +71,8 @@ export const getBoardAsync = createAsyncThunk(
         try {
             const token = localStorage.getItem("authToken");
             const { board } = await getBoard(token, boardId);
+            thunkAPI.dispatch(setColumns(board.columns));
+            //TODO add here setTasks as well
             return { board };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -157,6 +160,7 @@ const boardsSlice = createSlice({
                 state.status = "fulfilled";
                 console.log(action.payload);
                 state.boardId = action.payload.board.id;
+                // setColumns(action.payload.board.columns);
             })
             .addCase(getBoardAsync.rejected, (state, action) => {
                 state.status = "rejected";

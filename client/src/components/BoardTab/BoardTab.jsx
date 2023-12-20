@@ -7,9 +7,11 @@ import {
     updateBoardAsync,
     deleteBoardAsync,
     getBoardAsync,
+    getUserBoardsAsync,
 } from "../../features/boards/boardsSlice";
 import TrashIcon from "../../icons/TrashIcon/TrashIcon";
-import { current } from "@reduxjs/toolkit";
+//TODO remove
+import { selectColumns } from "../../features/columns/columnsSlice";
 
 const BoardTab = ({ name, id }) => {
     const [editMode, setEditMode] = useState(false);
@@ -64,6 +66,7 @@ const BoardTab = ({ name, id }) => {
 
     const deleteBoard = async (id) => {
         const res = await dispatch(deleteBoardAsync(id));
+        await dispatch(getUserBoardsAsync());
         // if (res.error?.message) {
         //     //TODO toastify
         //     console.error(res.payload);
