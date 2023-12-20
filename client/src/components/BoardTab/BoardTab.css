@@ -1,6 +1,6 @@
-   
 .board-tab-container{
     width: 100%;
+    padding: 0 2px;
 }
 
 .board-tab-name-input {
@@ -9,7 +9,6 @@
     border-radius: 4px;
     outline: none;
     color: var(--clr-text-primary);
-    
 }
 
 .board-tab-name-input:focus {

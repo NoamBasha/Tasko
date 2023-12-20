@@ -6,9 +6,11 @@ import {
     getUserBoardsAsync,
 } from "../../features/boards/boardsSlice.js";
 import { selectBoards } from "../../features/boards/boardsSlice.js";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import NewBoardTab from "../NewBoardTab/NewBoardTab.jsx";
 
 const BoardsContainer = () => {
+    const [createMode, setCreateMode] = useState(false);
     const boards = useSelector(selectBoards);
     const dispatch = useDispatch();
 
@@ -16,11 +18,10 @@ const BoardsContainer = () => {
         dispatch(getUserBoardsAsync());
     }, []);
 
-    const createBoard = async () => {
-        const rand = Math.floor(Math.random() * 10000);
+    const createBoard = async (name) => {
         try {
             //TODO toastify success? or just create the board?
-            await dispatch(createBoardAsync({ name: `Board ${rand}` }));
+            await dispatch(createBoardAsync({ name }));
         } catch (error) {
             //TODO toastify error
             console.error(error);
@@ -34,7 +35,7 @@ const BoardsContainer = () => {
                     <p className="boards-container-text">Boards</p>
                     <button
                         className="boards-container-icon"
-                        onClick={createBoard}
+                        onClick={() => setCreateMode(true)}
                     >
                         {/* // TODO add plus icon */}
                         {/* TODO add plus icon */}+
@@ -43,6 +44,12 @@ const BoardsContainer = () => {
                 <hr className="boards-container-divider" />
             </div>
             <div className="boards-container-content">
+                {createMode && (
+                    <NewBoardTab
+                        setCreateMode={setCreateMode}
+                        createBoard={createBoard}
+                    />
+                )}
                 {boards.map((board) => {
                     return (
                         <BoardTab

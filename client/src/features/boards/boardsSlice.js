@@ -63,7 +63,9 @@ const boardsSlice = createSlice({
             })
             .addCase(getUserBoardsAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
-                state.boards = action.payload.boardsNames;
+                state.boards = action.payload.boardsNames.sort(
+                    (a, b) => b.id - a.id
+                );
             })
             .addCase(getUserBoardsAsync.rejected, (state, action) => {
                 state.status = "rejected";
@@ -76,6 +78,7 @@ const boardsSlice = createSlice({
             .addCase(createBoardAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
                 state.boards.push(action.payload.createdBoard);
+                state.boards = state.boards.sort((a, b) => b.id - a.id);
             })
             .addCase(createBoardAsync.rejected, (state, action) => {
                 state.status = "rejected";
