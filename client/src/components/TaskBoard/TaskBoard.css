@@ -1,0 +1,46 @@
+@import "../../variables.css";
+
+.task-board-container {
+    margin: auto;
+    display: flex;
+    height: 100%;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    /* overflow-y: hidden; */
+    padding: 0 40px;
+
+    /* Variables */
+    --column-gap: 3rem;
+}
+
+
+
+.task-board-wrapper {
+    margin: auto;
+    display: flex;
+    gap: var(--column-gap);
+}
+
+.task-board-button {
+    cursor: pointer;
+    margin: auto;
+    min-width: 350px;
+    border-radius: 6px;
+    background-color: var(--clr-bg-primary);
+    border: 2px solid var(--clr-bg-secondary);
+    color: var(--clr-text-primary);
+    display:flex;
+    align-items: center;
+    padding: 6px 0px 6px 8px;
+    gap: 1rem;
+}
+
+.task-board-button:hover {
+    box-shadow: 0px 0px 0px 2px var(--clr-accent);
+}
+
+.task-board-columns {
+    display: flex;
+    gap: var(--column-gap);
+}

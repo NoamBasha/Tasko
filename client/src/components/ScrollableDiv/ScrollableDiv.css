@@ -1,0 +1,4 @@
+.scrollable-div-container{
+    /* Allowing smooth scrolling */
+    user-select: none;
+}

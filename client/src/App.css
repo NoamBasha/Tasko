@@ -1,0 +1,21 @@
+@import "./variables.css";
+
+.app-container {
+  height: 100vh;
+  display: flex;
+  background-color: var(--clr-bg-primary);
+  color: var(--clr-text-primary)
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar:horizontal {
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--clr-accent);
+  border-radius: 4px;
+}

@@ -1,0 +1,19 @@
+@import "../../variables.css";
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+  
+.spinner {
+    border: 2px solid var(--clr-bg-primary);
+    border-top: 2px solid var(--clr-accent);
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+    animation: spin 1s linear infinite;
+}

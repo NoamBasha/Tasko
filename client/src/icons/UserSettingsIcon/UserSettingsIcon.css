@@ -1,0 +1,9 @@
+@import "../../variables.css";
+
+.user-settings-icon {
+    display: flex;
+    width: 1.2rem;
+    stroke: var(--clr-text-secondary);
+    stroke-width: 1;
+    fill: transparent;
+}

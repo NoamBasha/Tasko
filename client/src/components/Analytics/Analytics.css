@@ -1,0 +1,7 @@
+@import "../../variables.css";
+
+.analytics-container {
+    min-width: 14.28%;
+    background-color: var(--clr-bg-secondary);
+    border-left: 1px solid var(--clr-bg-primary);
+}

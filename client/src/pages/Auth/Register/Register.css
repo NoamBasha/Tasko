@@ -1,0 +1,177 @@
+@import "../../../variables.css";
+
+.register-container {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    color: var(--clr-text-primary);
+}
+
+.register-wrapper {
+    background-color: var(--clr-bg-secondary);
+    width: 50%;
+    aspect-ratio: 4/3;
+    display: flex;
+    border-radius: 10px;
+    min-width: 850px;
+    background-image: url("../../../assets/tasko-auto-img-v2.png");
+    background-size: cover;
+}
+
+.register-content-wrapper {
+    background-color: var(--clr-bg-primary);
+    width: 40%;
+    margin: 0.5rem;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.register-form-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    padding: 1rem;
+}
+
+
+.register-title-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.register-title-header{
+    font-size: 2rem;  
+    font-weight: normal;
+}
+
+.register-title-text{
+    font-size: 0.8rem;  
+}
+
+.register-title-header span {
+    color: var(--clr-accent)
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0 0.2rem;
+    gap: 1rem;
+}
+
+.register-form-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.register-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+
+.form-error {
+    color: #ff7070;
+    font-size: 0.825rem;
+    height: 1rem;
+}
+
+.register-input {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid var(--clr-text-primary);
+    color: var(--clr-text-primary);
+    padding-bottom: 2px;
+    width:100%;
+}
+
+.register-input:focus, .register-input:active {
+    outline: none;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px var(--clr-bg-primary) inset !important;
+}
+
+input:-webkit-autofill{
+    -webkit-text-fill-color: var(--clr-text-primary) !important;
+}
+
+input:-moz-autofill,
+input:-moz-autofill:hover, 
+input:-moz-autofill:focus, 
+input:-moz-autofill:active{
+    -moz-box-shadow: 0 0 0 30px var(--clr-bg-primary) inset !important;
+}
+
+input:-moz-autofill{
+    -moz-text-fill-color: var(--clr-text-primary) !important;
+}
+
+.register-button {
+    background-color: var(--clr-bg-secondary);
+    border: none;
+    padding: 1rem;
+    border-radius: 2rem;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.register-button:hover {
+    opacity: 0.8;
+}
+
+.register-button:active {
+    background-color: var(--clr-bg-secondary-light);
+}
+
+.register-button:disabled {
+    background-color: var(--clr-bg-secondary-muted);
+}
+
+.register-footer a{
+    font-weight: bold;
+}
+
+.register-form-password {
+    width: 100%;
+    position: relative;
+}
+
+.register-form-password button {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    width: 20px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    visibility: hidden;
+    transition: visibility 0.1s ease;
+
+}
+
+.register-form-password:hover button {
+    visibility: visible;
+}
