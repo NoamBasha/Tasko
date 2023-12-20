@@ -1,6 +1,6 @@
-const COLUMNS_API = "http://localhost:3000/api/v1/columns/";
+const TASKS_API = "http://localhost:3000/api/v1/tasks/";
 
-export const createColumn = async (token, boardId, newColumn) => {
+export const createTask = async (token, boardId, columnId, newTask) => {
     try {
         const config = {
             method: "POST",
@@ -8,36 +8,11 @@ export const createColumn = async (token, boardId, newColumn) => {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(newColumn),
-        };
-
-        const response = await fetch(COLUMNS_API + `${boardId}`, config);
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Login failed");
-        }
-
-        const createdColumn = await response.json();
-        return { createdColumn };
-    } catch (error) {
-        throw error;
-    }
-};
-
-export const updateColumn = async (token, boardId, newColumn) => {
-    try {
-        const config = {
-            method: "PUT",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newColumn),
+            body: JSON.stringify(newTask),
         };
 
         const response = await fetch(
-            COLUMNS_API + `${boardId}/${newColumn.id}`,
+            TASKS_API + `${boardId}/${columnId}`,
             config
         );
 
@@ -46,14 +21,42 @@ export const updateColumn = async (token, boardId, newColumn) => {
             throw new Error(errorData.message || "Login failed");
         }
 
-        const updatedColumn = await response.json();
-        return { updatedColumn };
+        const createdTask = await response.json();
+        return { createdTask };
     } catch (error) {
         throw error;
     }
 };
 
-export const deleteColumn = async (token, boardId, columnId) => {
+export const updateTask = async (token, boardId, columnId, newTask) => {
+    try {
+        const config = {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newTask),
+        };
+
+        const response = await fetch(
+            TASKS_API + `${boardId}/${columnId}/${newTask.id}`,
+            config
+        );
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Login failed");
+        }
+
+        const updatedTask = await response.json();
+        return { updatedTask };
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const deleteTask = async (token, boardId, columnId, taskId) => {
     try {
         const config = {
             method: "DELETE",
@@ -61,11 +64,11 @@ export const deleteColumn = async (token, boardId, columnId) => {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ id: columnId }),
+            body: JSON.stringify({ id: taskId }),
         };
 
         const response = await fetch(
-            COLUMNS_API + `${boardId}/${columnId}`,
+            TASKS_API + `${boardId}/${columnId}/${taskId}`,
             config
         );
 

@@ -6,7 +6,12 @@ export const createColumnAsync = createAsyncThunk(
     async (newColumn, thunkAPI) => {
         try {
             const token = localStorage.getItem("authToken");
-            const { createdColumn } = await createColumn(token, newColumn);
+            const boardId = thunkAPI.getState().boards.boardId;
+            const { createdColumn } = await createColumn(
+                token,
+                boardId,
+                newColumn //TODO should have both title and index
+            );
             return { createdColumn };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -20,11 +25,11 @@ export const updateColumnAsync = createAsyncThunk(
         //TODO change "name" to "title"
         try {
             const token = localStorage.getItem("authToken");
-            const name = newColumn.newName;
-            const columnId = newColumn.id;
-            const { updatedColumn } = await updateColumn(token, {
-                name,
-                id: columnId,
+            const boardId = thunkAPI.getState().boards.boardId;
+            const { updatedColumn } = await updateColumn(token, boardId, {
+                name: newColumn.newName,
+                index: newColumn.index,
+                id: newColumn.id,
             });
             return { updatedColumn };
         } catch (error) {

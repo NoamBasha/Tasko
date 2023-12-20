@@ -3,7 +3,7 @@ import prisma from "../db/prisma.js";
 const createColumn = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = req.params.boardId;
+        const boardId = +req.params.boardId;
         const { title, index } = req.body;
 
         const board = await prisma.board.findUnique({
@@ -38,8 +38,8 @@ const createColumn = async function (req, res) {
 const deleteColumn = async function (req, res) {
     try {
         const userId = req.user.id;
-        const columnId = req.params.columnId;
-        const boardId = req.params.boardId;
+        const columnId = +req.params.columnId;
+        const boardId = +req.params.boardId;
 
         const board = await prisma.board.findUnique({
             where: {
@@ -89,8 +89,8 @@ const deleteColumn = async function (req, res) {
 const updateColumn = async function (req, res) {
     try {
         const userId = req.user.id;
-        const columnId = req.params.columnId;
-        const boardId = req.params.boardId;
+        const columnId = +req.params.columnId;
+        const boardId = +req.params.boardId;
         const { title, index } = req.body;
 
         const board = await prisma.board.findUnique({

@@ -3,8 +3,8 @@ import prisma from "../db/prisma.js";
 const createTask = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = req.params.boardId;
-        const columnId = req.params.columnId;
+        const boardId = +req.params.boardId;
+        const columnId = +req.params.columnId;
         const { title, description } = req.body;
 
         const board = await prisma.board.findUnique({
@@ -47,9 +47,9 @@ const createTask = async function (req, res) {
 const deleteTask = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = req.params.boardId;
-        const columnId = req.params.columnId;
-        const taskId = req.params.taskId;
+        const boardId = +req.params.boardId;
+        const columnId = +req.params.columnId;
+        const taskId = +req.params.taskId;
 
         const board = await prisma.board.findUnique({
             where: { id: boardId, userId: userId },
@@ -92,9 +92,9 @@ const deleteTask = async function (req, res) {
 const updateTask = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = req.params.boardId;
-        const columnId = req.params.columnId;
-        const taskId = req.params.taskId;
+        const boardId = +req.params.boardId;
+        const columnId = +req.params.columnId;
+        const taskId = +req.params.taskId;
         const { title, description } = req.body;
 
         const board = await prisma.board.findUnique({
