@@ -16,7 +16,7 @@ const BoardsContainer = () => {
 
     useEffect(() => {
         dispatch(getUserBoardsAsync());
-    }, []);
+    }, [boards]);
 
     const createBoard = async (name) => {
         try {

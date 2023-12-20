@@ -1,8 +1,12 @@
 import React, { useRef } from "react";
 import "./BoardTab.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { updateBoardAsync } from "../../features/boards/boardsSlice";
+import {
+    updateBoardAsync,
+    deleteBoardAsync,
+} from "../../features/boards/boardsSlice";
+import TrashIcon from "../../icons/TrashIcon/TrashIcon";
 
 const BoardTab = ({ name, id }) => {
     const [editMode, setEditMode] = useState(false);
@@ -51,6 +55,20 @@ const BoardTab = ({ name, id }) => {
         //TODO get board from backend, initizlize board (put it in boards?) columns and tasks with the data.
     };
 
+    const deleteBoard = async (id) => {
+        const res = await dispatch(deleteBoardAsync(id));
+        // if (res.error?.message) {
+        //     //TODO toastify
+        //     console.error(res.payload);
+        // } else {
+        //     prevName.current = newName;
+        // }
+    };
+
+    const handleDelete = async () => {
+        await deleteBoard(id);
+    };
+
     return (
         <div className="board-tab-container">
             {!editMode && (
@@ -72,6 +90,9 @@ const BoardTab = ({ name, id }) => {
                     value={newName}
                 />
             )}
+            <button className="board-tab-delete-button" onClick={handleDelete}>
+                <TrashIcon />
+            </button>
         </div>
     );
 };

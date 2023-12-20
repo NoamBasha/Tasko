@@ -72,3 +72,28 @@ export const updateBoard = async (token, newBoard) => {
         throw error;
     }
 };
+
+export const deleteBoard = async (token, boardId) => {
+    try {
+        const config = {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id: boardId }),
+        };
+
+        const response = await fetch(BOARDS_API + `${boardId}`, config);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Login failed");
+        }
+
+        const deletedId = await response.json();
+        return { deletedId };
+    } catch (error) {
+        throw error;
+    }
+};

@@ -26,10 +26,9 @@ const NewBoardTab = ({ setCreateMode, createBoard }) => {
             handleChangeName();
         }
     };
-
     //TODO: remove class name? add its own style ?
     return (
-        <div>
+        <div className="board-tab-container">
             <input
                 className="board-tab-name-input"
                 onBlur={handleBlur}

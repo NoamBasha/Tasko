@@ -1,6 +1,9 @@
 .board-tab-container{
+    display:flex;
+    justify-content: space-between;
     width: 100%;
     padding: 0 2px;
+    height: 20px;
 }
 
 .board-tab-name-input {
@@ -9,6 +12,8 @@
     border-radius: 4px;
     outline: none;
     color: var(--clr-text-primary);
+    padding: 8px 2px;
+
 }
 
 .board-tab-name-input:focus {
@@ -23,4 +28,20 @@
 
 .board-tab-button:hover {
     cursor: pointer;
+}
+
+.board-tab-delete-button {
+    display: flex;
+    cursor: pointer;
+    background-color: inherit;
+    border: 0;
+    opacity: 0;
+}
+
+.board-tab-container:hover .board-tab-delete-button{
+    opacity: 0.8;
+}
+
+.board-tab-container:hover .board-tab-delete-button:hover{
+    opacity: 1;
 }

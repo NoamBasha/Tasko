@@ -1,5 +1,5 @@
 @import "../../variables.css";
 
 .trash-icon-svg {
-    fill: var(--clr-text-secondary-light)
+    fill: var(--clr-text-secondary-light);
 }

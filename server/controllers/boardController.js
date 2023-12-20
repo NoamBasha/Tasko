@@ -73,7 +73,7 @@ const createBoard = async function (req, res) {
 const deleteBoard = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = req.params.boardId;
+        const boardId = +req.params.boardId;
 
         const board = await prisma.board.findUnique({
             where: { id: boardId, userId: userId },
@@ -111,7 +111,7 @@ const deleteBoard = async function (req, res) {
             where: { id: boardId },
         });
 
-        res.sendStatus(204);
+        res.status(204).json({ id: boardId });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });

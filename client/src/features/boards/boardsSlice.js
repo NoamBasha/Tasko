@@ -1,5 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getUserBoards, updateBoard, createBoard } from "./boardsService.js";
+import {
+    getUserBoards,
+    updateBoard,
+    createBoard,
+    deleteBoard,
+} from "./boardsService.js";
 
 export const getUserBoardsAsync = createAsyncThunk(
     "boards/getUserBoardsAsync",
@@ -39,6 +44,19 @@ export const updateBoardAsync = createAsyncThunk(
                 id: boardId,
             });
             return { updatedBoard };
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
+
+export const deleteBoardAsync = createAsyncThunk(
+    "boards/deleteBoardAsync",
+    async (boardId, thunkAPI) => {
+        try {
+            const token = localStorage.getItem("authToken");
+            const { deletedId } = await deleteBoard(token, boardId);
+            return { deletedId };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
         }
@@ -99,6 +117,20 @@ const boardsSlice = createSlice({
                 });
             })
             .addCase(updateBoardAsync.rejected, (state, action) => {
+                state.status = "rejected";
+                state.error = action.payload;
+            })
+            .addCase(deleteBoardAsync.pending, (state, action) => {
+                state.status = "pending";
+                state.error = null;
+            })
+            .addCase(deleteBoardAsync.fulfilled, (state, action) => {
+                state.status = "fulfilled";
+                state.boards = state.boards.filter(
+                    (board) => board.id !== action.payload.deletedId
+                );
+            })
+            .addCase(deleteBoardAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
             });
