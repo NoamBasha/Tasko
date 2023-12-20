@@ -18,6 +18,8 @@ const ColumnContainer = ({
     const [editMode, setEditMode] = useState(false);
     const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
 
+    const [newTitle, setNewTitle] = useState(column.title);
+
     const {
         setNodeRef,
         attributes,
@@ -73,13 +75,25 @@ const ColumnContainer = ({
                             <input
                                 className="column-container-title-input"
                                 autoFocus
-                                onBlur={() => setEditMode(false)}
+                                onBlur={() => {
+                                    setEditMode(false);
+                                    updateColumn(
+                                        column.id,
+                                        column.index,
+                                        newTitle
+                                    );
+                                }}
                                 onKeyDown={(e) => {
                                     if (e.key !== "Enter") return;
                                     setEditMode(false);
+                                    updateColumn(
+                                        column.id,
+                                        column.index,
+                                        newTitle
+                                    );
                                 }}
                                 onChange={(e) => {
-                                    updateColumn(column.id, e.target.value);
+                                    setNewTitle(e.target.value);
                                 }}
                             />
                         )}

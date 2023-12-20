@@ -26,7 +26,6 @@ export const updateTaskAsync = createAsyncThunk(
         //TODO change "name" to "title"
         try {
             const token = localStorage.getItem("authToken");
-            const name = newTask.newName;
             const boardId = thunkAPI.getState().boards.boardId;
             const { updatedTask } = await updateTask(
                 token,
@@ -127,6 +126,6 @@ const tasksSlice = createSlice({
 
 export const { setTasks } = tasksSlice.actions;
 
-export const selectTasks = (state) => state.tasks;
+export const selectTasks = (state) => state.tasks.tasks;
 
 export default tasksSlice.reducer;

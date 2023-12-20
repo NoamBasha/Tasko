@@ -5,12 +5,13 @@ export const createColumnAsync = createAsyncThunk(
     "columns/createColumnAsync",
     async (newColumn, thunkAPI) => {
         try {
+            console.log(newColumn);
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
             const { createdColumn } = await createColumn(
                 token,
                 boardId,
-                newColumn //TODO should have both title and index
+                newColumn
             );
             return { createdColumn };
         } catch (error) {
@@ -22,15 +23,14 @@ export const createColumnAsync = createAsyncThunk(
 export const updateColumnAsync = createAsyncThunk(
     "columns/updateColumnAsync",
     async (newColumn, thunkAPI) => {
-        //TODO change "name" to "title"
         try {
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
-            const { updatedColumn } = await updateColumn(token, boardId, {
-                name: newColumn.newName,
-                index: newColumn.index,
-                id: newColumn.id,
-            });
+            const { updatedColumn } = await updateColumn(
+                token,
+                boardId,
+                newColumn
+            );
             return { updatedColumn };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -43,7 +43,8 @@ export const deleteColumnAsync = createAsyncThunk(
     async (columnId, thunkAPI) => {
         try {
             const token = localStorage.getItem("authToken");
-            const { deletedId } = await deleteColumn(token, columnId);
+            const boardId = thunkAPI.getState().boards.boardId;
+            const { deletedId } = await deleteColumn(token, boardId, columnId);
             return { deletedId };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -75,7 +76,7 @@ const columnsSlice = createSlice({
             .addCase(createColumnAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
                 state.columns.push(action.payload.createdColumn);
-                state.columns = state.columns.sort((a, b) => b.index - a.index);
+                state.columns = state.columns.sort((a, b) => a.index - b.index);
             })
             .addCase(createColumnAsync.rejected, (state, action) => {
                 state.status = "rejected";
@@ -105,12 +106,15 @@ const columnsSlice = createSlice({
             })
             .addCase(deleteColumnAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
+                console.log(action.payload);
                 state.columns = state.columns.filter(
                     (column) => column.id !== action.payload.deletedId
                 );
             })
             .addCase(deleteColumnAsync.rejected, (state, action) => {
                 state.status = "rejected";
+                console.log(action.payload);
+
                 state.error = action.payload;
             });
     },
@@ -118,6 +122,6 @@ const columnsSlice = createSlice({
 
 export const { setColumns } = columnsSlice.actions;
 
-export const selectColumns = (state) => state.columns;
+export const selectColumns = (state) => state.columns.columns;
 
 export default columnsSlice.reducer;

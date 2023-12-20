@@ -10,6 +10,7 @@ export const createColumn = async (token, boardId, newColumn) => {
             },
             body: JSON.stringify(newColumn),
         };
+        console.log(token, boardId, newColumn);
 
         const response = await fetch(COLUMNS_API + `${boardId}`, config);
 
@@ -75,7 +76,7 @@ export const deleteColumn = async (token, boardId, columnId) => {
         }
 
         const deletedId = await response.json();
-        return { deletedId };
+        return { deletedId: deletedId.id };
     } catch (error) {
         throw error;
     }

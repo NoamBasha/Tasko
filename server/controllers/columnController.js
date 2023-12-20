@@ -6,6 +6,8 @@ const createColumn = async function (req, res) {
         const boardId = +req.params.boardId;
         const { title, index } = req.body;
 
+        console.log(userId, boardId, title, index);
+
         const board = await prisma.board.findUnique({
             where: { id: boardId, userId: userId },
         });
@@ -17,10 +19,12 @@ const createColumn = async function (req, res) {
         }
 
         const newColumn = await prisma.column.create({
-            title: title,
-            index: index,
-            board: {
-                connect: { id: boardId },
+            data: {
+                title: title,
+                index: +index,
+                board: {
+                    connect: { id: boardId },
+                },
             },
         });
 
@@ -79,7 +83,10 @@ const deleteColumn = async function (req, res) {
             },
         });
 
-        res.sendStatus(204);
+        console.log(columnId);
+
+        //TODO for all deletings return 204 and use the existing id in the frontend
+        res.status(200).json({ id: columnId });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
@@ -115,7 +122,7 @@ const updateColumn = async function (req, res) {
             where: { id: columnId },
             data: {
                 title: title,
-                index: index,
+                index: +index,
             },
         });
 
