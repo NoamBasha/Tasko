@@ -44,6 +44,9 @@ const getBoard = async function (req, res) {
 
 const createBoard = async function (req, res) {
     try {
+        //TODO remove console.log
+        console.log("Creating a new board...");
+
         const userId = req.user.id;
         const { name } = req.body;
 

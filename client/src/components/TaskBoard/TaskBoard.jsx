@@ -16,6 +16,7 @@ import useLocalStorage from "../../hooks/useLocalStorage.js";
 import ScrollableDiv from "../ScrollableDiv/ScrollableDiv.jsx";
 
 const TaskBoard = () => {
+    // TODO change "+ add column" to just a "+" and move it upwards like JIRA?
     const [columns, setColumns] = useLocalStorage("columns", []);
     const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 

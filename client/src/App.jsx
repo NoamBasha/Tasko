@@ -7,9 +7,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import RequireAuth from "./components/RequireAuth/RequireAuth.jsx";
 
-//TODO proctected routes for "/"
 //TODO change toast theme and overall style
-//TODO add border to analytics and sidebar?
 
 function App() {
     return (
