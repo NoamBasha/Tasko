@@ -10,7 +10,6 @@ export const createColumn = async (token, boardId, newColumn) => {
             },
             body: JSON.stringify(newColumn),
         };
-        console.log(token, boardId, newColumn);
 
         const response = await fetch(COLUMNS_API + `${boardId}`, config);
 
@@ -77,6 +76,64 @@ export const deleteColumn = async (token, boardId, columnId) => {
 
         const deletedId = await response.json();
         return { deletedId: deletedId.id };
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const updateTwoColumns = async (
+    token,
+    boardId,
+    firstNewColumn,
+    secondNewColumn
+) => {
+    try {
+        const config = {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ firstNewColumn, secondNewColumn }),
+        };
+
+        const response = await fetch(
+            COLUMNS_API +
+                `${boardId}/${firstNewColumn.id}/${secondNewColumn.id}`,
+            config
+        );
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Login failed");
+        }
+
+        const updatedTwoColumns = await response.json();
+        return { updatedTwoColumns };
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const updateAllColumns = async (token, boardId, newColumns) => {
+    try {
+        const config = {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newColumns),
+        };
+        const response = await fetch(COLUMNS_API + `${boardId}/all`, config);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Login failed");
+        }
+
+        const updatedColumns = await response.json();
+        return { updatedColumns };
     } catch (error) {
         throw error;
     }

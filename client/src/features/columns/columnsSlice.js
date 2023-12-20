@@ -1,11 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { updateColumn, createColumn, deleteColumn } from "./columnsService.js";
+import {
+    updateColumn,
+    createColumn,
+    deleteColumn,
+    updateTwoColumns,
+    updateAllColumns,
+} from "./columnsService.js";
 
 export const createColumnAsync = createAsyncThunk(
     "columns/createColumnAsync",
     async (newColumn, thunkAPI) => {
         try {
-            console.log(newColumn);
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
             const { createdColumn } = await createColumn(
@@ -38,6 +43,43 @@ export const updateColumnAsync = createAsyncThunk(
     }
 );
 
+export const updateTwoColumnsAsync = createAsyncThunk(
+    "columns/updateTwoColumnsAsync",
+    async ({ firstNewColumn, secondNewColumn }, thunkAPI) => {
+        try {
+            const token = localStorage.getItem("authToken");
+            const boardId = thunkAPI.getState().boards.boardId;
+            const { updatedTwoColumns } = await updateTwoColumns(
+                token,
+                boardId,
+                firstNewColumn,
+                secondNewColumn
+            );
+            return { updatedTwoColumns };
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
+
+export const updateAllColumnsAsync = createAsyncThunk(
+    "columns/updateAllColumnsAsync",
+    async (newColumns, thunkAPI) => {
+        try {
+            const token = localStorage.getItem("authToken");
+            const boardId = thunkAPI.getState().boards.boardId;
+            const { updatedColumns } = await updateAllColumns(
+                token,
+                boardId,
+                newColumns
+            );
+            return { updatedColumns };
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
+
 export const deleteColumnAsync = createAsyncThunk(
     "columns/deleteColumnAsync",
     async (columnId, thunkAPI) => {
@@ -63,7 +105,6 @@ const columnsSlice = createSlice({
     initialState,
     reducers: {
         setColumns: (state, action) => {
-            console.log(action.payload);
             state.columns = action.payload;
         },
     },
@@ -76,7 +117,6 @@ const columnsSlice = createSlice({
             .addCase(createColumnAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
                 state.columns.push(action.payload.createdColumn);
-                state.columns = state.columns.sort((a, b) => a.index - b.index);
             })
             .addCase(createColumnAsync.rejected, (state, action) => {
                 state.status = "rejected";
@@ -106,15 +146,49 @@ const columnsSlice = createSlice({
             })
             .addCase(deleteColumnAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
-                console.log(action.payload);
                 state.columns = state.columns.filter(
                     (column) => column.id !== action.payload.deletedId
                 );
             })
             .addCase(deleteColumnAsync.rejected, (state, action) => {
                 state.status = "rejected";
-                console.log(action.payload);
-
+                state.error = action.payload;
+            })
+            .addCase(updateTwoColumnsAsync.pending, (state, action) => {
+                state.status = "pending";
+                state.error = null;
+            })
+            .addCase(updateTwoColumnsAsync.fulfilled, (state, action) => {
+                state.status = "fulfilled";
+                const updatedColumns = state.columns.map((column) => {
+                    if (column.id === action.payload.updatedTwoColumns[0].id) {
+                        return action.payload.updatedTwoColumns[0];
+                    } else if (
+                        column.id === action.payload.updatedTwoColumns[1].id
+                    ) {
+                        return action.payload.updatedTwoColumns[1];
+                    } else {
+                        return column;
+                    }
+                });
+                updatedColumns.sort((a, b) => a.index - b.index);
+                state.columns = updatedColumns;
+            })
+            .addCase(updateTwoColumnsAsync.rejected, (state, action) => {
+                state.status = "rejected";
+                state.error = action.payload;
+            })
+            .addCase(updateAllColumnsAsync.pending, (state, action) => {
+                state.status = "pending";
+                state.error = null;
+            })
+            .addCase(updateAllColumnsAsync.fulfilled, (state, action) => {
+                state.status = "fulfilled";
+                const updatedColumns = action.payload.updatedColumns;
+                state.columns = updatedColumns;
+            })
+            .addCase(updateAllColumnsAsync.rejected, (state, action) => {
+                state.status = "rejected";
                 state.error = action.payload;
             });
     },

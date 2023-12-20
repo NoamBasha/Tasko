@@ -10,8 +10,6 @@ import {
     getUserBoardsAsync,
 } from "../../features/boards/boardsSlice";
 import TrashIcon from "../../icons/TrashIcon/TrashIcon";
-//TODO remove
-import { selectColumns } from "../../features/columns/columnsSlice";
 
 const BoardTab = ({ name, id }) => {
     const [editMode, setEditMode] = useState(false);
@@ -58,9 +56,7 @@ const BoardTab = ({ name, id }) => {
     };
 
     const handleClick = async () => {
-        console.log(id, currentBoardId);
         if (id === currentBoardId) return;
-        //TODO get board from backend, initizlize board (put it in boards?) columns and tasks with the data.
         await dispatch(getBoardAsync(id));
     };
 

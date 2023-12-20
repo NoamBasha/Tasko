@@ -52,6 +52,7 @@ export const updateBoardAsync = createAsyncThunk(
     }
 );
 
+//TODO when deleteing a board, boardId and maybe columns and tasks too.
 export const deleteBoardAsync = createAsyncThunk(
     "boards/deleteBoardAsync",
     async (boardId, thunkAPI) => {
@@ -71,8 +72,10 @@ export const getBoardAsync = createAsyncThunk(
         try {
             const token = localStorage.getItem("authToken");
             const { board } = await getBoard(token, boardId);
-            thunkAPI.dispatch(setColumns(board.columns));
+
             //TODO add here setTasks as well
+            thunkAPI.dispatch(setColumns(board.columns));
+
             return { board };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -158,7 +161,6 @@ const boardsSlice = createSlice({
             })
             .addCase(getBoardAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
-                console.log(action.payload);
                 state.boardId = action.payload.board.id;
                 // setColumns(action.payload.board.columns);
             })

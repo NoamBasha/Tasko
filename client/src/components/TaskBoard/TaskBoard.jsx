@@ -20,7 +20,9 @@ import {
     createColumnAsync,
     deleteColumnAsync,
     updateColumnAsync,
+    updateAllColumnsAsync,
     selectColumns,
+    updateTwoColumnsAsync,
 } from "../../features/columns/columnsSlice.js";
 import { selectTasks } from "../../features/tasks/tasksSlice.js";
 import { selectCurrentBoardId } from "../../features/boards/boardsSlice.js";
@@ -31,6 +33,7 @@ const TaskBoard = () => {
     const currentBoardId = useSelector(selectCurrentBoardId);
 
     const columns = useSelector(selectColumns);
+    console.log(columns.map((column) => column.index));
     const columnsIds = useMemo(() => columns.map((col) => col.id), [columns]);
 
     const originalTasks = useSelector(selectTasks);
@@ -82,6 +85,16 @@ const TaskBoard = () => {
         await dispatch(deleteColumnAsync(columnId));
     };
 
+    const updateTwoColumns = async (firstNewColumn, secondNewColumn) => {
+        await dispatch(
+            updateTwoColumnsAsync({ firstNewColumn, secondNewColumn })
+        );
+    };
+
+    const updateAllColumns = async (newColumns) => {
+        await dispatch(updateAllColumnsAsync(newColumns));
+    };
+
     const createTask = async (columnId) => {
         const newTask = {
             title: `Task ${tasks.length + 1}`,
@@ -127,32 +140,23 @@ const TaskBoard = () => {
 
         if (activeId === overId) return;
 
-        setColumns((prevColumns) => {
-            const activeColumnIndex = prevColumns.findIndex(
-                (col) => col.id === activeId
-            );
-            const overColumnIndex = prevColumns.findIndex(
-                (col) => col.id === overId
-            );
+        const activeColumnIndex = columns.findIndex(
+            (col) => col.id === activeId
+        );
+        const overColumnIndex = columns.findIndex((col) => col.id === overId);
 
-            return arrayMove(columns, activeColumnIndex, overColumnIndex);
+        // Create a new array with the updated column order
+        const movedColumns = arrayMove(
+            columns.slice(),
+            activeColumnIndex,
+            overColumnIndex
+        );
+
+        const newColumns = movedColumns.map((col, i) => {
+            return { ...col, index: movedColumns[i].index };
         });
 
-        //TODO upading two columns - (switching their indexes)
-        // const activeColumnIndex = columns.findIndex(
-        //     (col) => col.id === activeId
-        // );
-        // const overColumnIndex = columns.findIndex((col) => col.id === overId);
-
-        // // Create a new array with the updated column order
-        // const newColumns = arrayMove(
-        //     columns.slice(),
-        //     activeColumnIndex,
-        //     overColumnIndex
-        // );
-
-        // // Call setColumns with the final array
-        // setColumns(newColumns);
+        updateAllColumns(newColumns);
     };
 
     const onDragOver = (e) => {

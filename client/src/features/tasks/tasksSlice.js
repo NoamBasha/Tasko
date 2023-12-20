@@ -23,7 +23,6 @@ export const createTaskAsync = createAsyncThunk(
 export const updateTaskAsync = createAsyncThunk(
     "columns/updateTaskAsync",
     async (newTask, columnId, thunkAPI) => {
-        //TODO change "name" to "title"
         try {
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
@@ -70,7 +69,6 @@ const tasksSlice = createSlice({
     initialState,
     reducers: {
         setTasks: (state, action) => {
-            console.log(action.payload);
             state.tasks = action.payload;
         },
     },
@@ -83,7 +81,6 @@ const tasksSlice = createSlice({
             .addCase(createTaskAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
                 state.tasks.push(action.payload.createdTask);
-                //TODO sort them somehow?
             })
             .addCase(createTaskAsync.rejected, (state, action) => {
                 state.status = "rejected";
