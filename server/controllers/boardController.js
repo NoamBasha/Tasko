@@ -121,7 +121,7 @@ const deleteBoard = async function (req, res) {
 const updateBoard = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = req.params.boardId;
+        const boardId = +req.params.boardId;
         const { name } = req.body;
 
         const board = await prisma.board.findUnique({

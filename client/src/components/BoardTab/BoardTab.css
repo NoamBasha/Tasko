@@ -1,0 +1,27 @@
+   
+.board-tab-container{
+    width: 100%;
+}
+
+.board-tab-name-input {
+    width: 100%;
+    background-color: inherit;
+    border-radius: 4px;
+    outline: none;
+    color: var(--clr-text-primary);
+    
+}
+
+.board-tab-name-input:focus {
+    border: 2px solid var(--clr-accent);
+}
+
+.board-tab-button{
+    background-color: transparent;
+    border: none;
+    color: inherit;
+}
+
+.board-tab-button:hover {
+    cursor: pointer;
+}

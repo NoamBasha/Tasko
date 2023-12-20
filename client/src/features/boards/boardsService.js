@@ -47,3 +47,28 @@ export const createBoard = async (token, newBoard) => {
         throw error;
     }
 };
+
+export const updateBoard = async (token, newBoard) => {
+    try {
+        const config = {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name: newBoard.name }),
+        };
+
+        const response = await fetch(BOARDS_API + `${newBoard.id}`, config);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Login failed");
+        }
+
+        const updatedBoard = await response.json();
+        return { updatedBoard };
+    } catch (error) {
+        throw error;
+    }
+};

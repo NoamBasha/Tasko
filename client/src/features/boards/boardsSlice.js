@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getUserBoards, createBoard } from "./boardsService.js";
+import { getUserBoards, updateBoard, createBoard } from "./boardsService.js";
 
 export const getUserBoardsAsync = createAsyncThunk(
     "boards/getUserBoardsAsync",
@@ -21,6 +21,24 @@ export const createBoardAsync = createAsyncThunk(
             const token = localStorage.getItem("authToken");
             const { createdBoard } = await createBoard(token, newBoard);
             return { createdBoard };
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
+
+export const updateBoardAsync = createAsyncThunk(
+    "boards/updateBoardAsync",
+    async (newBoard, thunkAPI) => {
+        try {
+            const token = localStorage.getItem("authToken");
+            const name = newBoard.newName;
+            const boardId = newBoard.id;
+            const { updatedBoard } = await updateBoard(token, {
+                name,
+                id: boardId,
+            });
+            return { updatedBoard };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
         }
@@ -60,6 +78,24 @@ const boardsSlice = createSlice({
                 state.boards.push(action.payload.createdBoard);
             })
             .addCase(createBoardAsync.rejected, (state, action) => {
+                state.status = "rejected";
+                state.error = action.payload;
+            })
+            .addCase(updateBoardAsync.pending, (state, action) => {
+                state.status = "pending";
+                state.error = null;
+            })
+            .addCase(updateBoardAsync.fulfilled, (state, action) => {
+                state.status = "fulfilled";
+                state.boards = state.boards.map((board) => {
+                    if (board.id === action.payload.updatedBoard.id) {
+                        return action.payload.updatedBoard;
+                    } else {
+                        return board;
+                    }
+                });
+            })
+            .addCase(updateBoardAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
             });
