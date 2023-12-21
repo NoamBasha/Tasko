@@ -22,6 +22,7 @@ export const createTask = async (token, boardId, columnId, newTask) => {
         }
 
         const createdTask = await response.json();
+
         return { createdTask };
     } catch (error) {
         throw error;
@@ -50,6 +51,7 @@ export const updateTask = async (token, boardId, columnId, newTask) => {
         }
 
         const updatedTask = await response.json();
+
         return { updatedTask };
     } catch (error) {
         throw error;
@@ -76,9 +78,6 @@ export const deleteTask = async (token, boardId, columnId, taskId) => {
             const errorData = await response.json();
             throw new Error(errorData.message || "Login failed");
         }
-
-        const deletedId = await response.json();
-        return { deletedId };
     } catch (error) {
         throw error;
     }

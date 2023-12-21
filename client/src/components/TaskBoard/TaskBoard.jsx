@@ -24,7 +24,12 @@ import {
     selectColumns,
     updateTwoColumnsAsync,
 } from "../../features/columns/columnsSlice.js";
-import { selectTasks } from "../../features/tasks/tasksSlice.js";
+import {
+    selectTasks,
+    createTaskAsync,
+    updateTaskAsync,
+    deleteTaskAsync,
+} from "../../features/tasks/tasksSlice.js";
 import { selectCurrentBoardId } from "../../features/boards/boardsSlice.js";
 import { useDispatch } from "react-redux";
 
@@ -33,11 +38,9 @@ const TaskBoard = () => {
     const currentBoardId = useSelector(selectCurrentBoardId);
 
     const columns = useSelector(selectColumns);
-    console.log(columns.map((column) => column.index));
     const columnsIds = useMemo(() => columns.map((col) => col.id), [columns]);
 
-    const originalTasks = useSelector(selectTasks);
-    const [tasks, setTasks] = useState([...originalTasks]);
+    const tasks = useSelector(selectTasks);
 
     const [activeColumn, setActiveColumn] = useState(null);
     const [activeTask, setActiveTask] = useState(null);
@@ -99,9 +102,10 @@ const TaskBoard = () => {
         const newTask = {
             title: `Task ${tasks.length + 1}`,
             description: ``,
+            columnId: columnId,
         };
-
-        await dispatch(createTaskAsync(newTask, columnId));
+        console.log(newTask);
+        await dispatch(createTaskAsync({ newTask, columnId }));
     };
 
     const updateTask = async (taskId, title, description, columnId) => {
@@ -111,11 +115,11 @@ const TaskBoard = () => {
             id: taskId,
             columnId: columnId,
         };
-        await dispatch(updateTaskAsync(newTask, columnId));
+        await dispatch(updateTaskAsync({ newTask, columnId }));
     };
 
     const deleteTask = async (taskId, columnId) => {
-        await dispatch(deleteTaskAsync(taskId, columnId));
+        await dispatch(deleteTaskAsync({ taskId, columnId }));
     };
 
     const onDragStart = (e) => {

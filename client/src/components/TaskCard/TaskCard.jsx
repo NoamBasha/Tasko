@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-const TaskCard = ({ task, deleteTask, updateTask }) => {
+const TaskCard = ({ task, deleteTask, updateTask, columnId }) => {
     const [mouseIsOver, setMouseIsOver] = useState(false);
     const [editMode, setEditMode] = useState(false);
+    const [description, setDescription] = useState(task.description);
 
     function toggleEditMode() {
         setEditMode((prevEditMode) => !prevEditMode);
@@ -58,11 +59,24 @@ const TaskCard = ({ task, deleteTask, updateTask }) => {
                     value={task.content}
                     autoFocus
                     placeholder="Task content"
-                    onBlur={toggleEditMode}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter" && e.shiftKey) toggleEditMode();
+                    onBlur={() => {
+                        toggleEditMode();
+                        updateTask(task.id, task.title, description, columnId);
                     }}
-                    onChange={(e) => updateTask(task.id, e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" && e.shiftKey) {
+                            toggleEditMode();
+                            updateTask(
+                                task.id,
+                                task.title,
+                                description,
+                                columnId
+                            );
+                        }
+                    }}
+                    onChange={(e) => {
+                        setDescription(e.target.value);
+                    }}
                 />
             </div>
         );
@@ -83,12 +97,12 @@ const TaskCard = ({ task, deleteTask, updateTask }) => {
             }}
             onClick={toggleEditMode}
         >
-            <p className="task-card-content">{task.content}</p>
+            <p className="task-card-content">{task.description}</p>
             {mouseIsOver && (
                 <button
                     className="task-card-delete-button"
                     onClick={() => {
-                        deleteTask(task.id);
+                        deleteTask(task.id, task.columnId);
                     }}
                 >
                     <TrashIcon />

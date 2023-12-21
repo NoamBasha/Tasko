@@ -116,6 +116,7 @@ const ColumnContainer = ({
                             task={task}
                             deleteTask={deleteTask}
                             updateTask={updateTask}
+                            columnId={column.id}
                         />
                     ))}
                 </SortableContext>

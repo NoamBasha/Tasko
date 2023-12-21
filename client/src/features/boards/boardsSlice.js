@@ -7,6 +7,7 @@ import {
     deleteBoard,
 } from "./boardsService.js";
 import { setColumns } from "../columns/columnsSlice.js";
+import { setTasks } from "../tasks/tasksSlice.js";
 
 export const getUserBoardsAsync = createAsyncThunk(
     "boards/getUserBoardsAsync",
@@ -75,6 +76,11 @@ export const getBoardAsync = createAsyncThunk(
 
             //TODO add here setTasks as well
             thunkAPI.dispatch(setColumns(board.columns));
+            const boardTasks = [];
+            board.columns.forEach((column) => {
+                boardTasks.push(...column.tasks);
+            });
+            thunkAPI.dispatch(setTasks(boardTasks));
 
             return { board };
         } catch (error) {

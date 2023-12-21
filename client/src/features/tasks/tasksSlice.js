@@ -3,7 +3,7 @@ import { updateTask, createTask, deleteTask } from "./tasksService.js";
 
 export const createTaskAsync = createAsyncThunk(
     "tasks/createTaskAsync",
-    async (newTask, columnId, thunkAPI) => {
+    async ({ newTask, columnId }, thunkAPI) => {
         try {
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
@@ -22,7 +22,7 @@ export const createTaskAsync = createAsyncThunk(
 
 export const updateTaskAsync = createAsyncThunk(
     "columns/updateTaskAsync",
-    async (newTask, columnId, thunkAPI) => {
+    async ({ newTask, columnId }, thunkAPI) => {
         try {
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
@@ -41,17 +41,13 @@ export const updateTaskAsync = createAsyncThunk(
 
 export const deleteTaskAsync = createAsyncThunk(
     "columns/deleteTaskAsync",
-    async (taskId, columnId, thunkAPI) => {
+    async ({ taskId, columnId }, thunkAPI) => {
         try {
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
-            const { deletedId } = await deleteTask(
-                token,
-                boardId,
-                columnId,
-                taskId
-            );
-            return { deletedId };
+            console.log(taskId, columnId);
+            await deleteTask(token, boardId, columnId, taskId);
+            return { deletedId: taskId };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
         }
