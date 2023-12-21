@@ -1,6 +1,6 @@
 import "./TaskBoard.css";
 import PlusIcon from "../../icons/PlusIcon/PlusIcon.jsx";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import ColumnContainer from "../ColumnContainer/ColumnContainer.jsx";
 import {
     DndContext,
@@ -29,6 +29,7 @@ import {
     createTaskAsync,
     updateTaskAsync,
     deleteTaskAsync,
+    // updateAllTasksAsync,
 } from "../../features/tasks/tasksSlice.js";
 import { selectCurrentBoardId } from "../../features/boards/boardsSlice.js";
 import { useDispatch } from "react-redux";
@@ -40,7 +41,12 @@ const TaskBoard = () => {
     const columns = useSelector(selectColumns);
     const columnsIds = useMemo(() => columns.map((col) => col.id), [columns]);
 
-    const tasks = useSelector(selectTasks);
+    const originalTasks = useSelector(selectTasks);
+    const [tasks, setTasks] = useState(originalTasks);
+
+    useEffect(() => {
+        setTasks(originalTasks);
+    }, [originalTasks]);
 
     const [activeColumn, setActiveColumn] = useState(null);
     const [activeTask, setActiveTask] = useState(null);
@@ -54,18 +60,6 @@ const TaskBoard = () => {
             },
         })
     );
-
-    /*
-        Columns:
-            - create
-            - update
-            - delete
-
-        Tasks:
-            - create
-            - update
-            - delete
-    */
 
     const createColumn = async () => {
         const newColumn = {
@@ -122,6 +116,13 @@ const TaskBoard = () => {
         await dispatch(deleteTaskAsync({ taskId, columnId }));
     };
 
+    const updateAllTasks = async (newTasks) => {
+        console.log("Here");
+        console.log(originalTasks);
+        console.log(newTasks);
+        // await dispatch(updateAllTasksAsync(newTasks));
+    };
+
     const onDragStart = (e) => {
         if (e.active.data.current.type === "Column") {
             setActiveColumn(e.active.data.current.column);
@@ -142,7 +143,7 @@ const TaskBoard = () => {
         const activeId = active.id;
         const overId = over.id;
 
-        if (activeId === overId) return;
+        // if (activeId === overId) return;
 
         const activeColumnIndex = columns.findIndex(
             (col) => col.id === activeId
@@ -161,6 +162,7 @@ const TaskBoard = () => {
         });
 
         updateAllColumns(newColumns);
+        updateAllTasks(tasks);
     };
 
     const onDragOver = (e) => {
@@ -172,72 +174,43 @@ const TaskBoard = () => {
 
         if (activeId === overId) return;
 
-        // Dropping a task over another task
-
         const isActiveTask = active.data.current?.type === "Task";
         const isOverTask = over.data.current?.type === "Task";
 
         if (!isActiveTask) return;
 
+        // Dropping a task over another task
         if (isActiveTask && isOverTask) {
-            const activeIndex = tasks.findIndex((t) => t.id === activeId);
-            const overIndex = tasks.findIndex((t) => t.id === overId);
+            setTasks((tasks) => {
+                const activeIndex = tasks.findIndex((t) => t.id === activeId);
+                const overIndex = tasks.findIndex((t) => t.id === overId);
 
-            // Update the columnId of the active task
-            const updatedTask = {
-                ...tasks[activeIndex],
-                columnId: tasks[overIndex].columnId,
-            };
+                const updatedTasks = [...tasks];
 
-            // Create a new array with the updated task
-            const newTasks = [...tasks];
-            newTasks[activeIndex] = updatedTask;
+                updatedTasks[activeIndex] = {
+                    ...updatedTasks[activeIndex],
+                    columnId: updatedTasks[overIndex].columnId,
+                };
 
-            // Reorder the tasks using arrayMove
-            const reorderedTasks = arrayMove(newTasks, activeIndex, overIndex);
-
-            // Call setTasks with the final array
-            setTasks(reorderedTasks);
-            taskId, description, columnId;
-
-            updateTask(
-                updatedTask.id,
-                updatedTask.title,
-                updatedTask.description,
-                updatedTask.columnId
-            );
+                return arrayMove(updatedTasks, activeIndex, overIndex);
+            });
         }
-
-        // Dropping a task over a column
 
         const isOverColumn = over.data.current?.type === "Column";
 
         if (isActiveTask && isOverColumn) {
-            // Find the index of the active task
-            const activeIndex = tasks.findIndex((t) => t.id === activeId);
+            setTasks((tasks) => {
+                const activeIndex = tasks.findIndex((t) => t.id === activeId);
 
-            // Update the columnId of the active task
-            const updatedTask = { ...tasks[activeIndex], columnId: overId };
+                const updatedTasks = [...tasks];
 
-            // Create a new array with the updated task
-            const newTasks = [...tasks];
-            newTasks[activeIndex] = updatedTask;
+                updatedTasks[activeIndex] = {
+                    ...updatedTasks[activeIndex],
+                    columnId: overId,
+                };
 
-            // Reorder the tasks using arrayMove (keeping the same index)
-            const reorderedTasks = arrayMove(
-                newTasks,
-                activeIndex,
-                activeIndex
-            );
-
-            // Call setTasks with the final array
-            setTasks(reorderedTasks);
-            updateTask(
-                updatedTask.id,
-                updatedTask.title,
-                updatedTask.description,
-                updatedTask.columnId
-            );
+                return updatedTasks;
+            });
         }
     };
 

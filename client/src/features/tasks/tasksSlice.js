@@ -39,6 +39,26 @@ export const updateTaskAsync = createAsyncThunk(
     }
 );
 
+//TODO copy from updateAllColumnsAsync
+// export const updateAllTasksAsync = createAsyncThunk(
+//     "columns/updateAllTasksAsync",
+//     async (newTasks, thunkAPI) => {
+//         try {
+//             const token = localStorage.getItem("authToken");
+//             const boardId = thunkAPI.getState().boards.boardId;
+//             const { updatedTask } = await updateTask(
+//                 token,
+//                 boardId,
+//                 columnId,
+//                 newTask
+//             );
+//             return { updatedTask };
+//         } catch (error) {
+//             return thunkAPI.rejectWithValue(error.message);
+//         }
+//     }
+// );
+
 export const deleteTaskAsync = createAsyncThunk(
     "columns/deleteTaskAsync",
     async ({ taskId, columnId }, thunkAPI) => {
