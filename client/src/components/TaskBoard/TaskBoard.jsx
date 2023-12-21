@@ -29,7 +29,7 @@ import {
     createTaskAsync,
     updateTaskAsync,
     deleteTaskAsync,
-    // updateAllTasksAsync,
+    updateAllTasksAsync,
 } from "../../features/tasks/tasksSlice.js";
 import { selectCurrentBoardId } from "../../features/boards/boardsSlice.js";
 import { useDispatch } from "react-redux";
@@ -97,17 +97,25 @@ const TaskBoard = () => {
             title: `Task ${tasks.length + 1}`,
             description: ``,
             columnId: columnId,
+            index: tasks.length,
         };
         console.log(newTask);
         await dispatch(createTaskAsync({ newTask, columnId }));
     };
 
-    const updateTask = async (taskId, title, description, columnId) => {
+    const updateTask = async (
+        taskId,
+        title,
+        description,
+        columnId,
+        newIndex
+    ) => {
         const newTask = {
             title,
             description,
             id: taskId,
             columnId: columnId,
+            index: newIndex,
         };
         await dispatch(updateTaskAsync({ newTask, columnId }));
     };
@@ -117,10 +125,10 @@ const TaskBoard = () => {
     };
 
     const updateAllTasks = async (newTasks) => {
-        console.log("Here");
-        console.log(originalTasks);
+        //TODO update all - after adding index to everything realted to task.
+        // console.log("Here");
         console.log(newTasks);
-        // await dispatch(updateAllTasksAsync(newTasks));
+        await dispatch(updateAllTasksAsync(newTasks));
     };
 
     const onDragStart = (e) => {

@@ -1,5 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { updateTask, createTask, deleteTask } from "./tasksService.js";
+import {
+    updateTask,
+    createTask,
+    deleteTask,
+    updateAllTasks,
+} from "./tasksService.js";
 
 export const createTaskAsync = createAsyncThunk(
     "tasks/createTaskAsync",
@@ -21,7 +26,7 @@ export const createTaskAsync = createAsyncThunk(
 );
 
 export const updateTaskAsync = createAsyncThunk(
-    "columns/updateTaskAsync",
+    "tasks/updateTaskAsync",
     async ({ newTask, columnId }, thunkAPI) => {
         try {
             const token = localStorage.getItem("authToken");
@@ -39,28 +44,26 @@ export const updateTaskAsync = createAsyncThunk(
     }
 );
 
-//TODO copy from updateAllColumnsAsync
-// export const updateAllTasksAsync = createAsyncThunk(
-//     "columns/updateAllTasksAsync",
-//     async (newTasks, thunkAPI) => {
-//         try {
-//             const token = localStorage.getItem("authToken");
-//             const boardId = thunkAPI.getState().boards.boardId;
-//             const { updatedTask } = await updateTask(
-//                 token,
-//                 boardId,
-//                 columnId,
-//                 newTask
-//             );
-//             return { updatedTask };
-//         } catch (error) {
-//             return thunkAPI.rejectWithValue(error.message);
-//         }
-//     }
-// );
+export const updateAllTasksAsync = createAsyncThunk(
+    "tasks/updateAllTasksAsync",
+    async (newTasks, thunkAPI) => {
+        try {
+            const token = localStorage.getItem("authToken");
+            const boardId = thunkAPI.getState().boards.boardId;
+            const { updatedTasks } = await updateAllTasks(
+                token,
+                boardId,
+                newTasks
+            );
+            return { updatedTasks };
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
 
 export const deleteTaskAsync = createAsyncThunk(
-    "columns/deleteTaskAsync",
+    "tasks/deleteTaskAsync",
     async ({ taskId, columnId }, thunkAPI) => {
         try {
             const token = localStorage.getItem("authToken");
@@ -131,6 +134,19 @@ const tasksSlice = createSlice({
                 );
             })
             .addCase(deleteTaskAsync.rejected, (state, action) => {
+                state.status = "rejected";
+                state.error = action.payload;
+            })
+            .addCase(updateAllTasksAsync.pending, (state, action) => {
+                state.status = "pending";
+                state.error = null;
+            })
+            .addCase(updateAllTasksAsync.fulfilled, (state, action) => {
+                state.status = "fulfilled";
+                const updatedTasks = action.payload.updatedTasks;
+                state.tasks = updatedTasks;
+            })
+            .addCase(updateAllTasksAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
             });

@@ -82,3 +82,27 @@ export const deleteTask = async (token, boardId, columnId, taskId) => {
         throw error;
     }
 };
+
+export const updateAllTasks = async (token, boardId, newTasks) => {
+    try {
+        const config = {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newTasks),
+        };
+        const response = await fetch(TASKS_API + `${boardId}/all`, config);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Login failed");
+        }
+
+        const updatedTasks = await response.json();
+        return { updatedTasks };
+    } catch (error) {
+        throw error;
+    }
+};
