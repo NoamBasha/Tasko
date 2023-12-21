@@ -12,7 +12,6 @@ import {
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import TaskCard from "../TaskCard/TaskCard.jsx";
-import useLocalStorage from "../../hooks/useLocalStorage.js";
 import ScrollableDiv from "../ScrollableDiv/ScrollableDiv.jsx";
 
 import { useSelector } from "react-redux";
@@ -38,7 +37,9 @@ const TaskBoard = () => {
     // TODO change "+ add column" to just a "+" and move it upwards like JIRA?
     const currentBoardId = useSelector(selectCurrentBoardId);
 
-    const columns = useSelector(selectColumns);
+    const originalColumns = useSelector(selectColumns);
+    const [columns, setColumns] = useState(originalColumns);
+
     const columnsIds = useMemo(() => columns.map((col) => col.id), [columns]);
 
     const originalTasks = useSelector(selectTasks);
@@ -47,6 +48,10 @@ const TaskBoard = () => {
     useEffect(() => {
         setTasks(originalTasks);
     }, [originalTasks]);
+
+    useEffect(() => {
+        setColumns(originalColumns);
+    }, [originalColumns]);
 
     const [activeColumn, setActiveColumn] = useState(null);
     const [activeTask, setActiveTask] = useState(null);
@@ -125,9 +130,6 @@ const TaskBoard = () => {
     };
 
     const updateAllTasks = async (newTasks) => {
-        //TODO update all - after adding index to everything realted to task.
-        // console.log("Here");
-        console.log(newTasks);
         await dispatch(updateAllTasksAsync(newTasks));
     };
 
@@ -151,14 +153,13 @@ const TaskBoard = () => {
         const activeId = active.id;
         const overId = over.id;
 
-        // if (activeId === overId) return;
+        if (activeId === overId) return;
 
         const activeColumnIndex = columns.findIndex(
             (col) => col.id === activeId
         );
         const overColumnIndex = columns.findIndex((col) => col.id === overId);
 
-        // Create a new array with the updated column order
         const movedColumns = arrayMove(
             columns.slice(),
             activeColumnIndex,
@@ -169,6 +170,7 @@ const TaskBoard = () => {
             return { ...col, index: movedColumns[i].index };
         });
 
+        setColumns(newColumns);
         updateAllColumns(newColumns);
         updateAllTasks(tasks);
     };
