@@ -145,8 +145,14 @@ const TaskBoard = () => {
     };
 
     const onDragEnd = (e) => {
+        // Updating the tasks in the server at the end of a drag operation if they changed in the dragging
+        if (JSON.stringify(originalTasks) !== JSON.stringify(tasks)) {
+            updateAllTasks(tasks);
+        }
+
         setActiveColumn(null);
         setActiveTask(null);
+
         const { active, over } = e;
         if (!over) return;
 
@@ -172,7 +178,6 @@ const TaskBoard = () => {
 
         setColumns(newColumns);
         updateAllColumns(newColumns);
-        updateAllTasks(tasks);
     };
 
     const onDragOver = (e) => {
