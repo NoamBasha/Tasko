@@ -129,6 +129,7 @@ const updateColumn = async function (req, res) {
     }
 };
 
+//TODO remove E2E?
 const updateTwoColumns = async function (req, res) {
     try {
         const userId = req.user.id;

@@ -37,8 +37,6 @@ model Task {
   id          Int     @id @default(autoincrement())
   title       String
   description String?
-  //TODO npx prisma generate
-  //TODO and then : npx prisma migrate --name task_add_index
   index       Int
   // priority    Priority?
   // isCompleted Boolean

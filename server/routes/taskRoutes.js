@@ -3,10 +3,13 @@ import {
     createTask,
     updateTask,
     deleteTask,
+    updateAllTasks,
 } from "../controllers/taskController.js";
 import protect from "../middleware/protect.js";
 
 const router = express.Router();
+
+router.route("/:boardId/all").put(protect, updateAllTasks);
 
 router.route("/:boardId/:columnId").post(protect, createTask);
 

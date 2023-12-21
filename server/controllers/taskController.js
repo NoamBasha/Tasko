@@ -5,7 +5,7 @@ const createTask = async function (req, res) {
         const userId = req.user.id;
         const boardId = +req.params.boardId;
         const columnId = +req.params.columnId;
-        const { title, description } = req.body;
+        const { title, description, index } = req.body;
 
         const board = await prisma.board.findUnique({
             where: { id: boardId, userId: userId },
@@ -31,6 +31,7 @@ const createTask = async function (req, res) {
             data: {
                 title: title,
                 description: description,
+                index: +index,
                 column: {
                     connect: { id: columnId },
                 },
@@ -95,7 +96,7 @@ const updateTask = async function (req, res) {
         const boardId = +req.params.boardId;
         const columnId = +req.params.columnId;
         const taskId = +req.params.taskId;
-        const { title, description } = req.body;
+        const { title, description, index } = req.body;
 
         const board = await prisma.board.findUnique({
             where: { id: boardId, userId: userId },
@@ -129,6 +130,7 @@ const updateTask = async function (req, res) {
             data: {
                 title: title,
                 description: description,
+                index: +index,
             },
         });
 
@@ -139,4 +141,58 @@ const updateTask = async function (req, res) {
     }
 };
 
-export { createTask, deleteTask, updateTask };
+const updateAllTasks = async function (req, res) {
+    try {
+        const userId = req.user.id;
+        const boardId = +req.params.boardId;
+        const newTasks = req.body;
+
+        console.log(userId, boardId, newTasks);
+
+        const board = await prisma.board.findUnique({
+            where: { id: boardId, userId: userId },
+        });
+
+        if (!board) {
+            return res.status(401).json({
+                message: "Could not find board or user is not authorized",
+            });
+        }
+
+        newTasks.map(async (task) => {
+            const taskId = +task.id;
+
+            const existingTask = await prisma.task.findUnique({
+                where: { id: taskId },
+            });
+
+            if (!existingTask) {
+                return res.status(404).json({ message: "Could not find task" });
+            }
+        });
+
+        const prismaPromisesArray = newTasks.map((task) => {
+            const taskId = +task.id;
+
+            return prisma.task.update({
+                where: { id: taskId },
+                data: {
+                    index: +task.index,
+                    columnId: task.columnId,
+                },
+            });
+        });
+
+        // Use a Prisma transaction to update all columns in the array
+        const transactionResults = await prisma.$transaction(
+            prismaPromisesArray
+        );
+
+        res.status(200).json(transactionResults);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+export { createTask, deleteTask, updateTask, updateAllTasks };
