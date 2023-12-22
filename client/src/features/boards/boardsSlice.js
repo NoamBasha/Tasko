@@ -74,7 +74,6 @@ export const getBoardAsync = createAsyncThunk(
             const token = localStorage.getItem("authToken");
             const { board } = await getBoard(token, boardId);
 
-            //TODO add here setTasks as well
             thunkAPI.dispatch(setColumns(board.columns));
             const boardTasks = [];
             board.columns.forEach((column) => {

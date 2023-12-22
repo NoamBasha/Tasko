@@ -13,13 +13,14 @@ export const createTaskAsync = createAsyncThunk(
         try {
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
+            thunkAPI.dispatch(createLocalTask(newTask));
             const { createdTask } = await createTask(
                 token,
                 boardId,
                 columnId,
                 newTask
             );
-            return { createdTask };
+            return { createdTask, prevId: newTask.id };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
         }
@@ -32,6 +33,7 @@ export const updateTaskAsync = createAsyncThunk(
         try {
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
+            thunkAPI.dispatch(updateLocalTask(newTask));
             const { updatedTask } = await updateTask(
                 token,
                 boardId,
@@ -47,10 +49,11 @@ export const updateTaskAsync = createAsyncThunk(
 
 export const updateAllTasksAsync = createAsyncThunk(
     "tasks/updateAllTasksAsync",
-    async (newTasks, thunkAPI) => {
+    async (_, thunkAPI) => {
         try {
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
+            const newTasks = thunkAPI.getState().tasks.localTasks;
             const { updatedTasks } = await updateAllTasks(
                 token,
                 boardId,
@@ -69,7 +72,7 @@ export const deleteTaskAsync = createAsyncThunk(
         try {
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
-            console.log(taskId, columnId);
+            thunkAPI.dispatch(deleteLocalTask(taskId));
             await deleteTask(token, boardId, columnId, taskId);
             return { deletedId: taskId };
         } catch (error) {
@@ -80,7 +83,7 @@ export const deleteTaskAsync = createAsyncThunk(
 
 const initialState = {
     tasks: [],
-    orginialTasks: [],
+    localTasks: [],
     status: "idle",
     error: null,
 };
@@ -91,6 +94,27 @@ const tasksSlice = createSlice({
     reducers: {
         setTasks: (state, action) => {
             state.tasks = action.payload;
+            state.localTasks = action.payload;
+        },
+        setLocalTasks: (state, action) => {
+            state.localTasks = action.payload;
+        },
+        createLocalTask: (state, action) => {
+            state.localTasks.push(action.payload);
+        },
+        updateLocalTask: (state, action) => {
+            state.localTasks = state.localTasks.map((task) => {
+                if (task.id === action.payload.id) {
+                    return action.payload;
+                } else {
+                    return task;
+                }
+            });
+        },
+        deleteLocalTask: (state, action) => {
+            state.localTasks = state.localTasks.filter(
+                (task) => task.id !== action.payload
+            );
         },
     },
     extraReducers: (builder) => {
@@ -102,10 +126,20 @@ const tasksSlice = createSlice({
             .addCase(createTaskAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
                 state.tasks.push(action.payload.createdTask);
+
+                state.localTasks = state.localTasks.map((task) => {
+                    if (task.id === action.payload.prevId) {
+                        return action.payload.createdTask;
+                    } else {
+                        return task;
+                    }
+                });
             })
             .addCase(createTaskAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                state.localTasks = state.tasks;
+                toast.error(action.payload);
             })
             .addCase(updateTaskAsync.pending, (state, action) => {
                 state.status = "pending";
@@ -124,6 +158,8 @@ const tasksSlice = createSlice({
             .addCase(updateTaskAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                state.localTasks = state.tasks;
+                toast.error(action.payload);
             })
             .addCase(deleteTaskAsync.pending, (state, action) => {
                 state.status = "pending";
@@ -138,6 +174,8 @@ const tasksSlice = createSlice({
             .addCase(deleteTaskAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                state.localTasks = state.tasks;
+                toast.error(action.payload);
             })
             .addCase(updateAllTasksAsync.pending, (state, action) => {
                 state.status = "pending";
@@ -147,17 +185,26 @@ const tasksSlice = createSlice({
                 state.status = "fulfilled";
                 const updatedTasks = action.payload.updatedTasks;
                 state.tasks = updatedTasks;
+                state.localTasks = updatedTasks;
             })
             .addCase(updateAllTasksAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                state.localTasks = state.tasks;
                 toast.error(action.payload);
             });
     },
 });
 
-export const { setTasks } = tasksSlice.actions;
+export const {
+    setTasks,
+    setLocalTasks,
+    createLocalTask,
+    updateLocalTask,
+    deleteLocalTask,
+} = tasksSlice.actions;
 
 export const selectTasks = (state) => state.tasks.tasks;
+export const selectLocalTasks = (state) => state.tasks.localTasks;
 
 export default tasksSlice.reducer;

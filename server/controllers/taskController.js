@@ -149,9 +149,13 @@ const updateAllTasks = async function (req, res) {
 
         console.log(userId, boardId, newTasks);
 
+        console.log("1");
+
         const board = await prisma.board.findUnique({
             where: { id: boardId, userId: userId },
         });
+
+        console.log("2");
 
         if (!board) {
             return res.status(401).json({
@@ -159,17 +163,30 @@ const updateAllTasks = async function (req, res) {
             });
         }
 
-        newTasks.map(async (task) => {
+        console.log("3");
+
+        for (const task of newTasks) {
             const taskId = +task.id;
 
-            const existingTask = await prisma.task.findUnique({
-                where: { id: taskId },
-            });
+            try {
+                console.log(taskId, boardId);
+                const existingTask = await prisma.task.findUnique({
+                    where: { id: taskId },
+                });
 
-            if (!existingTask) {
-                return res.status(404).json({ message: "Could not find task" });
+                if (!existingTask) {
+                    return res
+                        .status(404)
+                        .json({ message: "Could not find task" });
+                }
+            } catch (err) {
+                return res
+                    .status(500)
+                    .json({ message: "Internal Server Error" });
             }
-        });
+        }
+
+        console.log("4");
 
         const prismaPromisesArray = newTasks.map((task) => {
             const taskId = +task.id;
@@ -183,10 +200,14 @@ const updateAllTasks = async function (req, res) {
             });
         });
 
+        console.log("5");
+
         // Use a Prisma transaction to update all columns in the array
         const transactionResults = await prisma.$transaction(
             prismaPromisesArray
         );
+
+        console.log("6");
 
         res.status(200).json(transactionResults);
     } catch (error) {

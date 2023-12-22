@@ -177,9 +177,13 @@ const updateAllColumns = async function (req, res) {
         const boardId = +req.params.boardId;
         const newColumns = req.body;
 
+        console.log("1");
+
         const board = await prisma.board.findUnique({
             where: { id: boardId, userId: userId },
         });
+
+        console.log("2");
 
         if (!board) {
             return res.status(401).json({
@@ -187,19 +191,29 @@ const updateAllColumns = async function (req, res) {
             });
         }
 
-        newColumns.map(async (column) => {
+        console.log("3");
+
+        for (const column of newColumns) {
             const columnId = +column.id;
 
-            const existingColumn = await prisma.column.findUnique({
-                where: { id: columnId, boardId: boardId },
-            });
+            try {
+                const existingColumn = await prisma.column.findUnique({
+                    where: { id: columnId, boardId: boardId },
+                });
 
-            if (!existingColumn) {
+                if (!existingColumn) {
+                    return res
+                        .status(404)
+                        .json({ message: "Could not find column" });
+                }
+            } catch (err) {
                 return res
-                    .status(404)
-                    .json({ message: "Could not find column" });
+                    .status(500)
+                    .json({ message: "Internal Server Error" });
             }
-        });
+        }
+
+        console.log("4");
 
         const prismaPromisesArray = newColumns.map((column) => {
             const columnId = +column.id;
@@ -211,12 +225,13 @@ const updateAllColumns = async function (req, res) {
                 },
             });
         });
+        console.log("5");
 
         // Use a Prisma transaction to update all columns in the array
         const transactionResults = await prisma.$transaction(
             prismaPromisesArray
         );
-
+        console.log("6");
         res.status(200).json(transactionResults);
     } catch (error) {
         console.error(error);

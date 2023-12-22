@@ -15,44 +15,39 @@ import TaskCard from "../TaskCard/TaskCard.jsx";
 import ScrollableDiv from "../ScrollableDiv/ScrollableDiv.jsx";
 import { toast } from "react-toastify";
 
-import { useSelector } from "react-redux";
 import {
     createColumnAsync,
     deleteColumnAsync,
     updateColumnAsync,
     updateAllColumnsAsync,
-    selectColumns,
-    updateTwoColumnsAsync,
+    // updateTwoColumnsAsync,
+    selectLocalColumns,
+    setLocalColumns,
 } from "../../features/columns/columnsSlice.js";
+
 import {
-    selectTasks,
     createTaskAsync,
     updateTaskAsync,
     deleteTaskAsync,
     updateAllTasksAsync,
+    selectLocalTasks,
+    setLocalTasks,
 } from "../../features/tasks/tasksSlice.js";
-import { selectCurrentBoardId } from "../../features/boards/boardsSlice.js";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-const TaskBoard = () => {
+const TaskBoard = ({ boardId, columns, tasks }) => {
     // TODO change "+ add column" to just a "+" and move it upwards like JIRA?
-    const currentBoardId = useSelector(selectCurrentBoardId);
 
-    const originalColumns = useSelector(selectColumns);
-    const [columns, setColumns] = useState(originalColumns);
+    const localColumns = useSelector(selectLocalColumns);
+    const localTasks = useSelector(selectLocalTasks);
 
-    const columnsIds = useMemo(() => columns.map((col) => col.id), [columns]);
+    console.log(localColumns);
+    console.log(localTasks);
 
-    const originalTasks = useSelector(selectTasks);
-    const [tasks, setTasks] = useState(originalTasks);
-
-    useEffect(() => {
-        setTasks(originalTasks);
-    }, [originalTasks]);
-
-    useEffect(() => {
-        setColumns(originalColumns);
-    }, [originalColumns]);
+    const localColumnsIds = useMemo(
+        () => localColumns.map((col) => col.id),
+        [localColumns]
+    );
 
     const [activeColumn, setActiveColumn] = useState(null);
     const [activeTask, setActiveTask] = useState(null);
@@ -69,8 +64,11 @@ const TaskBoard = () => {
 
     const createColumn = async () => {
         const newColumn = {
-            title: `Column ${columns.length + 1}`,
-            index: `${columns.length}`,
+            boardId: boardId,
+            title: `Column ${localColumns.length + 1}`,
+            index: `${localColumns.length}`,
+            //TODO simulating a new id until the real id comes back form the server - there might be a better way
+            id: Math.floor(Math.random() * 100000000),
         };
         await dispatch(createColumnAsync(newColumn));
     };
@@ -81,36 +79,32 @@ const TaskBoard = () => {
             index: newIndex,
             title: newTitle,
         };
-        //TODO: maybe not returning but handling it in the redux? or maybe both if needed?
-        return await dispatch(updateColumnAsync(newColumn));
+        await dispatch(updateColumnAsync(newColumn));
     };
 
     const deleteColumn = async (columnId) => {
         await dispatch(deleteColumnAsync(columnId));
     };
 
-    const updateTwoColumns = async (firstNewColumn, secondNewColumn) => {
-        await dispatch(
-            updateTwoColumnsAsync({ firstNewColumn, secondNewColumn })
-        );
-    };
+    // const updateTwoColumns = async (firstNewColumn, secondNewColumn) => {
+    //     await dispatch(
+    //         updateTwoColumnsAsync({ firstNewColumn, secondNewColumn })
+    //     );
+    // };
 
-    const updateAllColumns = async (newColumns) => {
-        const res = await dispatch(updateAllColumnsAsync(newColumns));
-        if (res.error?.message) {
-            toast.error(res.error?.message);
-            setColumns(originalColumns);
-        }
+    const updateAllColumns = async () => {
+        await dispatch(updateAllColumnsAsync());
     };
 
     const createTask = async (columnId) => {
         const newTask = {
-            title: `Task ${tasks.length + 1}`,
+            title: `Task ${localTasks.length + 1}`,
             description: ``,
             columnId: columnId,
-            index: tasks.length,
+            index: localTasks.length,
+            //TODO simulating a new id until the real id comes back form the server - there might be a better way
+            id: Math.floor(Math.random() * 100000000),
         };
-        console.log(newTask);
         await dispatch(createTaskAsync({ newTask, columnId }));
     };
 
@@ -135,12 +129,8 @@ const TaskBoard = () => {
         await dispatch(deleteTaskAsync({ taskId, columnId }));
     };
 
-    const updateAllTasks = async (newTasks) => {
-        const res = await dispatch(updateAllTasksAsync(newTasks));
-        if (res.error?.message) {
-            toast.error(res.error?.message);
-            setTasks(originalTasks);
-        }
+    const updateAllTasks = async () => {
+        await dispatch(updateAllTasksAsync());
     };
 
     const onDragStart = (e) => {
@@ -156,9 +146,9 @@ const TaskBoard = () => {
 
     const onDragEnd = (e) => {
         // Updating the tasks in the server at the end of a drag operation if they changed in the dragging
-        if (JSON.stringify(originalTasks) !== JSON.stringify(tasks)) {
+        if (JSON.stringify(localTasks) !== JSON.stringify(tasks)) {
             //TODO maybe send only those one who changed?
-            updateAllTasks(tasks);
+            updateAllTasks();
         }
 
         setActiveColumn(null);
@@ -172,13 +162,15 @@ const TaskBoard = () => {
 
         if (activeId === overId) return;
 
-        const activeColumnIndex = columns.findIndex(
+        const activeColumnIndex = localColumns.findIndex(
             (col) => col.id === activeId
         );
-        const overColumnIndex = columns.findIndex((col) => col.id === overId);
+        const overColumnIndex = localColumns.findIndex(
+            (col) => col.id === overId
+        );
 
         const movedColumns = arrayMove(
-            columns.slice(),
+            localColumns.slice(),
             activeColumnIndex,
             overColumnIndex
         );
@@ -187,8 +179,13 @@ const TaskBoard = () => {
             return { ...col, index: movedColumns[i].index };
         });
 
-        setColumns(newColumns);
-        updateAllColumns(newColumns);
+        if (JSON.stringify(newColumns) !== JSON.stringify(columns)) {
+            //TODO should this be awaited? bacause of the use of updateAllColumns with localSolumns
+            dispatch(setLocalColumns(newColumns));
+
+            //TODO maybe send only those one who changed?
+            updateAllColumns();
+        }
     };
 
     const onDragOver = (e) => {
@@ -207,41 +204,42 @@ const TaskBoard = () => {
 
         // Dropping a task over another task
         if (isActiveTask && isOverTask) {
-            console.log("Render");
-            setTasks((tasks) => {
-                const activeIndex = tasks.findIndex((t) => t.id === activeId);
-                const overIndex = tasks.findIndex((t) => t.id === overId);
+            const activeIndex = localTasks.findIndex((t) => t.id === activeId);
+            const overIndex = localTasks.findIndex((t) => t.id === overId);
 
-                const updatedTasks = [...tasks];
+            const updatedTasks = [...localTasks];
 
-                updatedTasks[activeIndex] = {
-                    ...updatedTasks[activeIndex],
-                    columnId: updatedTasks[overIndex].columnId,
-                };
+            updatedTasks[activeIndex] = {
+                ...updatedTasks[activeIndex],
+                columnId: updatedTasks[overIndex].columnId,
+            };
 
-                return arrayMove(updatedTasks, activeIndex, overIndex);
-            });
+            const updatedMovedLocalTasks = arrayMove(
+                updatedTasks,
+                activeIndex,
+                overIndex
+            );
+
+            dispatch(setLocalTasks(updatedMovedLocalTasks));
         }
 
         const isOverColumn = over.data.current?.type === "Column";
 
         if (isActiveTask && isOverColumn) {
-            setTasks((tasks) => {
-                const activeIndex = tasks.findIndex((t) => t.id === activeId);
+            const activeIndex = localTasks.findIndex((t) => t.id === activeId);
 
-                const updatedTasks = [...tasks];
+            const updatedTasks = [...localTasks];
 
-                updatedTasks[activeIndex] = {
-                    ...updatedTasks[activeIndex],
-                    columnId: overId,
-                };
+            updatedTasks[activeIndex] = {
+                ...updatedTasks[activeIndex],
+                columnId: overId,
+            };
 
-                return updatedTasks;
-            });
+            dispatch(setLocalTasks(updatedTasks));
         }
     };
 
-    if (currentBoardId === null || currentBoardId === undefined) {
+    if (boardId === null || boardId === undefined) {
         return <div className="task-board-container"></div>;
     }
 
@@ -255,15 +253,15 @@ const TaskBoard = () => {
             >
                 <div className="task-board-wrapper">
                     <div className="task-board-columns">
-                        <SortableContext items={columnsIds}>
-                            {columns.map((col) => (
+                        <SortableContext items={localColumnsIds}>
+                            {localColumns.map((col) => (
                                 <ColumnContainer
                                     key={col.id}
                                     column={col}
                                     deleteColumn={deleteColumn}
                                     updateColumn={updateColumn}
                                     createTask={createTask}
-                                    tasks={tasks.filter(
+                                    tasks={localTasks.filter(
                                         (task) => task.columnId === col.id
                                     )}
                                     deleteTask={deleteTask}
@@ -293,7 +291,7 @@ const TaskBoard = () => {
                                 createTask={createTask}
                                 deleteTask={deleteTask}
                                 updateTask={updateTask}
-                                tasks={tasks.filter(
+                                tasks={localTasks.filter(
                                     (task) => task.columnId === activeColumn.id
                                 )}
                             />

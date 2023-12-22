@@ -55,17 +55,7 @@ const ColumnContainer = ({
     const handleUpdateColumn = async () => {
         setEditMode(false);
         if (newTitle === column.title || newTitle.trim() === "") return;
-        //TODO: check the updateColumn todo in TaskBoard.jsx - then decide what to do here :)
-        const res = await updateColumn(
-            column.id,
-            column.index,
-            newTitle.trim()
-        );
-        if (res.error?.message) {
-            setNewTitle(column.title);
-            //TODO: toastify another message instead of this one? mayne something else in the object?
-            toast.error(res.error?.message);
-        }
+        updateColumn(column.id, column.index, newTitle.trim());
     };
 
     return (
@@ -87,7 +77,7 @@ const ColumnContainer = ({
                         <div className="column-container-title-counter">
                             {tasks.length}
                         </div>
-                        {!editMode && newTitle}
+                        {!editMode && column.title}
                         {editMode && (
                             <input
                                 className="column-container-title-input"

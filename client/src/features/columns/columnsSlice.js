@@ -6,6 +6,7 @@ import {
     updateTwoColumns,
     updateAllColumns,
 } from "./columnsService.js";
+import { toast } from "react-toastify";
 
 export const createColumnAsync = createAsyncThunk(
     "columns/createColumnAsync",
@@ -13,12 +14,13 @@ export const createColumnAsync = createAsyncThunk(
         try {
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
+            thunkAPI.dispatch(createLocalColumn(newColumn));
             const { createdColumn } = await createColumn(
                 token,
                 boardId,
                 newColumn
             );
-            return { createdColumn };
+            return { createdColumn, prevId: newColumn.id };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
         }
@@ -31,6 +33,7 @@ export const updateColumnAsync = createAsyncThunk(
         try {
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
+            thunkAPI.dispatch(updateLocalColumn(newColumn));
             const { updatedColumn } = await updateColumn(
                 token,
                 boardId,
@@ -43,31 +46,32 @@ export const updateColumnAsync = createAsyncThunk(
     }
 );
 
-export const updateTwoColumnsAsync = createAsyncThunk(
-    "columns/updateTwoColumnsAsync",
-    async ({ firstNewColumn, secondNewColumn }, thunkAPI) => {
-        try {
-            const token = localStorage.getItem("authToken");
-            const boardId = thunkAPI.getState().boards.boardId;
-            const { updatedTwoColumns } = await updateTwoColumns(
-                token,
-                boardId,
-                firstNewColumn,
-                secondNewColumn
-            );
-            return { updatedTwoColumns };
-        } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
-        }
-    }
-);
+// export const updateTwoColumnsAsync = createAsyncThunk(
+//     "columns/updateTwoColumnsAsync",
+//     async ({ firstNewColumn, secondNewColumn }, thunkAPI) => {
+//         try {
+//             const token = localStorage.getItem("authToken");
+//             const boardId = thunkAPI.getState().boards.boardId;
+//             const { updatedTwoColumns } = await updateTwoColumns(
+//                 token,
+//                 boardId,
+//                 firstNewColumn,
+//                 secondNewColumn
+//             );
+//             return { updatedTwoColumns };
+//         } catch (error) {
+//             return thunkAPI.rejectWithValue(error.message);
+//         }
+//     }
+// );
 
 export const updateAllColumnsAsync = createAsyncThunk(
     "columns/updateAllColumnsAsync",
-    async (newColumns, thunkAPI) => {
+    async (_, thunkAPI) => {
         try {
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
+            const newColumns = thunkAPI.getState().columns.localColumns;
             const { updatedColumns } = await updateAllColumns(
                 token,
                 boardId,
@@ -86,6 +90,7 @@ export const deleteColumnAsync = createAsyncThunk(
         try {
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
+            thunkAPI.dispatch(deleteLocalColumn(columnId));
             const { deletedId } = await deleteColumn(token, boardId, columnId);
             return { deletedId };
         } catch (error) {
@@ -96,6 +101,7 @@ export const deleteColumnAsync = createAsyncThunk(
 
 const initialState = {
     columns: [],
+    localColumns: [],
     status: "idle",
     error: null,
 };
@@ -106,6 +112,27 @@ const columnsSlice = createSlice({
     reducers: {
         setColumns: (state, action) => {
             state.columns = action.payload;
+            state.localColumns = action.payload;
+        },
+        setLocalColumns: (state, action) => {
+            state.localColumns = action.payload;
+        },
+        createLocalColumn: (state, action) => {
+            state.localColumns.push(action.payload);
+        },
+        updateLocalColumn: (state, action) => {
+            state.localColumns = state.localColumns.map((column) => {
+                if (column.id === action.payload.id) {
+                    return action.payload;
+                } else {
+                    return column;
+                }
+            });
+        },
+        deleteLocalColumn: (state, action) => {
+            state.localColumns = state.localColumns.filter(
+                (column) => column.id !== action.payload
+            );
         },
     },
     extraReducers: (builder) => {
@@ -117,10 +144,20 @@ const columnsSlice = createSlice({
             .addCase(createColumnAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
                 state.columns.push(action.payload.createdColumn);
+
+                state.localColumns = state.localColumns.map((column) => {
+                    if (column.id === action.payload.prevId) {
+                        return action.payload.createdColumn;
+                    } else {
+                        return column;
+                    }
+                });
             })
             .addCase(createColumnAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                state.localColumns = state.columns;
+                toast.error(action.payload);
             })
             .addCase(updateColumnAsync.pending, (state, action) => {
                 state.status = "pending";
@@ -139,6 +176,8 @@ const columnsSlice = createSlice({
             .addCase(updateColumnAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                state.localColumns = state.columns;
+                toast.error(action.payload);
             })
             .addCase(deleteColumnAsync.pending, (state, action) => {
                 state.status = "pending";
@@ -153,31 +192,33 @@ const columnsSlice = createSlice({
             .addCase(deleteColumnAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                state.localColumns = state.columns;
+                toast.error(action.payload);
             })
-            .addCase(updateTwoColumnsAsync.pending, (state, action) => {
-                state.status = "pending";
-                state.error = null;
-            })
-            .addCase(updateTwoColumnsAsync.fulfilled, (state, action) => {
-                state.status = "fulfilled";
-                const updatedColumns = state.columns.map((column) => {
-                    if (column.id === action.payload.updatedTwoColumns[0].id) {
-                        return action.payload.updatedTwoColumns[0];
-                    } else if (
-                        column.id === action.payload.updatedTwoColumns[1].id
-                    ) {
-                        return action.payload.updatedTwoColumns[1];
-                    } else {
-                        return column;
-                    }
-                });
-                updatedColumns.sort((a, b) => a.index - b.index);
-                state.columns = updatedColumns;
-            })
-            .addCase(updateTwoColumnsAsync.rejected, (state, action) => {
-                state.status = "rejected";
-                state.error = action.payload;
-            })
+            // .addCase(updateTwoColumnsAsync.pending, (state, action) => {
+            //     state.status = "pending";
+            //     state.error = null;
+            // })
+            // .addCase(updateTwoColumnsAsync.fulfilled, (state, action) => {
+            //     state.status = "fulfilled";
+            //     const updatedColumns = state.columns.map((column) => {
+            //         if (column.id === action.payload.updatedTwoColumns[0].id) {
+            //             return action.payload.updatedTwoColumns[0];
+            //         } else if (
+            //             column.id === action.payload.updatedTwoColumns[1].id
+            //         ) {
+            //             return action.payload.updatedTwoColumns[1];
+            //         } else {
+            //             return column;
+            //         }
+            //     });
+            //     updatedColumns.sort((a, b) => a.index - b.index);
+            //     state.columns = updatedColumns;
+            // })
+            // .addCase(updateTwoColumnsAsync.rejected, (state, action) => {
+            //     state.status = "rejected";
+            //     state.error = action.payload;
+            // })
             .addCase(updateAllColumnsAsync.pending, (state, action) => {
                 state.status = "pending";
                 state.error = null;
@@ -186,16 +227,26 @@ const columnsSlice = createSlice({
                 state.status = "fulfilled";
                 const updatedColumns = action.payload.updatedColumns;
                 state.columns = updatedColumns;
+                state.localColumns = updatedColumns;
             })
             .addCase(updateAllColumnsAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                state.localColumns = state.columns;
+                toast.error(action.payload);
             });
     },
 });
 
-export const { setColumns } = columnsSlice.actions;
+export const {
+    setColumns,
+    setLocalColumns,
+    createLocalColumn,
+    updateLocalColumn,
+    deleteLocalColumn,
+} = columnsSlice.actions;
 
 export const selectColumns = (state) => state.columns.columns;
+export const selectLocalColumns = (state) => state.columns.localColumns;
 
 export default columnsSlice.reducer;

@@ -19,6 +19,12 @@ app.use("/api/v1/boards", boardRouter);
 app.use("/api/v1/columns", columnRouter);
 app.use("/api/v1/tasks", taskRouter);
 
+//TODO remove
+// // RESETTING DATABASE
+// await prisma.task.deleteMany({});
+// await prisma.column.deleteMany({});
+// await prisma.board.deleteMany({});
+
 app.listen(PORT, () => {
     console.log(`listening on port ${PORT}`);
 });
