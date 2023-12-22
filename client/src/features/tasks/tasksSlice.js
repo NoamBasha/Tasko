@@ -5,6 +5,7 @@ import {
     deleteTask,
     updateAllTasks,
 } from "./tasksService.js";
+import { toast } from "react-toastify";
 
 export const createTaskAsync = createAsyncThunk(
     "tasks/createTaskAsync",
@@ -79,6 +80,7 @@ export const deleteTaskAsync = createAsyncThunk(
 
 const initialState = {
     tasks: [],
+    orginialTasks: [],
     status: "idle",
     error: null,
 };
@@ -149,6 +151,7 @@ const tasksSlice = createSlice({
             .addCase(updateAllTasksAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                toast.error(action.payload);
             });
     },
 });

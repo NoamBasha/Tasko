@@ -5,6 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { useState, useMemo } from "react";
 import PlusIcon from "../../icons/PlusIcon/PlusIcon.jsx";
 import TaskCard from "../TaskCard/TaskCard.jsx";
+import { toast } from "react-toastify";
 
 const ColumnContainer = ({
     column,
@@ -51,6 +52,22 @@ const ColumnContainer = ({
         );
     }
 
+    const handleUpdateColumn = async () => {
+        setEditMode(false);
+        if (newTitle === column.title || newTitle.trim() === "") return;
+        //TODO: check the updateColumn todo in TaskBoard.jsx - then decide what to do here :)
+        const res = await updateColumn(
+            column.id,
+            column.index,
+            newTitle.trim()
+        );
+        if (res.error?.message) {
+            setNewTitle(column.title);
+            //TODO: toastify another message instead of this one? mayne something else in the object?
+            toast.error(res.error?.message);
+        }
+    };
+
     return (
         <div
             className="column-container-container"
@@ -70,27 +87,17 @@ const ColumnContainer = ({
                         <div className="column-container-title-counter">
                             {tasks.length}
                         </div>
-                        {!editMode && column.title}
+                        {!editMode && newTitle}
                         {editMode && (
                             <input
                                 className="column-container-title-input"
                                 autoFocus
                                 onBlur={() => {
-                                    setEditMode(false);
-                                    updateColumn(
-                                        column.id,
-                                        column.index,
-                                        newTitle
-                                    );
+                                    handleUpdateColumn();
                                 }}
                                 onKeyDown={(e) => {
                                     if (e.key !== "Enter") return;
-                                    setEditMode(false);
-                                    updateColumn(
-                                        column.id,
-                                        column.index,
-                                        newTitle
-                                    );
+                                    handleUpdateColumn();
                                 }}
                                 onChange={(e) => {
                                     setNewTitle(e.target.value);
