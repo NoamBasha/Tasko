@@ -10,7 +10,9 @@ import { selectCurrentBoardId } from "../../features/boards/boardsSlice.js";
 import { selectName } from "../../features/auth/authSlice.js";
 
 const Product = () => {
-    const name = useSelector(selectName);
+    //TODO After refreshing the user clears from the redux state and here I get and error!
+    const name = "Alice Alicia";
+    //const name = useSelector(selectName);
     const tasks = useSelector(selectTasks);
     const columns = useSelector(selectColumns);
     const boardId = useSelector(selectCurrentBoardId);

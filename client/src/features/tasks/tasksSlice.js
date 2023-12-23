@@ -6,6 +6,7 @@ import {
     updateAllTasks,
 } from "./tasksService.js";
 import { toast } from "react-toastify";
+import { deleteColumnAsync } from "../columns/columnsSlice.js";
 
 export const createTaskAsync = createAsyncThunk(
     "tasks/createTaskAsync",
@@ -116,6 +117,11 @@ const tasksSlice = createSlice({
                 (task) => task.id !== action.payload
             );
         },
+        deleteLocalTasksByColumnId: (state, action) => {
+            state.localTasks = state.localTasks.filter(
+                (task) => task.columnId !== action.payload
+            );
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -184,6 +190,22 @@ const tasksSlice = createSlice({
                 state.error = action.payload;
                 state.localTasks = state.tasks;
                 toast.error(action.payload);
+            })
+            .addCase(deleteColumnAsync.pending, (state, action) => {
+                state.status = "pending";
+                state.error = null;
+            })
+            .addCase(deleteColumnAsync.fulfilled, (state, action) => {
+                state.status = "fulfilled";
+                state.tasks = state.tasks.filter(
+                    (task) => task.columnId !== action.payload.deletedId
+                );
+            })
+            .addCase(deleteColumnAsync.rejected, (state, action) => {
+                state.status = "rejected";
+                state.error = action.payload;
+                state.localTasks = state.tasks;
+                toast.error(action.payload);
             });
     },
 });
@@ -194,6 +216,7 @@ export const {
     createLocalTask,
     updateLocalTask,
     deleteLocalTask,
+    deleteLocalTasksByColumnId,
 } = tasksSlice.actions;
 
 export const selectTasks = (state) => state.tasks.tasks;

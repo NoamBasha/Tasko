@@ -3,10 +3,10 @@ import {
     updateColumn,
     createColumn,
     deleteColumn,
-    updateTwoColumns,
     updateAllColumns,
 } from "./columnsService.js";
 import { toast } from "react-toastify";
+import { deleteLocalTasksByColumnId } from "../tasks/tasksSlice.js";
 
 export const createColumnAsync = createAsyncThunk(
     "columns/createColumnAsync",
@@ -72,6 +72,7 @@ export const deleteColumnAsync = createAsyncThunk(
             const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
             thunkAPI.dispatch(deleteLocalColumn(columnId));
+            thunkAPI.dispatch(deleteLocalTasksByColumnId(columnId));
             const { deletedId } = await deleteColumn(token, boardId, columnId);
             return { deletedId };
         } catch (error) {
