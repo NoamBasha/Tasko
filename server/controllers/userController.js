@@ -78,6 +78,32 @@ const login = async function (req, res) {
     }
 };
 
+const getMe = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const user = await prisma.user.findUnique({
+            where: { userId: userId },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+            },
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+            });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
 const generateToken = (user) => {
     //TODO set an expiration time and add refresh token
     // const expiresIn = "10s";
@@ -87,4 +113,4 @@ const generateToken = (user) => {
     return token;
 };
 
-export { login, register };
+export { login, register, getMe };

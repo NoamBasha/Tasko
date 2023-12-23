@@ -40,3 +40,25 @@ export const register = async (userData) => {
         throw error;
     }
 };
+
+export const getUserData = async (token) => {
+    try {
+        const response = await fetch(USER_API + "getMe", {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Data fetching failed");
+        }
+
+        const user = await response.json();
+        return { user };
+    } catch (error) {
+        throw error;
+    }
+};

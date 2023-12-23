@@ -25,6 +25,21 @@ export const registerUserAsync = createAsyncThunk(
     }
 );
 
+export const getUserDataAsync = createAsyncThunk(
+    "auth/getUserDataAsync",
+    async (_, { rejectWithValue }) => {
+        try {
+            console.log("here!!");
+
+            const token = localStorage.getItem("authToken");
+            const { user } = await getUserData(token);
+            return { user };
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 const initialState = {
     user: null,
     status: "idle",
@@ -62,9 +77,20 @@ const authSlice = createSlice({
             })
             .addCase(registerUserAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
-                // state.user = action.payload.user;
             })
             .addCase(registerUserAsync.rejected, (state, action) => {
+                state.status = "rejected";
+                state.error = action.payload;
+            })
+            .addCase(getUserDataAsync.pending, (state) => {
+                state.status = "pending";
+                state.error = null;
+            })
+            .addCase(getUserDataAsync.fulfilled, (state, action) => {
+                state.status = "fulfilled";
+                state.user = action.payload.user;
+            })
+            .addCase(getUserDataAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
             });
@@ -76,8 +102,9 @@ export const selectUser = (state) => state.auth.user;
 export const selectAuthStatus = (state) => state.auth.status;
 export const selectAuthError = (state) => state.auth.error;
 export const selectIsAuthenticated = (state) =>
-    !!state.auth.user || !!localStorage.getItem("authToken");
-export const selectAuthToken = (state) =>
-    state.auth.user?.token || localStorage.getItem("authToken");
+    !!localStorage.getItem("authToken");
+export const selectAuthToken = (state) => localStorage.getItem("authToken");
+export const selectName = (state) => state.auth.user.name;
+export const selectStatus = (state) => state.status;
 
 export default authSlice.reducer;
