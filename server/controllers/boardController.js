@@ -45,10 +45,11 @@ const getBoard = async function (req, res) {
 const createBoard = async function (req, res) {
     try {
         const userId = req.user.id;
-        const { name } = req.body;
+        const { id, name } = req.body;
 
         const createdBoard = await prisma.board.create({
             data: {
+                id: id,
                 name: name,
                 user: {
                     connect: { id: userId },
@@ -108,7 +109,7 @@ const deleteBoard = async function (req, res) {
             where: { id: boardId },
         });
 
-        res.status(204).json({ id: boardId });
+        res.sendStatus(204);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });

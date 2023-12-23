@@ -7,6 +7,7 @@ import {
 } from "./tasksService.js";
 import { toast } from "react-toastify";
 import { deleteColumnAsync } from "../columns/columnsSlice.js";
+import { deleteBoardAsync } from "../boards/boardsSlice.js";
 
 export const createTaskAsync = createAsyncThunk(
     "tasks/createTaskAsync",
@@ -122,6 +123,11 @@ const tasksSlice = createSlice({
                 (task) => task.columnId !== action.payload
             );
         },
+        deleteTasksByColumnId: (state, action) => {
+            state.tasks = state.tasks.filter(
+                (task) => task.columnId !== action.payload
+            );
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -165,6 +171,7 @@ const tasksSlice = createSlice({
             })
             .addCase(deleteTaskAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
+                //TODO do the same for columns and boards?
                 state.tasks = state.tasks.filter(
                     (task) => task.id !== action.payload.deletedId
                 );
@@ -191,10 +198,6 @@ const tasksSlice = createSlice({
                 state.localTasks = state.tasks;
                 toast.error(action.payload);
             })
-            .addCase(deleteColumnAsync.pending, (state, action) => {
-                state.status = "pending";
-                state.error = null;
-            })
             .addCase(deleteColumnAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
                 state.tasks = state.tasks.filter(
@@ -202,6 +205,12 @@ const tasksSlice = createSlice({
                 );
             })
             .addCase(deleteColumnAsync.rejected, (state, action) => {
+                state.status = "rejected";
+                state.error = action.payload;
+                state.localTasks = state.tasks;
+                toast.error(action.payload);
+            })
+            .addCase(deleteBoardAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
                 state.localTasks = state.tasks;
@@ -217,6 +226,7 @@ export const {
     updateLocalTask,
     deleteLocalTask,
     deleteLocalTasksByColumnId,
+    deleteTasksByColumnId,
 } = tasksSlice.actions;
 
 export const selectTasks = (state) => state.tasks.tasks;

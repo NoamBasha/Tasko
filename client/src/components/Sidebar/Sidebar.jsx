@@ -2,14 +2,14 @@ import "./Sidebar.css";
 import BoardsContainer from "../BoardsContainer/BoardsContainer.jsx";
 import UserSettings from "../UserSettings/UserSettings.jsx";
 
-const Sidebar = ({ name }) => {
+const Sidebar = ({ name, boards }) => {
     return (
         <div className="sidebar-container">
             <div className="sidebar-header">
                 <p>{name}</p>
                 <UserSettings />
             </div>
-            <BoardsContainer />
+            <BoardsContainer boards={boards} />
             <div className="sidebar-footer">Tasko</div>
         </div>
     );

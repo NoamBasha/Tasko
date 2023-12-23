@@ -50,11 +50,6 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     const localColumns = useSelector(selectLocalColumns);
     const localTasks = useSelector(selectLocalTasks);
 
-    console.log("Columns ");
-    console.log(localColumns);
-    console.log("Tasks ");
-    console.log(localTasks);
-
     const localColumnsIds = useMemo(
         () => localColumns.map((col) => col.id),
         [localColumns]

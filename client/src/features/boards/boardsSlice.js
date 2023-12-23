@@ -6,7 +6,15 @@ import {
     createBoard,
     deleteBoard,
 } from "./boardsService.js";
-import { setColumns } from "../columns/columnsSlice.js";
+import {
+    setColumns,
+    deleteLocalColumnsByBoardId,
+} from "../columns/columnsSlice.js";
+import {
+    deleteLocalTasksByColumnId,
+    deleteTasksByColumnId,
+} from "../tasks/tasksSlice.js";
+
 import { setTasks } from "../tasks/tasksSlice.js";
 
 export const getUserBoardsAsync = createAsyncThunk(
@@ -27,6 +35,7 @@ export const createBoardAsync = createAsyncThunk(
     async (newBoard, thunkAPI) => {
         try {
             const token = localStorage.getItem("authToken");
+            thunkAPI.dispatch(createLocalBoard(newBoard));
             const { createdBoard } = await createBoard(token, newBoard);
             return { createdBoard };
         } catch (error) {
@@ -42,6 +51,7 @@ export const updateBoardAsync = createAsyncThunk(
             const token = localStorage.getItem("authToken");
             const name = newBoard.newName;
             const boardId = newBoard.id;
+            thunkAPI.dispatch(updateLocalBoard(newBoard));
             const { updatedBoard } = await updateBoard(token, {
                 name,
                 id: boardId,
@@ -59,8 +69,35 @@ export const deleteBoardAsync = createAsyncThunk(
     async (boardId, thunkAPI) => {
         try {
             const token = localStorage.getItem("authToken");
-            const { deletedId } = await deleteBoard(token, boardId);
-            return { deletedId };
+            const localColumns = thunkAPI.getState().columns.localColumns;
+            const currentBoardId = thunkAPI.getState().boards.boardId;
+            //TODO: this is optimistic - so? roll back to the currentBoardId if failed?
+            if (boardId.localeCompare(currentBoardId) === 0) {
+                thunkAPI.dispatch(resetCurrentBoardId());
+            }
+
+            localColumns.forEach((column) => {
+                if (column.boardId.localeCompare(boardId) === 0) {
+                    thunkAPI.dispatch(deleteLocalTasksByColumnId(column.id));
+                }
+            });
+
+            thunkAPI.dispatch(deleteLocalColumnsByBoardId(boardId));
+
+            thunkAPI.dispatch(deleteLocalBoard(boardId));
+
+            await deleteBoard(token, boardId);
+
+            const columns = thunkAPI.getState().columns.columns;
+
+            columns.forEach((column) => {
+                if (column.boardId.localeCompare(boardId) === 0) {
+                    thunkAPI.dispatch(deleteTasksByColumnId(column.id));
+                }
+            });
+            console.log("here");
+
+            return { deletedId: boardId };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
         }
@@ -90,6 +127,7 @@ export const getBoardAsync = createAsyncThunk(
 
 const initialState = {
     boards: [],
+    localBoards: [],
     boardId: null,
     status: "idle",
     error: null,
@@ -98,7 +136,28 @@ const initialState = {
 const boardsSlice = createSlice({
     name: "boards",
     initialState,
-    reducers: {},
+    reducers: {
+        createLocalBoard: (state, action) => {
+            state.localBoards.push(action.payload);
+        },
+        updateLocalBoard: (state, action) => {
+            state.localBoards = state.localBoards.map((board) => {
+                if (board.id === action.payload.id) {
+                    return action.payload;
+                } else {
+                    return board;
+                }
+            });
+        },
+        deleteLocalBoard: (state, action) => {
+            state.localBoards = state.localBoards.filter(
+                (board) => board.id !== action.payload
+            );
+        },
+        resetCurrentBoardId: (state, action) => {
+            state.boardId = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getUserBoardsAsync.pending, (state, action) => {
@@ -107,9 +166,8 @@ const boardsSlice = createSlice({
             })
             .addCase(getUserBoardsAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
-                state.boards = action.payload.boardsNames.sort(
-                    (a, b) => b.id - a.id
-                );
+                state.boards = action.payload.boardsNames;
+                state.localBoards = action.payload.boardsNames;
             })
             .addCase(getUserBoardsAsync.rejected, (state, action) => {
                 state.status = "rejected";
@@ -122,11 +180,12 @@ const boardsSlice = createSlice({
             .addCase(createBoardAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
                 state.boards.push(action.payload.createdBoard);
-                state.boards = state.boards.sort((a, b) => b.id - a.id);
             })
             .addCase(createBoardAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                state.localBoards = state.boards;
+                toast.error(action.payload);
             })
             .addCase(updateBoardAsync.pending, (state, action) => {
                 state.status = "pending";
@@ -145,6 +204,8 @@ const boardsSlice = createSlice({
             .addCase(updateBoardAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                state.localBoards = state.boards;
+                toast.error(action.payload);
             })
             .addCase(deleteBoardAsync.pending, (state, action) => {
                 state.status = "pending";
@@ -159,6 +220,8 @@ const boardsSlice = createSlice({
             .addCase(deleteBoardAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                state.localBoards = state.boards;
+                toast.error(action.payload);
             })
             .addCase(getBoardAsync.pending, (state, action) => {
                 state.status = "pending";
@@ -176,9 +239,17 @@ const boardsSlice = createSlice({
     },
 });
 
-export const {} = boardsSlice.actions;
+export const {
+    setBoards,
+    setLocalBoards,
+    createLocalBoard,
+    updateLocalBoard,
+    deleteLocalBoard,
+    resetCurrentBoardId,
+} = boardsSlice.actions;
 
 export const selectBoards = (state) => state.boards.boards;
+export const selectLocalBoards = (state) => state.boards.localBoards;
 export const selectCurrentBoardId = (state) => state.boards.boardId;
 
 export default boardsSlice.reducer;

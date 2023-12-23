@@ -13,7 +13,7 @@ import TrashIcon from "../../icons/TrashIcon/TrashIcon";
 
 const BoardTab = ({ name, id }) => {
     const [editMode, setEditMode] = useState(false);
-    const prevName = useRef(name);
+    // const prevName = useRef(name);
     const [newName, setNewName] = useState(name);
     const dispatch = useDispatch();
     const currentBoardId = useSelector(selectCurrentBoardId);
@@ -24,21 +24,8 @@ const BoardTab = ({ name, id }) => {
 
     const handleChangeName = async () => {
         setEditMode(false);
-
-        if (newName.trim().length === 0) {
-            setNewName(prevName.current);
-            return;
-        }
-        if (newName.localeCompare(name) === 0) return;
-
-        const res = await dispatch(updateBoardAsync({ id, newName }));
-        if (res.error?.message) {
-            //TODO toastify
-            console.error(res.payload);
-            setNewName(prevName.current);
-        } else {
-            prevName.current = newName;
-        }
+        if (newName === name || newName.localeCompare(name) === 0) return;
+        await dispatch(updateBoardAsync({ id, newName }));
     };
 
     const handleBlur = async () => {
@@ -60,19 +47,8 @@ const BoardTab = ({ name, id }) => {
         await dispatch(getBoardAsync(id));
     };
 
-    const deleteBoard = async (id) => {
-        const res = await dispatch(deleteBoardAsync(id));
-        await dispatch(getUserBoardsAsync());
-        // if (res.error?.message) {
-        //     //TODO toastify
-        //     console.error(res.payload);
-        // } else {
-        //     prevName.current = newName;
-        // }
-    };
-
-    const handleDelete = async () => {
-        await deleteBoard(id);
+    const deleteBoard = async () => {
+        await dispatch(deleteBoardAsync(id));
     };
 
     return (
@@ -96,7 +72,7 @@ const BoardTab = ({ name, id }) => {
                     value={newName}
                 />
             )}
-            <button className="board-tab-delete-button" onClick={handleDelete}>
+            <button className="board-tab-delete-button" onClick={deleteBoard}>
                 <TrashIcon />
             </button>
         </div>

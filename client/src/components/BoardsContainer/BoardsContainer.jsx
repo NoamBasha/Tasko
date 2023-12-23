@@ -5,13 +5,17 @@ import {
     createBoardAsync,
     getUserBoardsAsync,
 } from "../../features/boards/boardsSlice.js";
-import { selectBoards } from "../../features/boards/boardsSlice.js";
+import {
+    selectBoards,
+    selectLocalBoards,
+} from "../../features/boards/boardsSlice.js";
 import { useEffect, useState } from "react";
 import NewBoardTab from "../NewBoardTab/NewBoardTab.jsx";
+import { v4 as uuidv4 } from "uuid";
 
-const BoardsContainer = () => {
+const BoardsContainer = ({ boards }) => {
     const [createMode, setCreateMode] = useState(false);
-    const boards = useSelector(selectBoards);
+    const localBoards = useSelector(selectLocalBoards);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -19,13 +23,7 @@ const BoardsContainer = () => {
     }, []);
 
     const createBoard = async (name) => {
-        try {
-            //TODO toastify success? or just create the board?
-            await dispatch(createBoardAsync({ name }));
-        } catch (error) {
-            //TODO toastify error
-            console.error(error);
-        }
+        await dispatch(createBoardAsync({ id: uuidv4(), name }));
     };
 
     return (
@@ -50,7 +48,7 @@ const BoardsContainer = () => {
                         createBoard={createBoard}
                     />
                 )}
-                {boards.map((board) => {
+                {localBoards.map((board) => {
                     return (
                         <BoardTab
                             key={board.id}

@@ -7,14 +7,14 @@ const NewBoardTab = ({ setCreateMode, createBoard }) => {
 
     const dispatch = useDispatch();
 
-    const handleChangeName = async () => {
+    const handleCreateBoard = async () => {
         if (name.trim().length === 0) return;
-        await createBoard(name);
         setCreateMode(false);
+        createBoard(name);
     };
 
     const handleBlur = async () => {
-        handleChangeName();
+        handleCreateBoard();
     };
 
     const handleChange = (e) => {
@@ -23,7 +23,7 @@ const NewBoardTab = ({ setCreateMode, createBoard }) => {
 
     const handleKeyDown = async (e) => {
         if (e.key === "Enter") {
-            handleChangeName();
+            handleCreateBoard();
         }
     };
     //TODO: remove class name? add its own style ?

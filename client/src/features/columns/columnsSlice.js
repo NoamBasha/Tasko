@@ -7,6 +7,7 @@ import {
 } from "./columnsService.js";
 import { toast } from "react-toastify";
 import { deleteLocalTasksByColumnId } from "../tasks/tasksSlice.js";
+import { deleteBoardAsync } from "../boards/boardsSlice.js";
 
 export const createColumnAsync = createAsyncThunk(
     "columns/createColumnAsync",
@@ -116,6 +117,11 @@ const columnsSlice = createSlice({
                 (column) => column.id !== action.payload
             );
         },
+        deleteLocalColumnsByBoardId: (state, action) => {
+            state.localColumns = state.localColumns.filter(
+                (column) => column.boardId !== action.payload
+            );
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -184,6 +190,18 @@ const columnsSlice = createSlice({
                 state.error = action.payload;
                 state.localColumns = state.columns;
                 toast.error(action.payload);
+            })
+            .addCase(deleteBoardAsync.fulfilled, (state, action) => {
+                state.columns = state.columns.filter(
+                    (column) => column.boardId !== action.payload.deletedId
+                );
+            })
+            .addCase(deleteBoardAsync.rejected, (state, action) => {
+                state.status = "rejected";
+                state.error = action.payload;
+                state.localColumns = state.columns;
+                //TODO: delete this toast and eveything like it (meaning - duplicates)
+                toast.error(action.payload);
             });
     },
 });
@@ -194,6 +212,7 @@ export const {
     createLocalColumn,
     updateLocalColumn,
     deleteLocalColumn,
+    deleteLocalColumnsByBoardId,
 } = columnsSlice.actions;
 
 export const selectColumns = (state) => state.columns.columns;

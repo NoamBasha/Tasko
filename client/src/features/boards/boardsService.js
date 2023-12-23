@@ -84,15 +84,14 @@ export const deleteBoard = async (token, boardId) => {
             body: JSON.stringify({ id: boardId }),
         };
 
-        const response = await fetch(BOARDS_API + `${boardId}`, config);
+        console.log("1");
 
+        const response = await fetch(BOARDS_API + `${boardId}`, config);
+        console.log("w");
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.message || "Login failed");
         }
-
-        const deletedId = await response.json();
-        return { deletedId };
     } catch (error) {
         throw error;
     }
