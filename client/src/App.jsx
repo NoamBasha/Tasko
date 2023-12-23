@@ -1,13 +1,13 @@
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Product from "./pages/Product/Product.jsx";
 import Login from "./pages/Auth/Login/Login.jsx";
 import Register from "./pages/Auth/Register/Register.jsx";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import RequireAuth from "./components/RequireAuth/RequireAuth.jsx";
 
-//TODO change toast theme and overall style
+//TODO Dark and light theme + background image needs to match the theme
 
 function App() {
     return (
@@ -33,9 +33,6 @@ function App() {
                 draggable
                 pauseOnHover
                 theme="light"
-                progressStyle={{
-                    background: "grey",
-                }}
             />
         </div>
     );

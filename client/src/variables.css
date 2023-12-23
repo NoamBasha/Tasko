@@ -7,6 +7,9 @@
   --clr-bg-primary-light: rgba(241, 241, 241, 0.8);
   --clr-bg-secondary: #e0e0e0;
   --clr-accent: #7173d6;
+  --toastify-color-light: var(--clr-bg-primary-light);
+  --toastify-text-color-light: var(  --clr-text-primary);  
+
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,6 +24,8 @@
     --clr-bg-secondary-light: rgb(43, 42, 46, 0.8);
     --clr-bg-secondary-muted: rgb(43, 42, 46, 0.2);
     --clr-accent: #7173d6;
+    --toastify-color-light: var(--clr-bg-primary-light);
+    --toastify-text-color-light: var(  --clr-text-primary);  
   }
 }
 
