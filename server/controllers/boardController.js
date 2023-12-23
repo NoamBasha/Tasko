@@ -18,7 +18,7 @@ const getBoards = async function (req, res) {
 const getBoard = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = +req.params.boardId;
+        const boardId = req.params.boardId;
 
         const board = await prisma.board.findUnique({
             where: { userId: userId, id: boardId },
@@ -70,7 +70,7 @@ const createBoard = async function (req, res) {
 const deleteBoard = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = +req.params.boardId;
+        const boardId = req.params.boardId;
 
         const board = await prisma.board.findUnique({
             where: { id: boardId, userId: userId },
@@ -118,7 +118,7 @@ const deleteBoard = async function (req, res) {
 const updateBoard = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = +req.params.boardId;
+        const boardId = req.params.boardId;
         const { name } = req.body;
 
         const board = await prisma.board.findUnique({

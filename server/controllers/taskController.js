@@ -3,9 +3,9 @@ import prisma from "../db/prisma.js";
 const createTask = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = +req.params.boardId;
-        const columnId = +req.params.columnId;
-        const { title, description, index } = req.body;
+        const boardId = req.params.boardId;
+        const columnId = req.params.columnId;
+        const { title, description, index, id } = req.body;
 
         const board = await prisma.board.findUnique({
             where: { id: boardId, userId: userId },
@@ -29,6 +29,7 @@ const createTask = async function (req, res) {
         // Create a new task in the specified column
         const createdTask = await prisma.task.create({
             data: {
+                id: id,
                 title: title,
                 description: description,
                 index: +index,
@@ -48,9 +49,9 @@ const createTask = async function (req, res) {
 const deleteTask = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = +req.params.boardId;
-        const columnId = +req.params.columnId;
-        const taskId = +req.params.taskId;
+        const boardId = req.params.boardId;
+        const columnId = req.params.columnId;
+        const taskId = req.params.taskId;
 
         const board = await prisma.board.findUnique({
             where: { id: boardId, userId: userId },
@@ -93,9 +94,9 @@ const deleteTask = async function (req, res) {
 const updateTask = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = +req.params.boardId;
-        const columnId = +req.params.columnId;
-        const taskId = +req.params.taskId;
+        const boardId = req.params.boardId;
+        const columnId = req.params.columnId;
+        const taskId = req.params.taskId;
         const { title, description, index } = req.body;
 
         const board = await prisma.board.findUnique({
@@ -144,18 +145,12 @@ const updateTask = async function (req, res) {
 const updateAllTasks = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = +req.params.boardId;
+        const boardId = req.params.boardId;
         const newTasks = req.body;
-
-        console.log(userId, boardId, newTasks);
-
-        console.log("1");
 
         const board = await prisma.board.findUnique({
             where: { id: boardId, userId: userId },
         });
-
-        console.log("2");
 
         if (!board) {
             return res.status(401).json({
@@ -163,13 +158,10 @@ const updateAllTasks = async function (req, res) {
             });
         }
 
-        console.log("3");
-
         for (const task of newTasks) {
-            const taskId = +task.id;
+            const taskId = task.id;
 
             try {
-                console.log(taskId, boardId);
                 const existingTask = await prisma.task.findUnique({
                     where: { id: taskId },
                 });
@@ -186,10 +178,8 @@ const updateAllTasks = async function (req, res) {
             }
         }
 
-        console.log("4");
-
         const prismaPromisesArray = newTasks.map((task) => {
-            const taskId = +task.id;
+            const taskId = task.id;
 
             return prisma.task.update({
                 where: { id: taskId },
@@ -200,14 +190,10 @@ const updateAllTasks = async function (req, res) {
             });
         });
 
-        console.log("5");
-
         // Use a Prisma transaction to update all columns in the array
         const transactionResults = await prisma.$transaction(
             prismaPromisesArray
         );
-
-        console.log("6");
 
         res.status(200).json(transactionResults);
     } catch (error) {

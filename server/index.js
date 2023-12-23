@@ -21,9 +21,18 @@ app.use("/api/v1/tasks", taskRouter);
 
 //TODO remove
 // // RESETTING DATABASE
-// await prisma.task.deleteMany({});
-// await prisma.column.deleteMany({});
+// await prisma.user.deleteMany({});
 // await prisma.board.deleteMany({});
+// await prisma.column.deleteMany({});
+// await prisma.task.deleteMany({});
+// const remainingUsers = await prisma.user.findMany();
+// console.log("Remaining users:", remainingUsers);
+// const remainingBoards = await prisma.board.findMany();
+// console.log("Remaining board:", remainingBoards);
+// const remainingColumns = await prisma.column.findMany();
+// console.log("Remaining column:", remainingColumns);
+// const remainingTasks = await prisma.task.findMany();
+// console.log("Remaining tasks:", remainingTasks);
 
 app.listen(PORT, () => {
     console.log(`listening on port ${PORT}`);

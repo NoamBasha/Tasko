@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
+  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name     String
   email    String  @unique
   password String
@@ -17,30 +17,30 @@ model User {
 }
 
 model Board {
-  id      Int      @id @default(autoincrement())
+  id      String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name    String
-  userId  Int
+  userId  String   @db.Uuid
   user    User     @relation(fields: [userId], references: [id])
   columns Column[]
 }
 
 model Column {
-  id      Int    @id @default(autoincrement())
+  id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title   String
   index   Int
-  boardId Int
+  boardId String @db.Uuid
   board   Board  @relation(fields: [boardId], references: [id])
   tasks   Task[]
 }
 
 model Task {
-  id          Int     @id @default(autoincrement())
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title       String
   description String?
   index       Int
   // priority    Priority?
   // isCompleted Boolean
-  columnId    Int
+  columnId    String  @db.Uuid
   column      Column  @relation(fields: [columnId], references: [id])
 }
 

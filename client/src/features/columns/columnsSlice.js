@@ -20,7 +20,7 @@ export const createColumnAsync = createAsyncThunk(
                 boardId,
                 newColumn
             );
-            return { createdColumn, prevId: newColumn.id };
+            return { createdColumn };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
         }
@@ -45,25 +45,6 @@ export const updateColumnAsync = createAsyncThunk(
         }
     }
 );
-
-// export const updateTwoColumnsAsync = createAsyncThunk(
-//     "columns/updateTwoColumnsAsync",
-//     async ({ firstNewColumn, secondNewColumn }, thunkAPI) => {
-//         try {
-//             const token = localStorage.getItem("authToken");
-//             const boardId = thunkAPI.getState().boards.boardId;
-//             const { updatedTwoColumns } = await updateTwoColumns(
-//                 token,
-//                 boardId,
-//                 firstNewColumn,
-//                 secondNewColumn
-//             );
-//             return { updatedTwoColumns };
-//         } catch (error) {
-//             return thunkAPI.rejectWithValue(error.message);
-//         }
-//     }
-// );
 
 export const updateAllColumnsAsync = createAsyncThunk(
     "columns/updateAllColumnsAsync",
@@ -144,14 +125,6 @@ const columnsSlice = createSlice({
             .addCase(createColumnAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
                 state.columns.push(action.payload.createdColumn);
-
-                state.localColumns = state.localColumns.map((column) => {
-                    if (column.id === action.payload.prevId) {
-                        return action.payload.createdColumn;
-                    } else {
-                        return column;
-                    }
-                });
             })
             .addCase(createColumnAsync.rejected, (state, action) => {
                 state.status = "rejected";
@@ -195,30 +168,6 @@ const columnsSlice = createSlice({
                 state.localColumns = state.columns;
                 toast.error(action.payload);
             })
-            // .addCase(updateTwoColumnsAsync.pending, (state, action) => {
-            //     state.status = "pending";
-            //     state.error = null;
-            // })
-            // .addCase(updateTwoColumnsAsync.fulfilled, (state, action) => {
-            //     state.status = "fulfilled";
-            //     const updatedColumns = state.columns.map((column) => {
-            //         if (column.id === action.payload.updatedTwoColumns[0].id) {
-            //             return action.payload.updatedTwoColumns[0];
-            //         } else if (
-            //             column.id === action.payload.updatedTwoColumns[1].id
-            //         ) {
-            //             return action.payload.updatedTwoColumns[1];
-            //         } else {
-            //             return column;
-            //         }
-            //     });
-            //     updatedColumns.sort((a, b) => a.index - b.index);
-            //     state.columns = updatedColumns;
-            // })
-            // .addCase(updateTwoColumnsAsync.rejected, (state, action) => {
-            //     state.status = "rejected";
-            //     state.error = action.payload;
-            // })
             .addCase(updateAllColumnsAsync.pending, (state, action) => {
                 state.status = "pending";
                 state.error = null;

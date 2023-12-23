@@ -20,7 +20,7 @@ export const createTaskAsync = createAsyncThunk(
                 columnId,
                 newTask
             );
-            return { createdTask, prevId: newTask.id };
+            return { createdTask };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
         }
@@ -126,14 +126,6 @@ const tasksSlice = createSlice({
             .addCase(createTaskAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
                 state.tasks.push(action.payload.createdTask);
-
-                state.localTasks = state.localTasks.map((task) => {
-                    if (task.id === action.payload.prevId) {
-                        return action.payload.createdTask;
-                    } else {
-                        return task;
-                    }
-                });
             })
             .addCase(createTaskAsync.rejected, (state, action) => {
                 state.status = "rejected";

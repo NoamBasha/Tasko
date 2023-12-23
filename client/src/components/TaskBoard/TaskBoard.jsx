@@ -1,6 +1,6 @@
 import "./TaskBoard.css";
 import PlusIcon from "../../icons/PlusIcon/PlusIcon.jsx";
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useCallback } from "react";
 import ColumnContainer from "../ColumnContainer/ColumnContainer.jsx";
 import {
     DndContext,
@@ -13,14 +13,12 @@ import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import TaskCard from "../TaskCard/TaskCard.jsx";
 import ScrollableDiv from "../ScrollableDiv/ScrollableDiv.jsx";
-import { toast } from "react-toastify";
 
 import {
     createColumnAsync,
     deleteColumnAsync,
     updateColumnAsync,
     updateAllColumnsAsync,
-    // updateTwoColumnsAsync,
     selectLocalColumns,
     setLocalColumns,
 } from "../../features/columns/columnsSlice.js";
@@ -75,12 +73,12 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             boardId: boardId,
             title: `Column ${localColumns.length + 1}`,
             index: `${localColumns.length}`,
-            //TODO simulating a new id until the real id comes back form the server - there might be a better way
-            id: Math.floor(Math.random() * 100000000),
+            id: uuidv4(),
         };
         await dispatch(createColumnAsync(newColumn));
     };
 
+    //TODO: use debounce?
     const updateColumn = async (id, newIndex, newTitle) => {
         const newColumn = {
             id,
@@ -93,12 +91,6 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     const deleteColumn = async (columnId) => {
         await dispatch(deleteColumnAsync(columnId));
     };
-
-    // const updateTwoColumns = async (firstNewColumn, secondNewColumn) => {
-    //     await dispatch(
-    //         updateTwoColumnsAsync({ firstNewColumn, secondNewColumn })
-    //     );
-    // };
 
     const updateAllColumns = async () => {
         await dispatch(updateAllColumnsAsync());
@@ -115,12 +107,12 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             description: ``,
             columnId: columnId,
             index: localTasks.length,
-            //TODO simulating a new id until the real id comes back form the server - there might be a better way
-            id: Math.floor(Math.random() * 100000000),
+            id: uuidv4(),
         };
         await dispatch(createTaskAsync({ newTask, columnId }));
     };
 
+    //TODO: use debounce?
     const updateTask = async (
         taskId,
         title,
@@ -143,7 +135,6 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     };
 
     const updateAllTasks = async () => {
-        console.log("here :)");
         await dispatch(updateAllTasksAsync());
     };
 
@@ -194,13 +185,14 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             overColumnIndex
         );
 
-        const newColumns = movedColumns.map((col, i) => {
-            return { ...col, index: movedColumns[i].index };
-        });
+        //TODO Seitch movedColumns to newColumns? (also in the if below!)
+        // const newColumns = movedColumns.map((col, i) => {
+        //     return { ...col, index: movedColumns[i].index };
+        // });
 
-        if (JSON.stringify(newColumns) !== JSON.stringify(columns)) {
+        if (JSON.stringify(movedColumns) !== JSON.stringify(columns)) {
             //TODO should this be awaited? bacause of the use of updateAllColumns with localSolumns
-            dispatch(setLocalColumns(newColumns));
+            dispatch(setLocalColumns(movedColumns));
 
             //TODO maybe send only those one who changed?
             debouncedUpdateAllColumns();

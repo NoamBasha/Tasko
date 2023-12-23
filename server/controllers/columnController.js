@@ -3,8 +3,8 @@ import prisma from "../db/prisma.js";
 const createColumn = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = +req.params.boardId;
-        const { title, index } = req.body;
+        const boardId = req.params.boardId;
+        const { title, index, id } = req.body;
 
         const board = await prisma.board.findUnique({
             where: { id: boardId, userId: userId },
@@ -18,6 +18,7 @@ const createColumn = async function (req, res) {
 
         const newColumn = await prisma.column.create({
             data: {
+                id: id,
                 title: title,
                 index: +index,
                 board: {
@@ -40,8 +41,8 @@ const createColumn = async function (req, res) {
 const deleteColumn = async function (req, res) {
     try {
         const userId = req.user.id;
-        const columnId = +req.params.columnId;
-        const boardId = +req.params.boardId;
+        const columnId = req.params.columnId;
+        const boardId = req.params.boardId;
 
         const board = await prisma.board.findUnique({
             where: {
@@ -92,8 +93,8 @@ const deleteColumn = async function (req, res) {
 const updateColumn = async function (req, res) {
     try {
         const userId = req.user.id;
-        const columnId = +req.params.columnId;
-        const boardId = +req.params.boardId;
+        const columnId = req.params.columnId;
+        const boardId = req.params.boardId;
         const { title, index } = req.body;
 
         const board = await prisma.board.findUnique({
@@ -133,9 +134,9 @@ const updateColumn = async function (req, res) {
 const updateTwoColumns = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = +req.params.boardId;
-        const firstColumnId = +req.params.firstColumnId;
-        const secondColumnId = +req.params.secondColumnId;
+        const boardId = req.params.boardId;
+        const firstColumnId = req.params.firstColumnId;
+        const secondColumnId = req.params.secondColumnId;
         const { firstNewColumn, secondNewColumn } = req.body;
 
         const board = await prisma.board.findUnique({
@@ -153,13 +154,13 @@ const updateTwoColumns = async function (req, res) {
             prisma.column.update({
                 where: { id: firstColumnId },
                 data: {
-                    index: firstNewColumn.index,
+                    index: +firstNewColumn.index,
                 },
             }),
             prisma.column.update({
                 where: { id: secondColumnId },
                 data: {
-                    index: secondNewColumn.index,
+                    index: +secondNewColumn.index,
                 },
             }),
         ]);
@@ -174,16 +175,12 @@ const updateTwoColumns = async function (req, res) {
 const updateAllColumns = async function (req, res) {
     try {
         const userId = req.user.id;
-        const boardId = +req.params.boardId;
+        const boardId = req.params.boardId;
         const newColumns = req.body;
-
-        console.log("1");
 
         const board = await prisma.board.findUnique({
             where: { id: boardId, userId: userId },
         });
-
-        console.log("2");
 
         if (!board) {
             return res.status(401).json({
@@ -191,10 +188,8 @@ const updateAllColumns = async function (req, res) {
             });
         }
 
-        console.log("3");
-
         for (const column of newColumns) {
-            const columnId = +column.id;
+            const columnId = column.id;
 
             try {
                 const existingColumn = await prisma.column.findUnique({
@@ -213,10 +208,8 @@ const updateAllColumns = async function (req, res) {
             }
         }
 
-        console.log("4");
-
         const prismaPromisesArray = newColumns.map((column) => {
-            const columnId = +column.id;
+            const columnId = column.id;
 
             return prisma.column.update({
                 where: { id: columnId },
@@ -225,13 +218,11 @@ const updateAllColumns = async function (req, res) {
                 },
             });
         });
-        console.log("5");
 
         // Use a Prisma transaction to update all columns in the array
         const transactionResults = await prisma.$transaction(
             prismaPromisesArray
         );
-        console.log("6");
         res.status(200).json(transactionResults);
     } catch (error) {
         console.error(error);
