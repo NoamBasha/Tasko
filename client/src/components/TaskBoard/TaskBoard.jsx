@@ -1,6 +1,6 @@
 import "./TaskBoard.css";
 import PlusIcon from "../../icons/PlusIcon/PlusIcon.jsx";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import ColumnContainer from "../ColumnContainer/ColumnContainer.jsx";
 import {
     DndContext,
@@ -34,15 +34,23 @@ import {
     setLocalTasks,
 } from "../../features/tasks/tasksSlice.js";
 import { useDispatch, useSelector } from "react-redux";
+import { v4 as uuidv4 } from "uuid";
+
+const DEBOUNCE_INTERVAL = 1000;
+
+const debounce = (func, delay) => {
+    let timeoutId;
+    return function (...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func.apply(this, args), delay);
+    };
+};
 
 const TaskBoard = ({ boardId, columns, tasks }) => {
     // TODO change "+ add column" to just a "+" and move it upwards like JIRA?
 
     const localColumns = useSelector(selectLocalColumns);
     const localTasks = useSelector(selectLocalTasks);
-
-    console.log(localColumns);
-    console.log(localTasks);
 
     const localColumnsIds = useMemo(
         () => localColumns.map((col) => col.id),
@@ -96,6 +104,11 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         await dispatch(updateAllColumnsAsync());
     };
 
+    const debouncedUpdateAllColumns = useCallback(
+        debounce(updateAllColumns, DEBOUNCE_INTERVAL),
+        []
+    );
+
     const createTask = async (columnId) => {
         const newTask = {
             title: `Task ${localTasks.length + 1}`,
@@ -130,8 +143,14 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     };
 
     const updateAllTasks = async () => {
+        console.log("here :)");
         await dispatch(updateAllTasksAsync());
     };
+
+    const debouncedUpdateAllTasks = useCallback(
+        debounce(updateAllTasks, DEBOUNCE_INTERVAL),
+        []
+    );
 
     const onDragStart = (e) => {
         if (e.active.data.current.type === "Column") {
@@ -148,7 +167,7 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         // Updating the tasks in the server at the end of a drag operation if they changed in the dragging
         if (JSON.stringify(localTasks) !== JSON.stringify(tasks)) {
             //TODO maybe send only those one who changed?
-            updateAllTasks();
+            debouncedUpdateAllTasks();
         }
 
         setActiveColumn(null);
@@ -184,7 +203,7 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             dispatch(setLocalColumns(newColumns));
 
             //TODO maybe send only those one who changed?
-            updateAllColumns();
+            debouncedUpdateAllColumns();
         }
     };
 
