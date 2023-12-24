@@ -34,7 +34,7 @@ const registerSchema = yup.object().shape({
 
 const Register = () => {
     const dispatch = useDispatch();
-    const authStatus = useSelector(selectAuthStatus);
+    const authStatus = useSelector(selectUsersStatus);
 
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
