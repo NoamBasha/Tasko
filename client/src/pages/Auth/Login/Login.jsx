@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
     loginUserAsync,
     selectAuthStatus,
+    selectIsAuthenticated,
 } from "../../../features/auth/authSlice.js";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -10,7 +11,7 @@ import * as yup from "yup";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import Spinner from "../../../components/Spinner/Spinner.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import OpenEyeIcon from "../../../icons/OpenEyeIcon/OpenEyeIcon.jsx";
 import CloseEyeIcon from "../../../icons/CloseEyeIcon/CloseEyeIcon.jsx";
 
@@ -30,10 +31,15 @@ const loginSchema = yup.object().shape({
 const Login = () => {
     const dispatch = useDispatch();
     const authStatus = useSelector(selectAuthStatus);
+    const isAuthenticated = useSelector(selectIsAuthenticated);
 
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const isLoading = authStatus === "pending";
+
+    useEffect(() => {
+        if (isAuthenticated) navigate("/");
+    }, []);
 
     const handleToggleVisibility = () => {
         setShowPassword((prevShowPassword) => !prevShowPassword);
@@ -49,6 +55,7 @@ const Login = () => {
 
     const onSubmit = async (data) => {
         const res = await dispatch(loginUserAsync(data));
+        //TODO remove and handle in slice (same for regsiter)
         if (res.error?.message) {
             toast.error(res.payload);
         } else {

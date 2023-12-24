@@ -25,7 +25,7 @@ export const refresh = async () => {
     try {
         console.log("1");
 
-        const response = await api.get(`${AUTH_BASE}/refresh`, {
+        const response = await api.get(`${AUTH_BASE}refresh`, {
             headers: {
                 "Content-Type": "application/json",
             },
