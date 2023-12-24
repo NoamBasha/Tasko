@@ -1,8 +1,7 @@
 import prisma from "../db/prisma.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
-const register = async function (req, res) {
+const createNewUser = async function (req, res) {
     try {
         const { name, password, email } = req.body;
 
@@ -42,42 +41,6 @@ const register = async function (req, res) {
     }
 };
 
-const login = async function (req, res) {
-    try {
-        const { email, password } = req.body;
-
-        if (!email || !password) {
-            return res
-                .status(400)
-                .json({ message: "Email and password are required" });
-        }
-
-        const user = await prisma.user.findUnique({ where: { email: email } });
-
-        if (!user) {
-            return res.status(400).json({ message: "Invalid Credentials" });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if (!isMatch) {
-            return res.status(400).json({ message: "Invalid Credentials" });
-        }
-
-        const token = generateToken(user);
-
-        const userToSend = {
-            id: user.id,
-            name: user.name,
-        };
-
-        res.status(200).json({ user: userToSend, token });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
-    }
-};
-
 const getMe = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -103,14 +66,4 @@ const getMe = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
-
-const generateToken = (user) => {
-    //TODO set an expiration time and add refresh token
-    // const expiresIn = "10s";
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
-        // expiresIn,
-    });
-    return token;
-};
-
-export { login, register, getMe };
+export { createNewUser, getMe };

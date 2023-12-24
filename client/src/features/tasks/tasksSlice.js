@@ -13,11 +13,9 @@ export const createTaskAsync = createAsyncThunk(
     "tasks/createTaskAsync",
     async ({ newTask, columnId }, thunkAPI) => {
         try {
-            const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
             thunkAPI.dispatch(createLocalTask(newTask));
             const { createdTask } = await createTask(
-                token,
                 boardId,
                 columnId,
                 newTask
@@ -33,11 +31,9 @@ export const updateTaskAsync = createAsyncThunk(
     "tasks/updateTaskAsync",
     async ({ newTask, columnId }, thunkAPI) => {
         try {
-            const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
             thunkAPI.dispatch(updateLocalTask(newTask));
             const { updatedTask } = await updateTask(
-                token,
                 boardId,
                 columnId,
                 newTask
@@ -53,14 +49,9 @@ export const updateAllTasksAsync = createAsyncThunk(
     "tasks/updateAllTasksAsync",
     async (_, thunkAPI) => {
         try {
-            const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
             const newTasks = thunkAPI.getState().tasks.localTasks;
-            const { updatedTasks } = await updateAllTasks(
-                token,
-                boardId,
-                newTasks
-            );
+            const { updatedTasks } = await updateAllTasks(boardId, newTasks);
             return { updatedTasks };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -72,10 +63,9 @@ export const deleteTaskAsync = createAsyncThunk(
     "tasks/deleteTaskAsync",
     async ({ taskId, columnId }, thunkAPI) => {
         try {
-            const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
             thunkAPI.dispatch(deleteLocalTask(taskId));
-            await deleteTask(token, boardId, columnId, taskId);
+            await deleteTask(boardId, columnId, taskId);
             return { deletedId: taskId };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);

@@ -1,121 +1,48 @@
-const BOARDS_API = "http://localhost:3000/api/v1/boards/";
+import api from "../../services/apiService.js";
 
-export const getUserBoards = async (token) => {
+const BOARDS_BASE = "boards/";
+
+export const getUserBoards = async () => {
     try {
-        const config = {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-        };
-
-        const response = await fetch(BOARDS_API, config);
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Login failed");
-        }
-        const boardsNames = await response.json();
-        return { boardsNames };
+        const response = await api.get(BOARDS_BASE);
+        return { boardsNames: response.data };
     } catch (error) {
         throw error;
     }
 };
 
-export const createBoard = async (token, newBoard) => {
+export const createBoard = async (newBoard) => {
     try {
-        const config = {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newBoard),
-        };
-
-        const response = await fetch(BOARDS_API, config);
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Login failed");
-        }
-
-        const createdBoard = await response.json();
-        return { createdBoard };
+        const response = await api.post(BOARDS_BASE, newBoard);
+        return { createdBoard: response.data };
     } catch (error) {
         throw error;
     }
 };
 
-export const updateBoard = async (token, newBoard) => {
+export const updateBoard = async (newBoard) => {
     try {
-        const config = {
-            method: "PUT",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ name: newBoard.name }),
-        };
-
-        const response = await fetch(BOARDS_API + `${newBoard.id}`, config);
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Login failed");
-        }
-
-        const updatedBoard = await response.json();
-        return { updatedBoard };
+        const response = await api.put(`${BOARDS_BASE}${newBoard.id}`, {
+            name: newBoard.name,
+        });
+        return { updatedBoard: response.data };
     } catch (error) {
         throw error;
     }
 };
 
-export const deleteBoard = async (token, boardId) => {
+export const deleteBoard = async (boardId) => {
     try {
-        const config = {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ id: boardId }),
-        };
-
-        console.log("1");
-
-        const response = await fetch(BOARDS_API + `${boardId}`, config);
-        console.log("w");
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Login failed");
-        }
+        await api.delete(`${BOARDS_BASE}${boardId}`);
     } catch (error) {
         throw error;
     }
 };
 
-export const getBoard = async (token, boardId) => {
+export const getBoard = async (boardId) => {
     try {
-        const config = {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-        };
-
-        const response = await fetch(BOARDS_API + `${boardId}`, config);
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Login failed");
-        }
-
-        const board = await response.json();
-        return { board };
+        const response = await api.get(`${BOARDS_BASE}${boardId}`);
+        return { board: response.data };
     } catch (error) {
         throw error;
     }

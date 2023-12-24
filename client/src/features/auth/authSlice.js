@@ -1,47 +1,41 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { login, register, getUserData } from "./authService.js";
+import { login, refresh } from "./authService.js";
+import Cookies from "js-cookie";
+import { getUserDataAsync, resetUserState } from "../users/usersSlice.js";
 
 export const loginUserAsync = createAsyncThunk(
     "auth/loginUserAsync",
-    async (userData, { rejectWithValue }) => {
+    async (userData, thunkAPI) => {
         try {
-            const { token, user } = await login(userData);
-            localStorage.setItem("authToken", token);
-            return { user };
+            const { accessToken } = await login(userData);
+            await thunkAPI.dispatch(getUserDataAsync(accessToken));
+            return { accessToken };
         } catch (error) {
-            return rejectWithValue(error.message);
+            return thunkAPI.rejectWithValue(error.message);
         }
     }
 );
 
-export const registerUserAsync = createAsyncThunk(
-    "auth/registerUserAsync",
-    async (userData, { rejectWithValue }) => {
+export const refreshAccessToken = createAsyncThunk(
+    "auth/refreshAccessToken",
+    async (_, thunkAPI) => {
         try {
-            await register(userData);
-        } catch (error) {
-            return rejectWithValue(error.message);
-        }
-    }
-);
+            console.log("1");
+            const { accessToken } = await refresh();
+            console.log(accessToken);
 
-export const getUserDataAsync = createAsyncThunk(
-    "auth/getUserDataAsync",
-    async (_, { rejectWithValue }) => {
-        try {
-            console.log("here!!");
-
-            const token = localStorage.getItem("authToken");
-            const { user } = await getUserData(token);
-            return { user };
+            return { newAccessToken: accessToken };
         } catch (error) {
-            return rejectWithValue(error.message);
+            console.log(error);
+            thunkAPI.dispatch(clearTokens());
+            thunkAPI.dispatch(resetUserState());
+            return thunkAPI.rejectWithValue(error.message);
         }
     }
 );
 
 const initialState = {
-    user: null,
+    token: null,
     status: "idle",
     error: null,
 };
@@ -50,11 +44,10 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        logoutUser: (state) => {
-            state.user = null;
-            state.status = "idle";
-            state.error = null;
-            localStorage.removeItem("authToken");
+        clearTokens: (state) => {
+            console.log("1");
+            state.token = null;
+            Cookies.remove("refreshToken");
         },
     },
     extraReducers: (builder) => {
@@ -65,46 +58,33 @@ const authSlice = createSlice({
             })
             .addCase(loginUserAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
-                state.user = action.payload.user;
+                state.token = action.payload.accessToken;
             })
             .addCase(loginUserAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
             })
-            .addCase(registerUserAsync.pending, (state) => {
+            .addCase(refreshAccessToken.pending, (state) => {
                 state.status = "pending";
                 state.error = null;
             })
-            .addCase(registerUserAsync.fulfilled, (state, action) => {
+            .addCase(refreshAccessToken.fulfilled, (state, action) => {
                 state.status = "fulfilled";
+                state.token = action.payload.newAccessToken;
             })
-            .addCase(registerUserAsync.rejected, (state, action) => {
+            .addCase(refreshAccessToken.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
-            })
-            .addCase(getUserDataAsync.pending, (state) => {
-                state.status = "pending";
-                state.error = null;
-            })
-            .addCase(getUserDataAsync.fulfilled, (state, action) => {
-                state.status = "fulfilled";
-                state.user = action.payload.user;
-            })
-            .addCase(getUserDataAsync.rejected, (state, action) => {
-                state.status = "rejected";
-                state.error = action.payload;
+                state.token = null;
+                // TODO toastify error?
             });
     },
 });
 
-export const { logoutUser } = authSlice.actions;
-export const selectUser = (state) => state.auth.user;
+export const { clearTokens } = authSlice.actions;
+
+export const selectToken = (state) => state.auth.token;
 export const selectAuthStatus = (state) => state.auth.status;
-export const selectAuthError = (state) => state.auth.error;
-export const selectIsAuthenticated = (state) =>
-    !!localStorage.getItem("authToken");
-export const selectAuthToken = (state) => localStorage.getItem("authToken");
-export const selectName = (state) => state.auth.user.name;
-export const selectStatus = (state) => state.status;
+export const selectIsAuthenticated = (state) => !!state.auth.token;
 
 export default authSlice.reducer;

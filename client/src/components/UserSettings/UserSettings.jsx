@@ -1,8 +1,9 @@
-import { logoutUser } from "../../features/auth/authSlice.js";
+import { clearTokens } from "../../features/auth/authSlice.js";
 import "./UserSettings.css";
 import UserSettingsIcon from "../../icons/UserSettingsIcon/UserSettingsIcon.jsx";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
+import { resetUserState } from "../../features/users/usersSlice.js";
 
 const UserSettings = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +14,8 @@ const UserSettings = () => {
     };
 
     const handleLogout = () => {
-        dispatch(logoutUser());
+        dispatch(clearTokens());
+        dispatch(resetUserState());
         setIsOpen(false);
     };
 

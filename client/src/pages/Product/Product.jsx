@@ -10,7 +10,7 @@ import {
     selectBoards,
     selectCurrentBoardId,
 } from "../../features/boards/boardsSlice.js";
-import { selectName } from "../../features/auth/authSlice.js";
+import { selectName } from "../../features/users/usersSlice.js";
 
 const Product = () => {
     //TODO After refreshing the user clears from the redux state and here I get and error!

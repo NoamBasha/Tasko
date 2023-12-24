@@ -21,8 +21,7 @@ export const getUserBoardsAsync = createAsyncThunk(
     "boards/getUserBoardsAsync",
     async (_, thunkAPI) => {
         try {
-            const token = localStorage.getItem("authToken");
-            const { boardsNames } = await getUserBoards(token);
+            const { boardsNames } = await getUserBoards();
             return { boardsNames };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -34,9 +33,8 @@ export const createBoardAsync = createAsyncThunk(
     "boards/createBoardAsync",
     async (newBoard, thunkAPI) => {
         try {
-            const token = localStorage.getItem("authToken");
             thunkAPI.dispatch(createLocalBoard(newBoard));
-            const { createdBoard } = await createBoard(token, newBoard);
+            const { createdBoard } = await createBoard(newBoard);
             return { createdBoard };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -48,11 +46,10 @@ export const updateBoardAsync = createAsyncThunk(
     "boards/updateBoardAsync",
     async (newBoard, thunkAPI) => {
         try {
-            const token = localStorage.getItem("authToken");
             const name = newBoard.newName;
             const boardId = newBoard.id;
             thunkAPI.dispatch(updateLocalBoard(newBoard));
-            const { updatedBoard } = await updateBoard(token, {
+            const { updatedBoard } = await updateBoard({
                 name,
                 id: boardId,
             });
@@ -68,7 +65,6 @@ export const deleteBoardAsync = createAsyncThunk(
     "boards/deleteBoardAsync",
     async (boardId, thunkAPI) => {
         try {
-            const token = localStorage.getItem("authToken");
             const localColumns = thunkAPI.getState().columns.localColumns;
             const currentBoardId = thunkAPI.getState().boards.boardId;
             //TODO: this is optimistic - so? roll back to the currentBoardId if failed?
@@ -86,7 +82,7 @@ export const deleteBoardAsync = createAsyncThunk(
 
             thunkAPI.dispatch(deleteLocalBoard(boardId));
 
-            await deleteBoard(token, boardId);
+            await deleteBoard(boardId);
 
             const columns = thunkAPI.getState().columns.columns;
 
@@ -108,8 +104,7 @@ export const getBoardAsync = createAsyncThunk(
     "boards/getBoardAsync",
     async (boardId, thunkAPI) => {
         try {
-            const token = localStorage.getItem("authToken");
-            const { board } = await getBoard(token, boardId);
+            const { board } = await getBoard(boardId);
 
             thunkAPI.dispatch(setColumns(board.columns));
             const boardTasks = [];

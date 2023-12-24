@@ -2,8 +2,8 @@ import "./Register.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
     registerUserAsync,
-    selectAuthStatus,
-} from "../../../features/auth/authSlice.js";
+    selectUsersStatus,
+} from "../../../features/users/usersSlice.js";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";

@@ -11,16 +11,16 @@ const protect = async (req, res, next) => {
                 .json({ message: "Authorization token is missing" });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
         req.user = await prisma.user.findUnique({
-            where: { id: decoded.userId },
+            where: { id: decoded.UserInfo.userId },
         });
 
         next();
     } catch (error) {
-        console.error(error);
-        res.status(401).json({ message: "Invalid token" });
+        // console.error(error);
+        res.status(401).json({ message: "Invalid access token" });
     }
 };
 

@@ -1,107 +1,46 @@
-const TASKS_API = "http://localhost:3000/api/v1/tasks/";
+import api from "../../services/apiService.js";
 
-export const createTask = async (token, boardId, columnId, newTask) => {
+const TASKS_BASE = "tasks/";
+
+export const createTask = async (boardId, columnId, newTask) => {
     try {
-        const config = {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newTask),
-        };
-
-        const response = await fetch(
-            TASKS_API + `${boardId}/${columnId}`,
-            config
+        console.log("1");
+        const response = await api.post(
+            TASKS_BASE + `${boardId}/${columnId}`,
+            newTask
         );
+        console.log(response);
+        return { createdTask: response.data };
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Login failed");
-        }
-
-        const createdTask = await response.json();
-
-        return { createdTask };
+export const updateTask = async (boardId, columnId, newTask) => {
+    try {
+        const response = await api.put(
+            TASKS_BASE + `${boardId}/${columnId}/${newTask.id}`,
+            newTask
+        );
+        return { updatedTask: response.data };
     } catch (error) {
         throw error;
     }
 };
 
-export const updateTask = async (token, boardId, columnId, newTask) => {
+export const deleteTask = async (boardId, columnId, taskId) => {
     try {
-        const config = {
-            method: "PUT",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newTask),
-        };
-
-        const response = await fetch(
-            TASKS_API + `${boardId}/${columnId}/${newTask.id}`,
-            config
-        );
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Login failed");
-        }
-
-        const updatedTask = await response.json();
-
-        return { updatedTask };
+        await api.delete(TASKS_BASE + `${boardId}/${columnId}/${taskId}`);
     } catch (error) {
         throw error;
     }
 };
 
-export const deleteTask = async (token, boardId, columnId, taskId) => {
+export const updateAllTasks = async (boardId, newTasks) => {
     try {
-        const config = {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ id: taskId }),
-        };
-
-        const response = await fetch(
-            TASKS_API + `${boardId}/${columnId}/${taskId}`,
-            config
-        );
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Login failed");
-        }
-    } catch (error) {
-        throw error;
-    }
-};
-
-export const updateAllTasks = async (token, boardId, newTasks) => {
-    try {
-        const config = {
-            method: "PUT",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newTasks),
-        };
-        const response = await fetch(TASKS_API + `${boardId}/all`, config);
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Login failed");
-        }
-
-        const updatedTasks = await response.json();
-        return { updatedTasks };
+        const response = await api.put(TASKS_BASE + `${boardId}/all`, newTasks);
+        return { updatedTasks: response.data };
     } catch (error) {
         throw error;
     }

@@ -13,14 +13,9 @@ export const createColumnAsync = createAsyncThunk(
     "columns/createColumnAsync",
     async (newColumn, thunkAPI) => {
         try {
-            const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
             thunkAPI.dispatch(createLocalColumn(newColumn));
-            const { createdColumn } = await createColumn(
-                token,
-                boardId,
-                newColumn
-            );
+            const { createdColumn } = await createColumn(boardId, newColumn);
             return { createdColumn };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -32,14 +27,9 @@ export const updateColumnAsync = createAsyncThunk(
     "columns/updateColumnAsync",
     async (newColumn, thunkAPI) => {
         try {
-            const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
             thunkAPI.dispatch(updateLocalColumn(newColumn));
-            const { updatedColumn } = await updateColumn(
-                token,
-                boardId,
-                newColumn
-            );
+            const { updatedColumn } = await updateColumn(boardId, newColumn);
             return { updatedColumn };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -51,11 +41,9 @@ export const updateAllColumnsAsync = createAsyncThunk(
     "columns/updateAllColumnsAsync",
     async (_, thunkAPI) => {
         try {
-            const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
             const newColumns = thunkAPI.getState().columns.localColumns;
             const { updatedColumns } = await updateAllColumns(
-                token,
                 boardId,
                 newColumns
             );
@@ -70,11 +58,10 @@ export const deleteColumnAsync = createAsyncThunk(
     "columns/deleteColumnAsync",
     async (columnId, thunkAPI) => {
         try {
-            const token = localStorage.getItem("authToken");
             const boardId = thunkAPI.getState().boards.boardId;
             thunkAPI.dispatch(deleteLocalColumn(columnId));
             thunkAPI.dispatch(deleteLocalTasksByColumnId(columnId));
-            const { deletedId } = await deleteColumn(token, boardId, columnId);
+            const { deletedId } = await deleteColumn(boardId, columnId);
             return { deletedId };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);

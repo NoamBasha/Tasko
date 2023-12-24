@@ -8,8 +8,8 @@ const NewBoardTab = ({ setCreateMode, createBoard }) => {
     const dispatch = useDispatch();
 
     const handleCreateBoard = async () => {
-        if (name.trim().length === 0) return;
         setCreateMode(false);
+        if (name.trim().length === 0) return;
         createBoard(name);
     };
 

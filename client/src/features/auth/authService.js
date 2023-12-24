@@ -1,63 +1,46 @@
-const USER_API = "http://localhost:3000/api/v1/users/";
+import api from "../../services/apiService.js";
+
+const AUTH_BASE = "auth/";
 
 export const login = async (userData) => {
     try {
-        const response = await fetch(USER_API + "login", {
-            method: "POST",
+        const response = await api.post(AUTH_BASE, userData, {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(userData),
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Login failed");
+        if (response.status !== 200) {
+            throw new Error(response.data.message || "Login failed");
         }
 
-        const { token, user } = await response.json();
-        return { token, user };
+        const { accessToken, user } = response.data;
+        return { accessToken, user };
     } catch (error) {
         throw error;
     }
 };
 
-export const register = async (userData) => {
+export const refresh = async () => {
     try {
-        const response = await fetch(USER_API + "register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(userData),
-        });
+        console.log("1");
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Registration failed");
-        }
-    } catch (error) {
-        throw error;
-    }
-};
-
-export const getUserData = async (token) => {
-    try {
-        const response = await fetch(USER_API + "getMe", {
-            method: "GET",
+        const response = await api.get(`${AUTH_BASE}/refresh`, {
             headers: {
-                Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             },
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Data fetching failed");
+        console.log("1");
+
+        if (response.status !== 200) {
+            throw new Error(response.data.message || "Refresh token failed");
         }
 
-        const user = await response.json();
-        return { user };
+        console.log("1");
+
+        const { accessToken } = response.data;
+        return { accessToken };
     } catch (error) {
         throw error;
     }
