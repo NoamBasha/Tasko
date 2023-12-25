@@ -14,6 +14,7 @@ import {
     deleteLocalTasksByColumnId,
     deleteTasksByColumnId,
 } from "../tasks/tasksSlice.js";
+import { toast } from "react-toastify";
 
 import { setTasks } from "../tasks/tasksSlice.js";
 
@@ -165,6 +166,7 @@ const boardsSlice = createSlice({
             .addCase(getUserBoardsAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                toast.error(action.payload);
             })
             .addCase(createBoardAsync.pending, (state, action) => {
                 state.status = "pending";
@@ -228,6 +230,7 @@ const boardsSlice = createSlice({
             .addCase(getBoardAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                toast.error(action.payload);
             });
     },
 });

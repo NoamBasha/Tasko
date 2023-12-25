@@ -54,11 +54,7 @@ const Register = () => {
 
     const onSubmit = async (data) => {
         const res = await dispatch(registerUserAsync(data));
-        if (res.error?.message) {
-            toast.error(res.payload);
-        } else {
-            navigate("/login");
-        }
+        if (!res.error) navigate("/login");
     };
 
     return (

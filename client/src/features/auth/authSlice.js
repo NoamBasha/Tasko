@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { login, refresh, logout } from "./authService.js";
 import Cookies from "js-cookie";
 import { getUserDataAsync, resetUserState } from "../users/usersSlice.js";
+import { toast } from "react-toastify";
 
 export const loginUserAsync = createAsyncThunk(
     "auth/loginUserAsync",
@@ -74,6 +75,7 @@ const authSlice = createSlice({
             .addCase(loginUserAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                toast.error(action.payload);
             })
             .addCase(refreshAccessToken.pending, (state) => {
                 state.status = "pending";
@@ -87,7 +89,7 @@ const authSlice = createSlice({
                 state.status = "rejected";
                 state.error = action.payload;
                 state.token = null;
-                // TODO toastify error?
+                //TODO should there be: toast.error(action.payload); ?
             });
     },
 });

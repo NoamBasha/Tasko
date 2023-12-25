@@ -64,6 +64,7 @@ const usersSlice = createSlice({
             .addCase(getUserDataAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                toast.error(action.payload);
             });
     },
 });

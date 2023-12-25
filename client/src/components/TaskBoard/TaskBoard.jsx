@@ -45,8 +45,6 @@ const debounce = (func, delay) => {
 };
 
 const TaskBoard = ({ boardId, columns, tasks }) => {
-    // TODO change "+ add column" to just a "+" and move it upwards like JIRA?
-
     const localColumns = useSelector(selectLocalColumns);
     const localTasks = useSelector(selectLocalTasks);
 

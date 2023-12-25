@@ -39,7 +39,7 @@ const Login = () => {
 
     useEffect(() => {
         if (isAuthenticated) navigate("/");
-    }, []);
+    }, [isAuthenticated]);
 
     const handleToggleVisibility = () => {
         setShowPassword((prevShowPassword) => !prevShowPassword);
@@ -54,13 +54,7 @@ const Login = () => {
     });
 
     const onSubmit = async (data) => {
-        const res = await dispatch(loginUserAsync(data));
-        //TODO remove and handle in slice (same for regsiter)
-        if (res.error?.message) {
-            toast.error(res.payload);
-        } else {
-            navigate("/");
-        }
+        await dispatch(loginUserAsync(data));
     };
 
     return (
