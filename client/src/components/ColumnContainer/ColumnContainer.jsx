@@ -3,7 +3,7 @@ import TrashIcon from "../../icons/TrashIcon/TrashIcon.jsx";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useState, useMemo } from "react";
-import PlusIcon from "../../icons/PlusIcon/PlusIcon.jsx";
+import PlusInCircleIcon from "../../icons/PlusInCircleIcon/PlusInCircleIcon.jsx";
 import TaskCard from "../TaskCard/TaskCard.jsx";
 import { toast } from "react-toastify";
 
@@ -125,7 +125,7 @@ const ColumnContainer = ({
                         createTask(column.id);
                     }}
                 >
-                    <PlusIcon />
+                    <PlusInCircleIcon />
                     <p>Add Task</p>
                 </button>
             </div>

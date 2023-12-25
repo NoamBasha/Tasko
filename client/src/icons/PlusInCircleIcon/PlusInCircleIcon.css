@@ -1,0 +1,5 @@
+@import "../../variables.css";
+
+.plus-in-circle-icon-svg {
+    fill: var(--clr-text-primary)
+}

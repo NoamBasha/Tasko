@@ -1,5 +1,5 @@
 import "./TaskBoard.css";
-import PlusIcon from "../../icons/PlusIcon/PlusIcon.jsx";
+import PlusInCircleIcon from "../../icons/PlusInCircleIcon/PlusInCircleIcon.jsx";
 import { useMemo, useState, useCallback } from "react";
 import ColumnContainer from "../ColumnContainer/ColumnContainer.jsx";
 import {
@@ -287,7 +287,7 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
                             createColumn();
                         }}
                     >
-                        <PlusIcon />
+                        <PlusInCircleIcon />
                         Add Column
                     </button>
                 </div>

@@ -1,5 +1,8 @@
+
 @import "../../variables.css";
 
 .plus-icon-svg {
-    fill: var(--clr-text-primary)
+    fill: var(--clr-text-primary);
+    width: 12px;
+    background-color: transparent;
 }

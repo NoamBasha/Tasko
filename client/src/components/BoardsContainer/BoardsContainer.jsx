@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import NewBoardTab from "../NewBoardTab/NewBoardTab.jsx";
 import { v4 as uuidv4 } from "uuid";
+import PlusIcon from "../../icons/PlusIcon/PlusIcon.jsx";
 
 const BoardsContainer = ({ boards }) => {
     const [createMode, setCreateMode] = useState(false);
@@ -35,8 +36,7 @@ const BoardsContainer = ({ boards }) => {
                         className="boards-container-icon"
                         onClick={() => setCreateMode(true)}
                     >
-                        {/* // TODO add plus icon */}
-                        {/* TODO add plus icon */}+
+                        <PlusIcon />
                     </button>
                 </div>
                 <hr className="boards-container-divider" />

@@ -34,7 +34,7 @@ const login = async (req, res) => {
             process.env.ACCESS_TOKEN_SECRET,
             {
                 //TODO: change to 15 minutes
-                expiresIn: "10s",
+                expiresIn: "15m",
             }
         );
 
@@ -43,7 +43,7 @@ const login = async (req, res) => {
             process.env.REFRESH_TOKEN_SECRET,
             {
                 //TODO: change to a few days (lets say 7)
-                expiresIn: "30s",
+                expiresIn: "7d",
             }
         );
 
@@ -51,7 +51,7 @@ const login = async (req, res) => {
             httpOnly: true,
             secure: true,
             sameSite: "None",
-            maxAge: 30 * 1000, // 7 * 24 * 60 * 60 * 1000,
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 * 24 * 60 * 60 * 1000,
         });
 
         res.status(200).json({ accessToken });
@@ -102,7 +102,7 @@ const refresh = async (req, res) => {
                     process.env.ACCESS_TOKEN_SECRET,
                     {
                         //TODO: change to 15 minutes
-                        expiresIn: "10s",
+                        expiresIn: "15m",
                     }
                 );
                 console.log("10");
