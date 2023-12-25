@@ -47,10 +47,9 @@ export const updateTaskAsync = createAsyncThunk(
 
 export const updateAllTasksAsync = createAsyncThunk(
     "tasks/updateAllTasksAsync",
-    async (_, thunkAPI) => {
+    async (newTasks, thunkAPI) => {
         try {
             const boardId = thunkAPI.getState().boards.boardId;
-            const newTasks = thunkAPI.getState().tasks.localTasks;
             const { updatedTasks } = await updateAllTasks(boardId, newTasks);
             return { updatedTasks };
         } catch (error) {

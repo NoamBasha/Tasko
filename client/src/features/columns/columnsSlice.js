@@ -39,10 +39,9 @@ export const updateColumnAsync = createAsyncThunk(
 
 export const updateAllColumnsAsync = createAsyncThunk(
     "columns/updateAllColumnsAsync",
-    async (_, thunkAPI) => {
+    async (newColumns, thunkAPI) => {
         try {
             const boardId = thunkAPI.getState().boards.boardId;
-            const newColumns = thunkAPI.getState().columns.localColumns;
             const { updatedColumns } = await updateAllColumns(
                 boardId,
                 newColumns

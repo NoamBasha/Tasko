@@ -78,7 +78,6 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         await dispatch(createColumnAsync(newColumn));
     };
 
-    //TODO: use debounce?
     const updateColumn = async (id, newIndex, newTitle) => {
         const newColumn = {
             id,
@@ -92,12 +91,15 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         await dispatch(deleteColumnAsync(columnId));
     };
 
-    const updateAllColumns = async () => {
-        await dispatch(updateAllColumnsAsync());
+    const updateAllColumns = async (newColumns) => {
+        await dispatch(updateAllColumnsAsync(newColumns));
     };
 
     const debouncedUpdateAllColumns = useCallback(
-        debounce(updateAllColumns, DEBOUNCE_INTERVAL),
+        debounce(
+            (newColumns) => updateAllColumns(newColumns),
+            DEBOUNCE_INTERVAL
+        ),
         []
     );
 
@@ -112,7 +114,6 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         await dispatch(createTaskAsync({ newTask, columnId }));
     };
 
-    //TODO: use debounce?
     const updateTask = async (
         taskId,
         title,
@@ -134,12 +135,12 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         await dispatch(deleteTaskAsync({ taskId, columnId }));
     };
 
-    const updateAllTasks = async () => {
-        await dispatch(updateAllTasksAsync());
+    const updateAllTasks = async (newTasks) => {
+        await dispatch(updateAllTasksAsync(newTasks));
     };
 
     const debouncedUpdateAllTasks = useCallback(
-        debounce(updateAllTasks, DEBOUNCE_INTERVAL),
+        debounce((newTasks) => updateAllTasks(newTasks), DEBOUNCE_INTERVAL),
         []
     );
 
@@ -157,8 +158,7 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     const onDragEnd = (e) => {
         // Updating the tasks in the server at the end of a drag operation if they changed in the dragging
         if (JSON.stringify(localTasks) !== JSON.stringify(tasks)) {
-            //TODO maybe send only those one who changed?
-            debouncedUpdateAllTasks();
+            debouncedUpdateAllTasks(localTasks);
         }
 
         setActiveColumn(null);
@@ -185,17 +185,9 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             overColumnIndex
         );
 
-        //TODO Seitch movedColumns to newColumns? (also in the if below!)
-        // const newColumns = movedColumns.map((col, i) => {
-        //     return { ...col, index: movedColumns[i].index };
-        // });
-
         if (JSON.stringify(movedColumns) !== JSON.stringify(columns)) {
-            //TODO should this be awaited? bacause of the use of updateAllColumns with localSolumns
             dispatch(setLocalColumns(movedColumns));
-
-            //TODO maybe send only those one who changed?
-            debouncedUpdateAllColumns();
+            debouncedUpdateAllColumns(movedColumns);
         }
     };
 
