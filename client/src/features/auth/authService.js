@@ -19,11 +19,7 @@ export const login = async (userData) => {
 
 export const refresh = async () => {
     try {
-        const response = await api.get(`${AUTH_BASE}refresh`, {
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        const response = await api.get(`${AUTH_BASE}refresh`);
         const { accessToken } = response.data;
         return { accessToken };
     } catch (error) {
@@ -33,11 +29,7 @@ export const refresh = async () => {
 
 export const logout = async () => {
     try {
-        const response = await api.post(`${AUTH_BASE}logout`, {
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        const response = await api.post(`${AUTH_BASE}logout`);
         const { message } = response.data;
         return { message };
     } catch (error) {

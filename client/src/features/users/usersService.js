@@ -17,12 +17,7 @@ export const register = async (userData) => {
 
 export const getUserData = async (accessToken) => {
     try {
-        const response = await api.get(`${USERS_BASE}/getMe`, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-            },
-        });
+        const response = await api.get(`${USERS_BASE}/getMe`);
         const user = response.data;
         return { user };
     } catch (error) {
