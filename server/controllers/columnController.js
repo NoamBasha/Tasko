@@ -11,8 +11,8 @@ const createColumn = asyncHandler(async function (req, res) {
     });
 
     if (!board) {
-        res.status(403);
-        throw new Error("Unauthorized: Board not found or user not authorized");
+        res.status(404);
+        throw new Error("Board not found");
     }
 
     try {
@@ -53,7 +53,7 @@ const deleteColumn = asyncHandler(async function (req, res) {
 
     if (!board) {
         res.status(404);
-        throw new Error("Board not found or user not authorized");
+        throw new Error("Board not found");
     }
 
     const column = await prisma.column.findUnique({
@@ -65,7 +65,7 @@ const deleteColumn = asyncHandler(async function (req, res) {
 
     if (!column) {
         res.status(404);
-        throw new Error("Column not found or user not authorized");
+        throw new Error("Column not found");
     }
 
     try {
@@ -99,8 +99,8 @@ const updateColumn = asyncHandler(async function (req, res) {
     });
 
     if (!board) {
-        res.status(401);
-        throw new Error("Could not find board or user is not authorized");
+        res.status(404);
+        throw new Error("Board not found");
     }
 
     const column = await prisma.column.findUnique({
@@ -109,7 +109,7 @@ const updateColumn = asyncHandler(async function (req, res) {
 
     if (!column) {
         res.status(404);
-        throw new Error("Could not gind column");
+        throw new Error("Column not found");
     }
 
     const updatedColumn = await prisma.column.update({
@@ -134,7 +134,7 @@ const updateAllColumns = asyncHandler(async function (req, res) {
 
     if (!board) {
         res.status(401);
-        throw new Error("Could not find board or user is not authorized");
+        throw new Error("Board not found");
     }
 
     for (const column of newColumns) {
@@ -151,7 +151,7 @@ const updateAllColumns = asyncHandler(async function (req, res) {
             }
         } catch (err) {
             res.status(500);
-            throw new Error("Could not find column");
+            throw new Error("Could not update columns");
         }
     }
 

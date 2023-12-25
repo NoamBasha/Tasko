@@ -12,10 +12,8 @@ const createTask = asyncHandler(async function (req, res) {
     });
 
     if (!board) {
-        res.status(401);
-        throw new Error(
-            "Unauthorized: Could not find board or user is not authorized"
-        );
+        res.status(404);
+        throw new Error("Board not found");
     }
 
     const column = await prisma.column.findUnique({
@@ -58,10 +56,8 @@ const deleteTask = asyncHandler(async function (req, res) {
     });
 
     if (!board) {
-        res.status(401);
-        throw new Error(
-            "Unauthorized: Could not find board or user is not authorized"
-        );
+        res.status(404);
+        throw new Error("Board not found");
     }
 
     const column = await prisma.column.findUnique({
@@ -105,10 +101,8 @@ const updateTask = asyncHandler(async function (req, res) {
     });
 
     if (!board) {
-        res.status(401);
-        throw new Error(
-            "Unauthorized: Could not find board or user is not authorized"
-        );
+        res.status(404);
+        throw new Error("Board not found");
     }
 
     const column = await prisma.column.findUnique({
@@ -155,10 +149,8 @@ const updateAllTasks = asyncHandler(async function (req, res) {
     });
 
     if (!board) {
-        res.status(401);
-        throw new Error(
-            "Unauthorized: Could not find board or user is not authorized"
-        );
+        res.status(404);
+        throw new Error("Board not found");
     }
 
     for (const task of newTasks) {
@@ -175,7 +167,7 @@ const updateAllTasks = asyncHandler(async function (req, res) {
             }
         } catch (err) {
             res.status(500);
-            throw new Error("Could not find task");
+            throw new Error("Task not found");
         }
     }
 

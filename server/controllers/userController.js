@@ -33,7 +33,7 @@ const createNewUser = asyncHandler(async function (req, res) {
         res.sendStatus(201);
     } catch (err) {
         res.status(500);
-        throw new Error("Couldn't create user");
+        throw new Error("Could not create user");
     }
 });
 
@@ -58,7 +58,7 @@ const getMe = asyncHandler(async (req, res) => {
         res.status(200).json(user);
     } catch (error) {
         res.status(500);
-        throw new Error("Couldn't find user");
+        throw new Error("User not found");
     }
 });
 

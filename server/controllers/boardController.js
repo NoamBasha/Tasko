@@ -26,7 +26,7 @@ const getBoard = asyncHandler(async function (req, res) {
 
     if (!board) {
         res.status(404);
-        throw new Error("Board not found or does not belong to the user");
+        throw new Error("Board not found");
     }
 
     res.status(200).json(board);
@@ -70,7 +70,7 @@ const deleteBoard = asyncHandler(async function (req, res) {
 
     if (!board) {
         res.status(404);
-        throw new Error("Board not found or does not belong to the user");
+        throw new Error("Board not found");
     }
 
     const columnIds = board.columns.map((column) => column.id);
@@ -111,7 +111,7 @@ const updateBoard = asyncHandler(async function (req, res) {
 
     if (!board) {
         res.status(404);
-        throw new Error("Board not found or does not belong to the user");
+        throw new Error("Board not found");
     }
 
     try {
