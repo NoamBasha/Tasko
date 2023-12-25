@@ -20,13 +20,9 @@ export const refreshAccessToken = createAsyncThunk(
     "auth/refreshAccessToken",
     async (_, thunkAPI) => {
         try {
-            console.log("1");
             const { accessToken } = await refresh();
-            console.log(accessToken);
-
             return { newAccessToken: accessToken };
         } catch (error) {
-            console.log(error);
             thunkAPI.dispatch(clearTokens());
             thunkAPI.dispatch(resetUserState());
             return thunkAPI.rejectWithValue(error.message);
@@ -59,13 +55,10 @@ const authSlice = createSlice({
     reducers: {
         clearTokens: (state) => {
             state.token = null;
-            console.log("Before removal:", Cookies.get("jwt"));
-
             Cookies.remove("jwt", {
                 secure: true,
                 sameSite: "None",
             });
-            console.log("Before removal:", Cookies.get("jwt"));
         },
     },
     extraReducers: (builder) => {

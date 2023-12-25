@@ -91,8 +91,6 @@ export const deleteBoardAsync = createAsyncThunk(
                     thunkAPI.dispatch(deleteTasksByColumnId(column.id));
                 }
             });
-            console.log("here");
-
             return { deletedId: boardId };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);

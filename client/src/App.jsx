@@ -46,7 +46,6 @@ function App() {
         const getData = async () => {
             try {
                 const res = await dispatch(refreshAccessToken()).unwrap();
-                console.log(res);
                 await dispatch(getUserDataAsync(res.newAccessToken));
             } finally {
                 setIsLoading(false);

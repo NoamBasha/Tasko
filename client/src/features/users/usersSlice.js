@@ -36,7 +36,6 @@ const usersSlice = createSlice({
     initialState,
     reducers: {
         resetUserState: (state, action) => {
-            console.log("1");
             state = initialState;
         },
     },
@@ -60,7 +59,6 @@ const usersSlice = createSlice({
             })
             .addCase(getUserDataAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
-                console.log(action.payload.user);
                 state.user = action.payload.user;
             })
             .addCase(getUserDataAsync.rejected, (state, action) => {

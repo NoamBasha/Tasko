@@ -25,7 +25,6 @@ api.interceptors.request.use(
         return config;
     },
     (error) => {
-        console.log(error);
         return Promise.reject(error);
     }
 );
@@ -37,7 +36,6 @@ api.interceptors.response.use(
     },
     async (error) => {
         const originalRequest = error.config;
-        console.log(error?.response?.data?.message);
         // Check if the error is due to an expired token
         if (
             error?.response?.data?.message === "Invalid access token" &&
