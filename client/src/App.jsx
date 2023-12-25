@@ -20,6 +20,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { getUserDataAsync } from "./features/users/usersSlice.js";
 import Spinner from "./components/Spinner/Spinner.jsx";
+import Cookies from "js-cookie";
 
 //TODO Dark and light theme + background image needs to match the theme
 
@@ -47,6 +48,7 @@ function App() {
             try {
                 const res = await dispatch(refreshAccessToken()).unwrap();
                 await dispatch(getUserDataAsync(res.newAccessToken));
+            } catch (error) {
             } finally {
                 setIsLoading(false);
             }

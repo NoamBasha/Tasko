@@ -89,7 +89,6 @@ const authSlice = createSlice({
                 state.status = "rejected";
                 state.error = action.payload;
                 state.token = null;
-                //TODO should there be: toast.error(action.payload); ?
             });
     },
 });
