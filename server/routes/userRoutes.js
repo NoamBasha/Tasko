@@ -4,7 +4,7 @@ import protect from "../middleware/protect.js";
 
 const router = express.Router();
 
-router.post("/register", createNewUser);
+router.post("/createNewUser", createNewUser);
 router.get("/getMe", protect, getMe);
 
 export default router;

@@ -30,32 +30,36 @@ const createNewUser = asyncHandler(async function (req, res) {
                 password: hashedPassword,
             },
         });
+        res.sendStatus(201);
     } catch (err) {
         res.status(500);
         throw new Error("Couldn't create user");
     }
-
-    res.sendStatus(201);
 });
 
 const getMe = asyncHandler(async (req, res) => {
     const userId = req.user.id;
 
-    const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-            id: true,
-            name: true,
-            email: true,
-        },
-    });
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+            },
+        });
 
-    if (!user) {
-        res.status(404);
-        throw new Error("User not found");
+        if (!user) {
+            res.status(404);
+            throw new Error("User not found");
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500);
+        throw new Error("Couldn't find user");
     }
-
-    res.status(200).json(user);
 });
 
 export { createNewUser, getMe };

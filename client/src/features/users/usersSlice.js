@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { register, getUserData } from "./usersService.js";
+import { createNewUser, getUserData } from "./usersService.js";
 import { toast } from "react-toastify";
 
 export const registerUserAsync = createAsyncThunk(
     "users/registerUserAsync",
     async (userData, { rejectWithValue }) => {
         try {
-            await register(userData);
+            await createNewUser(userData);
         } catch (error) {
             return rejectWithValue(error.message);
         }

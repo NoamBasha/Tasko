@@ -3,9 +3,9 @@ import { handleApiError } from "../../utils/apiUtils.js";
 
 const USERS_BASE = "users/";
 
-export const register = async (userData) => {
+export const createNewUser = async (userData) => {
     try {
-        await api.post(`${USERS_BASE}/register`, userData, {
+        await api.post(`${USERS_BASE}createNewUser`, userData, {
             headers: {
                 "Content-Type": "application/json",
             },
