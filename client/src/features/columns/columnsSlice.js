@@ -186,7 +186,6 @@ const columnsSlice = createSlice({
                 state.status = "rejected";
                 state.error = action.payload;
                 state.localColumns = state.columns;
-                //TODO: delete this toast and eveything like it (meaning - duplicates)
                 toast.error(action.payload);
             });
     },
