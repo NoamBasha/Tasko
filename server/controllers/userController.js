@@ -6,9 +6,8 @@ const createNewUser = asyncHandler(async function (req, res) {
     const { name, password, email } = req.body;
 
     if (!name || !password || !email) {
-        return res
-            .status(400)
-            .json({ message: "Name, password, and email are required" });
+        res.status(400);
+        throw new Error("Name, password, and email are required");
     }
 
     const isExist = await prisma.user.findUnique({
@@ -16,22 +15,24 @@ const createNewUser = asyncHandler(async function (req, res) {
     });
 
     if (isExist) {
-        return res.status(400).json({ message: "Email already exists" });
+        res.status(400);
+        throw new Error("Email already exists");
     }
 
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const createdUser = await prisma.user.create({
-        data: {
-            email: email,
-            name: name,
-            password: hashedPassword,
-        },
-    });
-
-    if (!createdUser) {
-        return res.status(500).json({ message: "Couldn't create user" });
+    try {
+        await prisma.user.create({
+            data: {
+                email: email,
+                name: name,
+                password: hashedPassword,
+            },
+        });
+    } catch (err) {
+        res.status(500);
+        throw new Error("Couldn't create user");
     }
 
     res.sendStatus(201);
@@ -50,9 +51,8 @@ const getMe = asyncHandler(async (req, res) => {
     });
 
     if (!user) {
-        return res.status(404).json({
-            message: "User not found",
-        });
+        res.status(404);
+        throw new Error("User not found");
     }
 
     res.status(200).json(user);

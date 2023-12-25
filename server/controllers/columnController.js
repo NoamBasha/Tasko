@@ -11,9 +11,8 @@ const createColumn = asyncHandler(async function (req, res) {
     });
 
     if (!board) {
-        return res
-            .status(403)
-            .json({ message: "Board not found or user not authorized" });
+        res.status(403);
+        throw new Error("Board not found or user not authorized");
     }
 
     const newColumn = await prisma.column.create({
@@ -28,7 +27,8 @@ const createColumn = asyncHandler(async function (req, res) {
     });
 
     if (!newColumn) {
-        return res.status(400).json({ message: "Could not create column" });
+        res.status(400);
+        throw new Error("Could not create column");
     }
 
     res.status(201).json(newColumn);
@@ -47,9 +47,8 @@ const deleteColumn = asyncHandler(async function (req, res) {
     });
 
     if (!board) {
-        return res
-            .status(404)
-            .json({ message: "Board not found or user not authorized" });
+        res.status(404);
+        throw new Error("Board not found or user not authorized");
     }
 
     const column = await prisma.column.findUnique({
@@ -60,9 +59,8 @@ const deleteColumn = asyncHandler(async function (req, res) {
     });
 
     if (!column) {
-        return res
-            .status(404)
-            .json({ message: "Column not found or user not authorized" });
+        res.status(404);
+        throw new Error("Column not found or user not authorized");
     }
 
     await prisma.task.deleteMany({
@@ -92,9 +90,8 @@ const updateColumn = asyncHandler(async function (req, res) {
     });
 
     if (!board) {
-        return res.status(401).json({
-            message: "Could not find board or user is not authorized",
-        });
+        res.status(401);
+        throw new Error("Could not find board or user is not authorized");
     }
 
     const column = await prisma.column.findUnique({
@@ -102,7 +99,8 @@ const updateColumn = asyncHandler(async function (req, res) {
     });
 
     if (!column) {
-        return res.status(404).json({ message: "Could not gind column" });
+        res.status(404);
+        throw new Error("Could not gind column");
     }
 
     const updatedColumn = await prisma.column.update({
@@ -126,9 +124,8 @@ const updateAllColumns = asyncHandler(async function (req, res) {
     });
 
     if (!board) {
-        return res.status(401).json({
-            message: "Could not find board or user is not authorized",
-        });
+        res.status(401);
+        throw new Error("Could not find board or user is not authorized");
     }
 
     for (const column of newColumns) {
@@ -140,12 +137,12 @@ const updateAllColumns = asyncHandler(async function (req, res) {
             });
 
             if (!existingColumn) {
-                return res
-                    .status(404)
-                    .json({ message: "Could not find column" });
+                res.status(404);
+                throw new Error("Could not find column");
             }
         } catch (err) {
-            return res.status(500).json({ message: "Internal Server Error" });
+            res.status(500);
+            throw new Error("Internal Server Error");
         }
     }
 

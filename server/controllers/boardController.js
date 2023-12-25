@@ -25,9 +25,8 @@ const getBoard = asyncHandler(async function (req, res) {
     });
 
     if (!board) {
-        return res.status(404).json({
-            message: "Board not found or does not belong to the user",
-        });
+        res.status(404);
+        throw new Error("Board not found or does not belong to the user");
     }
 
     res.status(200).json(board);
@@ -37,21 +36,21 @@ const createBoard = asyncHandler(async function (req, res) {
     const userId = req.user.id;
     const { id, name } = req.body;
 
-    const createdBoard = await prisma.board.create({
-        data: {
-            id: id,
-            name: name,
-            user: {
-                connect: { id: userId },
+    try {
+        const createdBoard = await prisma.board.create({
+            data: {
+                id: id,
+                name: name,
+                user: {
+                    connect: { id: userId },
+                },
             },
-        },
-    });
-
-    if (!createdBoard) {
-        return res.status(400).json({ message: "Could not create board" });
+        });
+        res.status(201).json(createdBoard);
+    } catch (error) {
+        res.status(500);
+        throw new Error("Could not create board");
     }
-
-    res.status(201).json(createdBoard);
 });
 
 const deleteBoard = asyncHandler(async function (req, res) {
@@ -70,29 +69,33 @@ const deleteBoard = asyncHandler(async function (req, res) {
     });
 
     if (!board) {
-        return res.status(404).json({
-            message: "Board not found or does not belong to the user",
-        });
+        res.status(404);
+        throw new Error("Board not found or does not belong to the user");
     }
 
     const columnIds = board.columns.map((column) => column.id);
-    await prisma.task.deleteMany({
-        where: {
-            columnId: {
-                in: columnIds,
-            },
-        },
-    });
-
-    await prisma.column.deleteMany({
-        where: {
-            boardId: boardId,
-        },
-    });
-
-    await prisma.board.delete({
-        where: { id: boardId },
-    });
+    try {
+        await prisma.$transaction([
+            prisma.task.deleteMany({
+                where: {
+                    columnId: {
+                        in: columnIds,
+                    },
+                },
+            }),
+            prisma.column.deleteMany({
+                where: {
+                    boardId: boardId,
+                },
+            }),
+            prisma.board.delete({
+                where: { id: boardId },
+            }),
+        ]);
+    } catch (error) {
+        res.status(500);
+        throw new Error("Could not delete board");
+    }
 
     res.sendStatus(204);
 });
@@ -107,19 +110,22 @@ const updateBoard = asyncHandler(async function (req, res) {
     });
 
     if (!board) {
-        return res.status(404).json({
-            message: "Board not found or does not belong to the user",
-        });
+        res.status(404);
+        throw new Error("Board not found or does not belong to the user");
     }
 
-    const updatedBoard = await prisma.board.update({
-        where: { id: boardId },
-        data: {
-            name: name,
-        },
-    });
-
-    res.status(200).json(updatedBoard);
+    try {
+        const updatedBoard = await prisma.board.update({
+            where: { id: boardId },
+            data: {
+                name: name,
+            },
+        });
+        res.status(200).json(updatedBoard);
+    } catch (error) {
+        res.status(404);
+        throw new Error("Could not update board");
+    }
 });
 
 export { getBoards, getBoard, createBoard, deleteBoard, updateBoard };

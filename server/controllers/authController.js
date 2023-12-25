@@ -7,21 +7,22 @@ const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return res
-            .status(400)
-            .json({ message: "Email and password are required" });
+        res.status(400);
+        throw new Error("Email and password are required");
     }
 
     const user = await prisma.user.findUnique({ where: { email: email } });
 
     if (!user) {
-        return res.status(400).json({ message: "Invalid Credentials" });
+        res.status(400);
+        throw new Error("Invalid Credentials");
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-        return res.status(400).json({ message: "Invalid Credentials" });
+        res.status(400);
+        throw new Error("Invalid Credentials");
     }
 
     const accessToken = jwt.sign(
@@ -57,7 +58,10 @@ const login = asyncHandler(async (req, res) => {
 
 const refresh = async (req, res) => {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
+    if (!cookies?.jwt) {
+        res.status(401);
+        throw new Error("Unauthorized");
+    }
 
     const refreshToken = cookies.jwt;
 
@@ -65,13 +69,19 @@ const refresh = async (req, res) => {
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
         asyncHandler(async (err, decoded) => {
-            if (err) return res.status(403).json({ message: "Forbidden" });
+            if (err) {
+                res.status(403);
+                throw new Error("Forbidden");
+            }
 
             const user = await prisma.user.findUnique({
                 where: { id: decoded.userId },
             });
 
-            if (!user) return res.status(401).json({ message: "Unauthorized" });
+            if (!user) {
+                res.status(401);
+                throw new Error("Unauthorized");
+            }
 
             const accessToken = jwt.sign(
                 {
@@ -93,9 +103,9 @@ const refresh = async (req, res) => {
 
 const logout = async (req, res) => {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(204).json();
+    if (!cookies?.jwt) return res.sendStatus(204);
     res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
-    res.status(201).json({ message: "Cookie cleared" });
+    res.status(200).json({ message: "Cookie cleared" });
 };
 
 export { login, refresh, logout };

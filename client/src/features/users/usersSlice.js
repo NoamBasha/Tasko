@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { register, getUserData } from "./usersService.js";
+import { toast } from "react-toastify";
 
 export const registerUserAsync = createAsyncThunk(
     "users/registerUserAsync",
@@ -51,6 +52,7 @@ const usersSlice = createSlice({
             .addCase(registerUserAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                toast.error(action.payload);
             })
             .addCase(getUserDataAsync.pending, (state) => {
                 state.status = "pending";
