@@ -29,9 +29,7 @@ export const refresh = async () => {
 
 export const logout = async () => {
     try {
-        const response = await api.post(`${AUTH_BASE}logout`);
-        const { message } = response.data;
-        return { message };
+        await api.post(`${AUTH_BASE}logout`);
     } catch (error) {
         handleApiError(error);
     }
