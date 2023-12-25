@@ -3,7 +3,6 @@ import {
     createColumn,
     deleteColumn,
     updateColumn,
-    updateTwoColumns,
     updateAllColumns,
 } from "../controllers/columnController.js";
 import protect from "../middleware/protect.js";
@@ -17,8 +16,5 @@ router
     .route("/:boardId/:columnId")
     .put(protect, updateColumn)
     .delete(protect, deleteColumn);
-router
-    .route("/:boardId/:firstColumnId/:secondColumnId")
-    .put(protect, updateTwoColumns);
 
 export default router;

@@ -34,22 +34,6 @@ export const deleteColumn = async (boardId, columnId) => {
     }
 };
 
-export const updateTwoColumns = async (
-    boardId,
-    firstNewColumn,
-    secondNewColumn
-) => {
-    try {
-        const response = await api.put(
-            `${COLUMNS_BASE}${boardId}/${firstNewColumn.id}/${secondNewColumn.id}`,
-            { firstNewColumn, secondNewColumn }
-        );
-        return { updatedTwoColumns: response.data };
-    } catch (error) {
-        throw error;
-    }
-};
-
 export const updateAllColumns = async (boardId, newColumns) => {
     try {
         const response = await api.put(

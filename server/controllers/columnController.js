@@ -130,48 +130,6 @@ const updateColumn = async function (req, res) {
     }
 };
 
-//TODO remove E2E?
-const updateTwoColumns = async function (req, res) {
-    try {
-        const userId = req.user.id;
-        const boardId = req.params.boardId;
-        const firstColumnId = req.params.firstColumnId;
-        const secondColumnId = req.params.secondColumnId;
-        const { firstNewColumn, secondNewColumn } = req.body;
-
-        const board = await prisma.board.findUnique({
-            where: { id: boardId, userId: userId },
-        });
-
-        if (!board) {
-            return res.status(401).json({
-                message: "Could not find board or user is not authorized",
-            });
-        }
-
-        // Use a Prisma transaction to update two columns
-        const transaction = await prisma.$transaction([
-            prisma.column.update({
-                where: { id: firstColumnId },
-                data: {
-                    index: +firstNewColumn.index,
-                },
-            }),
-            prisma.column.update({
-                where: { id: secondColumnId },
-                data: {
-                    index: +secondNewColumn.index,
-                },
-            }),
-        ]);
-
-        res.status(200).json(transaction);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
-    }
-};
-
 const updateAllColumns = async function (req, res) {
     try {
         const userId = req.user.id;
@@ -229,10 +187,4 @@ const updateAllColumns = async function (req, res) {
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
-export {
-    createColumn,
-    deleteColumn,
-    updateColumn,
-    updateTwoColumns,
-    updateAllColumns,
-};
+export { createColumn, deleteColumn, updateColumn, updateAllColumns };
