@@ -33,7 +33,6 @@ const login = asyncHandler(async (req, res) => {
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
-            //TODO: change to 15 minutes
             expiresIn: "15m",
         }
     );
@@ -42,7 +41,6 @@ const login = asyncHandler(async (req, res) => {
         { userId: user.id },
         process.env.REFRESH_TOKEN_SECRET,
         {
-            //TODO: change to a few days (lets say 7)
             expiresIn: "7d",
         }
     );
@@ -51,68 +49,46 @@ const login = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: true,
         sameSite: "None",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Days
     });
 
     res.status(200).json({ accessToken });
 });
 
 const refresh = async (req, res) => {
-    console.log("1");
     const cookies = req.cookies;
-    console.log("2");
-    console.log(cookies);
-    console.log(cookies?.jwt);
     if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
-    console.log("3");
 
     const refreshToken = cookies.jwt;
-    console.log("4");
 
     jwt.verify(
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
-        async (err, decoded) => {
-            console.log("6");
+        asyncHandler(async (err, decoded) => {
+            if (err) return res.status(403).json({ message: "Forbidden" });
 
-            try {
-                if (err) return res.status(403).json({ message: "Forbidden" });
-                console.log("7");
+            const user = await prisma.user.findUnique({
+                where: { id: decoded.userId },
+            });
 
-                const user = await prisma.user.findUnique({
-                    where: { id: decoded.userId },
-                });
-                console.log("8");
+            if (!user) return res.status(401).json({ message: "Unauthorized" });
 
-                if (!user)
-                    return res.status(401).json({ message: "Unauthorized" });
-                console.log("9");
-
-                const accessToken = jwt.sign(
-                    {
-                        UserInfo: {
-                            userId: user.id,
-                            name: user.name,
-                        },
+            const accessToken = jwt.sign(
+                {
+                    UserInfo: {
+                        userId: user.id,
+                        name: user.name,
                     },
-                    process.env.ACCESS_TOKEN_SECRET,
-                    {
-                        //TODO: change to 15 minutes
-                        expiresIn: "15m",
-                    }
-                );
-                console.log("10");
+                },
+                process.env.ACCESS_TOKEN_SECRET,
+                {
+                    expiresIn: "15m",
+                }
+            );
 
-                res.json({ accessToken });
-            } catch (error) {
-                console.error(error);
-                console.log("11");
-
-                res.status(500).json({ message: "Internal Server Error" });
-            }
-        }
+            res.json({ accessToken });
+        })
     );
-    console.log("5");
 };
 
 const logout = async (req, res) => {
