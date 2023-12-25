@@ -13,9 +13,7 @@ import {
 import { selectName } from "../../features/users/usersSlice.js";
 
 const Product = () => {
-    //TODO After refreshing the user clears from the redux state and here I get and error!
-    const name = "Alice Alicia";
-    //const name = useSelector(selectName);
+    const name = useSelector(selectName);
     const tasks = useSelector(selectTasks);
     const columns = useSelector(selectColumns);
     const boards = useSelector(selectBoards);

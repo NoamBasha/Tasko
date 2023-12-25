@@ -70,7 +70,7 @@ const usersSlice = createSlice({
 export const { resetUserState } = usersSlice.actions;
 
 export const selectUser = (state) => state.users.user;
-export const selectName = (state) => state.users.name;
+export const selectName = (state) => state.users.user.name;
 export const selectUsersStatus = (state) => state.users.status;
 
 export default usersSlice.reducer;
