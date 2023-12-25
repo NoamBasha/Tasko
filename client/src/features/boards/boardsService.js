@@ -7,7 +7,7 @@ export const getUserBoards = async () => {
         const response = await api.get(BOARDS_BASE);
         return { boardsNames: response.data };
     } catch (error) {
-        throw error;
+        throw new Error(error.response.data.message);
     }
 };
 
@@ -16,7 +16,7 @@ export const createBoard = async (newBoard) => {
         const response = await api.post(BOARDS_BASE, newBoard);
         return { createdBoard: response.data };
     } catch (error) {
-        throw error;
+        throw new Error(error.response.data.message);
     }
 };
 
@@ -27,7 +27,7 @@ export const updateBoard = async (newBoard) => {
         });
         return { updatedBoard: response.data };
     } catch (error) {
-        throw error;
+        throw new Error(error.response.data.message);
     }
 };
 
@@ -35,7 +35,7 @@ export const deleteBoard = async (boardId) => {
     try {
         await api.delete(`${BOARDS_BASE}${boardId}`);
     } catch (error) {
-        throw error;
+        throw new Error(error.response.data.message);
     }
 };
 
@@ -44,6 +44,6 @@ export const getBoard = async (boardId) => {
         const response = await api.get(`${BOARDS_BASE}${boardId}`);
         return { board: response.data };
     } catch (error) {
-        throw error;
+        throw new Error(error.response.data.message);
     }
 };

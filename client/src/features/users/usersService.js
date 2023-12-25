@@ -4,17 +4,13 @@ const USERS_BASE = "users/";
 
 export const register = async (userData) => {
     try {
-        const response = await api.post(`${USERS_BASE}/register`, userData, {
+        await api.post(`${USERS_BASE}/register`, userData, {
             headers: {
                 "Content-Type": "application/json",
             },
         });
-
-        if (response.status !== 201) {
-            throw new Error(response.data.message || "Registration failed");
-        }
     } catch (error) {
-        throw error;
+        throw new Error(error.response.data.message);
     }
 };
 
@@ -26,14 +22,9 @@ export const getUserData = async (accessToken) => {
                 "Content-Type": "application/json",
             },
         });
-
-        if (response.status !== 200) {
-            throw new Error(response.data.message || "Data fetching failed");
-        }
-
-        const user = response.data; // Adjust this based on your actual response structure
+        const user = response.data;
         return { user };
     } catch (error) {
-        throw error;
+        throw new Error(error.response.data.message);
     }
 };

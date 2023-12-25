@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { login, refresh } from "./authService.js";
+import { login, refresh, logout } from "./authService.js";
 import Cookies from "js-cookie";
 import { getUserDataAsync, resetUserState } from "../users/usersSlice.js";
 
@@ -34,6 +34,19 @@ export const refreshAccessToken = createAsyncThunk(
     }
 );
 
+export const logoutAsync = createAsyncThunk(
+    "auth/logoutAsync",
+    async (_, thunkAPI) => {
+        try {
+            await logout();
+            thunkAPI.dispatch(clearTokens());
+            thunkAPI.dispatch(resetUserState());
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
+
 const initialState = {
     token: null,
     status: "idle",
@@ -45,9 +58,14 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         clearTokens: (state) => {
-            console.log("1");
             state.token = null;
-            Cookies.remove("refreshToken");
+            console.log("Before removal:", Cookies.get("jwt"));
+
+            Cookies.remove("jwt", {
+                secure: true,
+                sameSite: "None",
+            });
+            console.log("Before removal:", Cookies.get("jwt"));
         },
     },
     extraReducers: (builder) => {

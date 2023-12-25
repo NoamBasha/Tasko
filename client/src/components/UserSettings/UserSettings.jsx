@@ -1,4 +1,4 @@
-import { clearTokens } from "../../features/auth/authSlice.js";
+import { clearTokens, logoutAsync } from "../../features/auth/authSlice.js";
 import "./UserSettings.css";
 import UserSettingsIcon from "../../icons/UserSettingsIcon/UserSettingsIcon.jsx";
 import { useDispatch } from "react-redux";
@@ -13,9 +13,8 @@ const UserSettings = () => {
         setIsOpen((prevState) => !prevState);
     };
 
-    const handleLogout = () => {
-        dispatch(clearTokens());
-        dispatch(resetUserState());
+    const handleLogout = async () => {
+        await dispatch(logoutAsync());
         setIsOpen(false);
     };
 

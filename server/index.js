@@ -7,6 +7,7 @@ import userRouter from "./routes/userRoutes.js";
 import boardRouter from "./routes/boardRoutes.js";
 import columnRouter from "./routes/columnRoutes.js";
 import taskRouter from "./routes/taskRoutes.js";
+import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
 const PORT = 3000;
@@ -41,6 +42,8 @@ app.use("/api/v1/tasks", taskRouter);
 // console.log("Remaining column:", remainingColumns);
 // const remainingTasks = await prisma.task.findMany();
 // console.log("Remaining tasks:", remainingTasks);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`listening on port ${PORT}`);
