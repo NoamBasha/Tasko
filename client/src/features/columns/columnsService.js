@@ -26,10 +26,7 @@ export const updateColumn = async (boardId, newColumn) => {
 
 export const deleteColumn = async (boardId, columnId) => {
     try {
-        const response = await api.delete(
-            `${COLUMNS_BASE}${boardId}/${columnId}`
-        );
-        return { deletedId: response.data.id };
+        await api.delete(`${COLUMNS_BASE}${boardId}/${columnId}`);
     } catch (error) {
         handleApiError(error);
     }

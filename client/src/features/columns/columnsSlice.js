@@ -61,8 +61,8 @@ export const deleteColumnAsync = createAsyncThunk(
             const boardId = thunkAPI.getState().boards.boardId;
             thunkAPI.dispatch(deleteLocalColumn(columnId));
             thunkAPI.dispatch(deleteLocalTasksByColumnId(columnId));
-            const { deletedId } = await deleteColumn(boardId, columnId);
-            return { deletedId };
+            await deleteColumn(boardId, columnId);
+            return { deletedId: columnId };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
         }

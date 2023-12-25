@@ -12,26 +12,31 @@ const createColumn = asyncHandler(async function (req, res) {
 
     if (!board) {
         res.status(403);
-        throw new Error("Board not found or user not authorized");
+        throw new Error("Unauthorized: Board not found or user not authorized");
     }
 
-    const newColumn = await prisma.column.create({
-        data: {
-            id: id,
-            title: title,
-            index: +index,
-            board: {
-                connect: { id: boardId },
+    try {
+        const newColumn = await prisma.column.create({
+            data: {
+                id: id,
+                title: title,
+                index: +index,
+                board: {
+                    connect: { id: boardId },
+                },
             },
-        },
-    });
+        });
 
-    if (!newColumn) {
-        res.status(400);
+        if (!newColumn) {
+            res.status(500);
+            throw new Error("Could not create column");
+        }
+
+        res.status(201).json(newColumn);
+    } catch (error) {
+        res.status(500);
         throw new Error("Could not create column");
     }
-
-    res.status(201).json(newColumn);
 });
 
 const deleteColumn = asyncHandler(async function (req, res) {
@@ -63,20 +68,24 @@ const deleteColumn = asyncHandler(async function (req, res) {
         throw new Error("Column not found or user not authorized");
     }
 
-    await prisma.task.deleteMany({
-        where: {
-            columnId: columnId,
-        },
-    });
+    try {
+        await prisma.$transaction([
+            // Delete tasks associated with the column
+            prisma.task.deleteMany({
+                where: { columnId: columnId },
+            }),
 
-    await prisma.column.delete({
-        where: {
-            id: columnId,
-        },
-    });
+            // Delete the column
+            prisma.column.delete({
+                where: { id: columnId },
+            }),
+        ]);
+    } catch (error) {
+        res.status(500);
+        throw new Error("Could not delete column");
+    }
 
-    //TODO for all deletings return 204 and use the existing id in the frontend
-    res.status(200).json({ id: columnId });
+    res.sendStatus(204);
 });
 
 const updateColumn = asyncHandler(async function (req, res) {
@@ -137,12 +146,12 @@ const updateAllColumns = asyncHandler(async function (req, res) {
             });
 
             if (!existingColumn) {
-                res.status(404);
-                throw new Error("Could not find column");
+                res.status(500);
+                throw new Error("Could not update columns");
             }
         } catch (err) {
             res.status(500);
-            throw new Error("Internal Server Error");
+            throw new Error("Could not find column");
         }
     }
 
