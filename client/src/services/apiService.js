@@ -1,5 +1,5 @@
 import axios from "axios";
-import { refreshAccessToken, clearTokens } from "../features/auth/authSlice.js";
+import { refreshAccessToken, clearToken } from "../features/auth/authSlice.js";
 import { resetUserState } from "../features/users/usersSlice.js";
 
 let store;
@@ -51,7 +51,7 @@ api.interceptors.response.use(
                 return api(originalRequest);
             } catch (refreshError) {
                 // Handle refresh token failure (e.g., clear tokens and log the user out)
-                store.dispatch(clearTokens());
+                store.dispatch(clearToken());
                 store.dispatch(resetUserState());
                 return Promise.reject(refreshError);
             }

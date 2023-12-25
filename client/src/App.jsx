@@ -58,7 +58,13 @@ function App() {
 
     return (
         <div className="app-container">
-            {isLoading ? <Spinner /> : <AppRoutes />}
+            {isLoading ? (
+                <div className="app-container-spinner">
+                    <Spinner />
+                </div>
+            ) : (
+                <AppRoutes />
+            )}
             <ToastContainer
                 position="top-right"
                 autoClose={5000}

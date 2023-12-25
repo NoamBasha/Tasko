@@ -1,17 +1,25 @@
-import { clearTokens, logoutAsync } from "../../features/auth/authSlice.js";
+import { clearToken, logoutAsync } from "../../features/auth/authSlice.js";
 import "./UserSettings.css";
 import UserSettingsIcon from "../../icons/UserSettingsIcon/UserSettingsIcon.jsx";
 import { useDispatch } from "react-redux";
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { resetUserState } from "../../features/users/usersSlice.js";
 
 const UserSettings = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dispatch = useDispatch();
+    const dropdownRef = useRef(null);
 
-    const toggleDropdown = () => {
-        setIsOpen((prevState) => !prevState);
+    const toggleDropdown = (e) => {
+        if (isOpen && !dropdownRef.current.contains(e.target)) {
+            setIsOpen(false);
+        }
     };
+
+    useEffect(() => {
+        window.addEventListener("click", toggleDropdown);
+        return () => window.removeEventListener("click", toggleDropdown);
+    }, [dropdownRef, toggleDropdown]);
 
     const handleLogout = async () => {
         await dispatch(logoutAsync());
@@ -22,10 +30,13 @@ const UserSettings = () => {
         ? "user-settings-dropdown-visible"
         : "user-settings-dropdown-hidden";
 
-    // TODO Try using onBlur={toggleDropdown}?
     return (
         <div className="user-settings-container">
-            <button className="user-settings-button" onClick={toggleDropdown}>
+            <button
+                className="user-settings-button"
+                onClick={() => setIsOpen(true)}
+                ref={dropdownRef}
+            >
                 <UserSettingsIcon />
             </button>
             <div className={dropdownClassName}>

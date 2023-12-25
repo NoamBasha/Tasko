@@ -24,7 +24,7 @@ export const refreshAccessToken = createAsyncThunk(
             const { accessToken } = await refresh();
             return { newAccessToken: accessToken };
         } catch (error) {
-            thunkAPI.dispatch(clearTokens());
+            thunkAPI.dispatch(clearToken());
             thunkAPI.dispatch(resetUserState());
             return thunkAPI.rejectWithValue(error.message);
         }
@@ -36,7 +36,7 @@ export const logoutAsync = createAsyncThunk(
     async (_, thunkAPI) => {
         try {
             await logout();
-            thunkAPI.dispatch(clearTokens());
+            thunkAPI.dispatch(clearToken());
             thunkAPI.dispatch(resetUserState());
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -54,12 +54,8 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        clearTokens: (state) => {
+        clearToken: (state) => {
             state.token = null;
-            Cookies.remove("jwt", {
-                secure: true,
-                sameSite: "None",
-            });
         },
     },
     extraReducers: (builder) => {
@@ -93,7 +89,7 @@ const authSlice = createSlice({
     },
 });
 
-export const { clearTokens } = authSlice.actions;
+export const { clearToken } = authSlice.actions;
 
 export const selectToken = (state) => state.auth.token;
 export const selectAuthStatus = (state) => state.auth.status;
