@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./NewBoardTab.css";
+import "../BoardTab/BoardTab.css";
 import { useDispatch } from "react-redux";
 
 const NewBoardTab = ({ setCreateMode, createBoard }) => {
@@ -26,7 +26,7 @@ const NewBoardTab = ({ setCreateMode, createBoard }) => {
             handleCreateBoard();
         }
     };
-    //TODO: remove class name? add its own style ?
+
     return (
         <div className="board-tab-container">
             <input

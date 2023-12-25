@@ -4,40 +4,8 @@
     background-color: transparent;
     border: none;
     padding: auto 0 ;
-
 }
 
 .user-settings-button:hover {
-    cursor: pointer;
-}
-
-.user-settings-container {
-    position: relative;
-    display: inline-block;
-}
-
-
-.user-settings-dropdown-hidden {
-    display: none;
-}
-
-.user-settings-dropdown-visible {
-    display: block;
-    position: absolute;
-    right: 0;
-    background-color: var(--clr-bg-primary-light);
-    color: var(--clr-text-secondary); 
-    z-index: 1;
-}
-
-/* Links inside the dropdown */
-.user-settings-dropdown-visible a {
-    padding: 12px 16px;
-    display: block;
-}
-
-/* Change color of dropdown links on hover */
-.user-settings-dropdown-visible a:hover {
-    opacity: 0.8;
     cursor: pointer;
 }
