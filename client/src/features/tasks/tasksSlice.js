@@ -160,7 +160,6 @@ const tasksSlice = createSlice({
             })
             .addCase(deleteTaskAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
-                //TODO do the same for columns and boards?
                 state.tasks = state.tasks.filter(
                     (task) => task.id !== action.payload.deletedId
                 );

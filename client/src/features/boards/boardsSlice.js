@@ -61,14 +61,13 @@ export const updateBoardAsync = createAsyncThunk(
     }
 );
 
-//TODO when deleteing a board, boardId and maybe columns and tasks too.
 export const deleteBoardAsync = createAsyncThunk(
     "boards/deleteBoardAsync",
     async (boardId, thunkAPI) => {
         try {
             const localColumns = thunkAPI.getState().columns.localColumns;
             const currentBoardId = thunkAPI.getState().boards.boardId;
-            //TODO: this is optimistic - so? roll back to the currentBoardId if failed?
+
             if (boardId.localeCompare(currentBoardId) === 0) {
                 thunkAPI.dispatch(resetCurrentBoardId());
             }
@@ -94,6 +93,7 @@ export const deleteBoardAsync = createAsyncThunk(
             });
             return { deletedId: boardId };
         } catch (error) {
+            thunkAPI.dispatch(setCurrentBoardId(boardId));
             return thunkAPI.rejectWithValue(error.message);
         }
     }
@@ -150,6 +150,10 @@ const boardsSlice = createSlice({
         },
         resetCurrentBoardId: (state, action) => {
             state.boardId = null;
+        },
+        setCurrentBoardId: (state, action) => {
+            console.log(action.payload);
+            state.boardId = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -242,6 +246,7 @@ export const {
     updateLocalBoard,
     deleteLocalBoard,
     resetCurrentBoardId,
+    setCurrentBoardId,
 } = boardsSlice.actions;
 
 export const selectBoards = (state) => state.boards.boards;
