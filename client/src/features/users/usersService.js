@@ -17,10 +17,15 @@ export const register = async (userData) => {
 
 export const getUserData = async (accessToken) => {
     try {
-        const response = await api.get(`${USERS_BASE}/getMe`);
+        const response = await api.get(`${USERS_BASE}getMe`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
         const user = response.data;
         return { user };
     } catch (error) {
+        console.erro(error);
         handleApiError(error);
     }
 };

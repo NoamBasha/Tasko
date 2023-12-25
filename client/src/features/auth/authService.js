@@ -10,8 +10,8 @@ export const login = async (userData) => {
                 "Content-Type": "application/json",
             },
         });
-        const { accessToken, user } = response.data;
-        return { accessToken, user };
+        const { accessToken } = response.data;
+        return { accessToken };
     } catch (error) {
         handleApiError(error);
     }

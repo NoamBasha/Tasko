@@ -60,6 +60,7 @@ const usersSlice = createSlice({
             })
             .addCase(getUserDataAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
+                console.log(action.payload.user);
                 state.user = action.payload.user;
             })
             .addCase(getUserDataAsync.rejected, (state, action) => {
@@ -72,7 +73,7 @@ const usersSlice = createSlice({
 export const { resetUserState } = usersSlice.actions;
 
 export const selectUser = (state) => state.users.user;
-export const selectName = (state) => state.users.user.name;
+export const selectName = (state) => state.users.user?.name;
 export const selectUsersStatus = (state) => state.users.status;
 
 export default usersSlice.reducer;
