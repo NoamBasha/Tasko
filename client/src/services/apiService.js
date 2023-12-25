@@ -37,10 +37,10 @@ api.interceptors.response.use(
     },
     async (error) => {
         const originalRequest = error.config;
-        console.log(error.response.data.message);
+        console.log(error?.response?.data?.message);
         // Check if the error is due to an expired token
         if (
-            error.response.data.message === "Invalid access token" &&
+            error?.response?.data?.message === "Invalid access token" &&
             !originalRequest._retry
         ) {
             originalRequest._retry = true;

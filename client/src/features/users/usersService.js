@@ -1,4 +1,5 @@
 import api from "../../services/apiService.js";
+import { handleApiError } from "../../utils/apiUtils.js";
 
 const USERS_BASE = "users/";
 
@@ -10,7 +11,7 @@ export const register = async (userData) => {
             },
         });
     } catch (error) {
-        throw new Error(error.response.data.message);
+        handleApiError(error);
     }
 };
 
@@ -25,6 +26,6 @@ export const getUserData = async (accessToken) => {
         const user = response.data;
         return { user };
     } catch (error) {
-        throw new Error(error.response.data.message);
+        handleApiError(error);
     }
 };

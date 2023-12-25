@@ -1,4 +1,5 @@
 import api from "../../services/apiService.js";
+import { handleApiError } from "../../utils/apiUtils.js";
 
 const COLUMNS_BASE = "columns/";
 
@@ -7,7 +8,7 @@ export const createColumn = async (boardId, newColumn) => {
         const response = await api.post(`${COLUMNS_BASE}${boardId}`, newColumn);
         return { createdColumn: response.data };
     } catch (error) {
-        throw new Error(error.response.data.message);
+        handleApiError(error);
     }
 };
 
@@ -19,7 +20,7 @@ export const updateColumn = async (boardId, newColumn) => {
         );
         return { updatedColumn: response.data };
     } catch (error) {
-        throw new Error(error.response.data.message);
+        handleApiError(error);
     }
 };
 
@@ -30,7 +31,7 @@ export const deleteColumn = async (boardId, columnId) => {
         );
         return { deletedId: response.data.id };
     } catch (error) {
-        throw new Error(error.response.data.message);
+        handleApiError(error);
     }
 };
 
@@ -42,6 +43,6 @@ export const updateAllColumns = async (boardId, newColumns) => {
         );
         return { updatedColumns: response.data };
     } catch (error) {
-        throw new Error(error.response.data.message);
+        handleApiError(error);
     }
 };

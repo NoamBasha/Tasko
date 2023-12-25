@@ -1,4 +1,5 @@
 import api from "../../services/apiService.js";
+import { handleApiError } from "../../utils/apiUtils.js";
 
 const AUTH_BASE = "auth/";
 
@@ -12,7 +13,7 @@ export const login = async (userData) => {
         const { accessToken, user } = response.data;
         return { accessToken, user };
     } catch (error) {
-        throw new Error(error.response.data.message);
+        handleApiError(error);
     }
 };
 
@@ -26,7 +27,7 @@ export const refresh = async () => {
         const { accessToken } = response.data;
         return { accessToken };
     } catch (error) {
-        throw new Error(error.response.data.message);
+        handleApiError(error);
     }
 };
 
@@ -40,6 +41,6 @@ export const logout = async () => {
         const { message } = response.data;
         return { message };
     } catch (error) {
-        throw new Error(error.response.data.message);
+        handleApiError(error);
     }
 };
