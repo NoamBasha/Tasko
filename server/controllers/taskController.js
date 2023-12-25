@@ -156,7 +156,9 @@ const updateAllTasks = asyncHandler(async function (req, res) {
 
     if (!board) {
         res.status(401);
-        throw new Error("Could not find board or user is not authorized");
+        throw new Error(
+            "Unauthorized: Could not find board or user is not authorized"
+        );
     }
 
     for (const task of newTasks) {
@@ -169,11 +171,11 @@ const updateAllTasks = asyncHandler(async function (req, res) {
 
             if (!existingTask) {
                 res.status(404);
-                throw new Error("Could not find task");
+                throw new Error("Task not found");
             }
         } catch (err) {
             res.status(500);
-            throw new Error("Internal Server Error");
+            throw new Error("Could not find task");
         }
     }
 
@@ -189,10 +191,15 @@ const updateAllTasks = asyncHandler(async function (req, res) {
         });
     });
 
-    // Use a Prisma transaction to update all columns in the array
-    const transactionResults = await prisma.$transaction(prismaPromisesArray);
-
-    res.status(200).json(transactionResults);
+    try {
+        const transactionResults = await prisma.$transaction(
+            prismaPromisesArray
+        );
+        res.status(200).json(transactionResults);
+    } catch (error) {
+        res.status(500);
+        throw new Error("Could not update tasks");
+    }
 });
 
 export { createTask, deleteTask, updateTask, updateAllTasks };
