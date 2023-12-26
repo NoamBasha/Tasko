@@ -70,7 +70,7 @@ const deleteTask = asyncHandler(async function (req, res) {
     }
 
     const task = await prisma.task.findUnique({
-        where: { id: taskId, columnId: columnId },
+        where: { id: taskId },
     });
 
     if (!task) {
