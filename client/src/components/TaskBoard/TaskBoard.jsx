@@ -85,16 +85,16 @@ function areTasksEqualIgnoringIndexes(arr1, arr2) {
     return true;
 }
 
-//TODO remove or include debounce?
-const DEBOUNCE_INTERVAL = 0;
+// //TODO remove or include debounce?
+// const DEBOUNCE_INTERVAL = 0;
 
-const debounce = (func, delay) => {
-    let timeoutId;
-    return function (...args) {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => func.apply(this, args), delay);
-    };
-};
+// const debounce = (func, delay) => {
+//     let timeoutId;
+//     return function (...args) {
+//         clearTimeout(timeoutId);
+//         timeoutId = setTimeout(() => func.apply(this, args), delay);
+//     };
+// };
 
 const TaskBoard = ({ boardId, columns, tasks }) => {
     const [tasksUpdateAllPromise, setTasksUpdateAllPromise] = useState(null);
@@ -150,13 +150,13 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         setColumnsUpdateAllPromise(promise);
     };
 
-    const debouncedUpdateAllColumns = useCallback(
-        debounce(
-            (newColumns) => updateAllColumns(newColumns),
-            DEBOUNCE_INTERVAL
-        ),
-        []
-    );
+    // const debouncedUpdateAllColumns = useCallback(
+    //     debounce(
+    //         (newColumns) => updateAllColumns(newColumns),
+    //         DEBOUNCE_INTERVAL
+    //     ),
+    //     []
+    // );
 
     const createTask = async (columnId) => {
         const newTask = {
@@ -195,10 +195,10 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         setTasksUpdateAllPromise(promise);
     };
 
-    const debouncedUpdateAllTasks = useCallback(
-        debounce((newTasks) => updateAllTasks(newTasks), DEBOUNCE_INTERVAL),
-        []
-    );
+    // const debouncedUpdateAllTasks = useCallback(
+    //     debounce((newTasks) => updateAllTasks(newTasks), DEBOUNCE_INTERVAL),
+    //     []
+    // );
 
     const onDragStart = (e) => {
         if (e.active.data.current.type === "Column") {
@@ -231,7 +231,9 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             tasksUpdateAllPromise.abort();
             setTasksUpdateAllPromise(null);
         }
-        debouncedUpdateAllTasks(localTasks);
+        //! Switch to denouce if necessary
+        // debouncedUpdateAllTasks(localTasks);
+        updateAllTasks(localTasks);
 
         setActiveColumn(null);
         setActiveTask(null);
@@ -271,8 +273,11 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             columnsUpdateAllPromise.abort();
             setColumnsUpdateAllPromise(null);
         }
+
         dispatch(setLocalColumns(movedColumnsWithIndexes));
-        debouncedUpdateAllColumns(movedColumnsWithIndexes);
+        //! Switch to denouce if necessary
+        // debouncedUpdateAllColumns(movedColumnsWithIndexes);
+        updateAllColumns(movedColumnsWithIndexes);
     };
 
     const onDragOver = (e) => {
