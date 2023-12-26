@@ -32,7 +32,7 @@ export const updateTaskAsync = createAsyncThunk(
     async ({ newTask, columnId }, thunkAPI) => {
         try {
             const boardId = thunkAPI.getState().boards.boardId;
-            // thunkAPI.dispatch(updateLocalTask(newTask));
+            thunkAPI.dispatch(updateLocalTask(newTask));
             const { updatedTask } = await updateTask(
                 boardId,
                 columnId,
