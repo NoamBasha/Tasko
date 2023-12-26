@@ -85,7 +85,6 @@ function areTasksEqualIgnoringIndexes(arr1, arr2) {
     return true;
 }
 
-// //TODO remove or include debounce?
 // const DEBOUNCE_INTERVAL = 0;
 
 // const debounce = (func, delay) => {

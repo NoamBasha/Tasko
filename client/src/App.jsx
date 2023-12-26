@@ -22,8 +22,6 @@ import { getUserDataAsync } from "./features/users/usersSlice.js";
 import Spinner from "./components/Spinner/Spinner.jsx";
 import Cookies from "js-cookie";
 
-//TODO Dark and light theme + background image needs to match the theme
-
 function AppRoutes() {
     return (
         <Router>
