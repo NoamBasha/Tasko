@@ -6,15 +6,13 @@
     height: 20px;
 }
 
-/* TODO: change padding here to 10px maybe? so it looks better when entering new name */
 .board-tab-name-input {
     width: 100%;
     background-color: inherit;
     border-radius: 4px;
     outline: none;
     color: var(--clr-text-primary);
-    padding: 8px 2px;
-
+    padding: 10px 3px;
 }
 
 .board-tab-name-input:focus {
