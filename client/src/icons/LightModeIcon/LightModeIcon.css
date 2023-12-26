@@ -1,0 +1,6 @@
+@import "../../variables.css";
+
+.lightmode-icon {
+    width: 20px;
+    stroke: var(--clr-text-secondary-light)
+}

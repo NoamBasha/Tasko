@@ -1,11 +1,16 @@
 @import "../../variables.css";
 
+.user-settings-container{
+    display: flex;
+    gap: 0.5rem;
+}
+
 .user-settings-button {
     background-color: transparent;
     border: none;
     padding: auto 0 ;
 }
 
-.user-settings-button:hover {
+.user-settings-button {
     cursor: pointer;
 }

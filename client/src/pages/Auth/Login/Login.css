@@ -19,7 +19,7 @@
     background-size: cover;
 }
 
-@media (prefers-color-scheme: dark) {
+:root[data-theme='dark'] {
     .login-wrapper {
         background-image: url("../../../assets/tasko-bg-img-v1-dark.png");
     }
