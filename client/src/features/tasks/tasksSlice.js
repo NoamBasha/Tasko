@@ -54,7 +54,6 @@ export const updateAllTasksAsync = createAsyncThunk(
     async (newTasks, thunkAPI) => {
         try {
             const abortAxiosHO = () => abortAxios(abortController);
-
             const abortController = new AbortController();
             const signal = abortController.signal;
 

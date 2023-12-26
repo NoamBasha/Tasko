@@ -137,6 +137,8 @@ const updateAllColumns = asyncHandler(async function (req, res) {
         throw new Error("Board not found");
     }
 
+    const databaseColumns = [];
+
     for (const column of newColumns) {
         const columnId = column.id;
 
@@ -149,13 +151,15 @@ const updateAllColumns = asyncHandler(async function (req, res) {
                 res.status(500);
                 throw new Error("Could not update columns");
             }
+
+            databaseColumns.push(column);
         } catch (err) {
-            res.status(500);
-            throw new Error("Could not update columns");
+            // res.status(500);
+            // throw new Error("Could not update columns");
         }
     }
 
-    const prismaPromisesArray = newColumns.map((column) => {
+    const prismaPromisesArray = databaseColumns.map((column) => {
         const columnId = column.id;
 
         return prisma.column.update({

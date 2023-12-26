@@ -85,7 +85,8 @@ function areTasksEqualIgnoringIndexes(arr1, arr2) {
     return true;
 }
 
-const DEBOUNCE_INTERVAL = 1000;
+//TODO remove or include debounce?
+const DEBOUNCE_INTERVAL = 0;
 
 const debounce = (func, delay) => {
     let timeoutId;

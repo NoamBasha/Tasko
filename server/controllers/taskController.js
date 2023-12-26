@@ -155,6 +155,8 @@ const updateAllTasks = asyncHandler(async function (req, res) {
         throw new Error("Board not found");
     }
 
+    const databaseTasks = [];
+
     for (const task of newTasks) {
         const taskId = task.id;
 
@@ -167,13 +169,15 @@ const updateAllTasks = asyncHandler(async function (req, res) {
                 res.status(404);
                 throw new Error("Task not found");
             }
+
+            databaseTasks.push(task);
         } catch (err) {
-            res.status(500);
-            throw new Error("Task not found");
+            // res.status(500);
+            // throw new Error("Task not found");
         }
     }
 
-    const prismaPromisesArray = newTasks.map((task) => {
+    const prismaPromisesArray = databaseTasks.map((task) => {
         const taskId = task.id;
 
         return prisma.task.update({
