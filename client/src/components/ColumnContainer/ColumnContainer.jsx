@@ -16,7 +16,7 @@ const ColumnContainer = ({
     deleteTask,
     updateTask,
 }) => {
-    const [editMode, setEditMode] = useState(false);
+    const [editMode, setEditMode] = useState(true);
     const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
 
     const [newTitle, setNewTitle] = useState(column.title);

@@ -6,7 +6,7 @@ import { CSS } from "@dnd-kit/utilities";
 
 const TaskCard = ({ task, deleteTask, updateTask, columnId }) => {
     const [mouseIsOver, setMouseIsOver] = useState(false);
-    const [editMode, setEditMode] = useState(false);
+    const [editMode, setEditMode] = useState(true);
     const [description, setDescription] = useState(task.description);
 
     function toggleEditMode() {
