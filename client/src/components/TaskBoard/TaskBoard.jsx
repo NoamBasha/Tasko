@@ -215,7 +215,6 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         //     tasks
         // );
         // if (areTasksChanged) {
-        //     console.log("here");
         //     if (tasksUpdateAllPromise !== null) {
         //         tasksUpdateAllPromise.abort();
         //         setTasksUpdateAllPromise(null);
