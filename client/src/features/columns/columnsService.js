@@ -32,11 +32,14 @@ export const deleteColumn = async (boardId, columnId) => {
     }
 };
 
-export const updateAllColumns = async (boardId, newColumns) => {
+export const updateAllColumns = async (boardId, newColumns, signal) => {
     try {
         const response = await api.put(
             `${COLUMNS_BASE}${boardId}/all`,
-            newColumns
+            newColumns,
+            {
+                signal: signal,
+            }
         );
         return { updatedColumns: response.data };
     } catch (error) {

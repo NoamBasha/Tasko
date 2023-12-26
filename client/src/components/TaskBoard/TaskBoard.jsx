@@ -97,6 +97,8 @@ const debounce = (func, delay) => {
 
 const TaskBoard = ({ boardId, columns, tasks }) => {
     const [tasksUpdateAllPromise, setTasksUpdateAllPromise] = useState(null);
+    const [columnsUpdateAllPromise, setColumnsUpdateAllPromise] =
+        useState(null);
 
     const localColumns = useSelector(selectLocalColumns);
     const localTasks = useSelector(selectLocalTasks);
@@ -143,7 +145,8 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     };
 
     const updateAllColumns = async (newColumns) => {
-        await dispatch(updateAllColumnsAsync(newColumns));
+        const promise = dispatch(updateAllColumnsAsync(newColumns));
+        setColumnsUpdateAllPromise(promise);
     };
 
     const debouncedUpdateAllColumns = useCallback(
@@ -253,14 +256,22 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             overColumnIndex
         );
 
+        const movedColumnsWithIndexes = movedColumns.map((column, i) => {
+            return { ...column, index: i };
+        });
+
         //! same for columns
-        // if (JSON.stringify(movedColumns) !== JSON.stringify(columns)) {
-        //     dispatch(setLocalColumns(movedColumns));
-        //     debouncedUpdateAllColumns(movedColumns);
+        // if (JSON.stringify(movedColumnsWithIndexes) !== JSON.stringify(columns)) {
+        //     dispatch(setLocalColumns(movedColumnsWithIndexes));
+        //     debouncedUpdateAllColumns(movedColumnsWithIndexes);
         // }
 
-        dispatch(setLocalColumns(movedColumns));
-        debouncedUpdateAllColumns(movedColumns);
+        if (columnsUpdateAllPromise !== null) {
+            columnsUpdateAllPromise.abort();
+            setColumnsUpdateAllPromise(null);
+        }
+        dispatch(setLocalColumns(movedColumnsWithIndexes));
+        debouncedUpdateAllColumns(movedColumnsWithIndexes);
     };
 
     const onDragOver = (e) => {

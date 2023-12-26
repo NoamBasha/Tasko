@@ -37,15 +37,31 @@ export const updateColumnAsync = createAsyncThunk(
     }
 );
 
+const abortAxios = (abortController) => {
+    abortController.abort();
+};
+
 export const updateAllColumnsAsync = createAsyncThunk(
     "columns/updateAllColumnsAsync",
     async (newColumns, thunkAPI) => {
         try {
+            const abortAxiosHO = () => abortAxios(abortController);
+
+            const abortController = new AbortController();
+            const signal = abortController.signal;
+
+            thunkAPI.signal.addEventListener("abort", abortAxiosHO);
+
             const boardId = thunkAPI.getState().boards.boardId;
             const { updatedColumns } = await updateAllColumns(
                 boardId,
-                newColumns
+                newColumns,
+                signal
             );
+
+            //TODO: putting this in "finally" won't work!
+            thunkAPI.signal.removeEventListener("abort", abortAxiosHO);
+
             return { updatedColumns };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -173,6 +189,7 @@ const columnsSlice = createSlice({
             })
             .addCase(updateAllColumnsAsync.rejected, (state, action) => {
                 state.status = "rejected";
+                if (action.error?.message === "Aborted") return;
                 state.error = action.payload;
                 state.localColumns = state.columns;
                 toast.error(action.payload);
