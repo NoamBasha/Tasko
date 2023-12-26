@@ -208,18 +208,27 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     };
 
     const onDragEnd = (e) => {
-        const areTasksChanged = !areTasksEqualIgnoringIndexes(
-            localTasks,
-            tasks
-        );
+        //! This won't work because the tasks did not change!
+        //! we would like to compare localTasks and PREVOIUS localTasks!
+        // const areTasksChanged = !areTasksEqualIgnoringIndexes(
+        //     localTasks,
+        //     tasks
+        // );
+        // if (areTasksChanged) {
+        //     console.log("here");
+        //     if (tasksUpdateAllPromise !== null) {
+        //         tasksUpdateAllPromise.abort();
+        //         setTasksUpdateAllPromise(null);
+        //     }
+        //     debouncedUpdateAllTasks(localTasks);
+        // }
 
-        if (areTasksChanged) {
-            if (tasksUpdateAllPromise !== null) {
-                tasksUpdateAllPromise.abort();
-                setTasksUpdateAllPromise(null);
-            }
-            debouncedUpdateAllTasks(localTasks);
+        //! Instead we just to this every time...
+        if (tasksUpdateAllPromise !== null) {
+            tasksUpdateAllPromise.abort();
+            setTasksUpdateAllPromise(null);
         }
+        debouncedUpdateAllTasks(localTasks);
 
         setActiveColumn(null);
         setActiveTask(null);
@@ -245,10 +254,14 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             overColumnIndex
         );
 
-        if (JSON.stringify(movedColumns) !== JSON.stringify(columns)) {
-            dispatch(setLocalColumns(movedColumns));
-            debouncedUpdateAllColumns(movedColumns);
-        }
+        //! same for columns
+        // if (JSON.stringify(movedColumns) !== JSON.stringify(columns)) {
+        //     dispatch(setLocalColumns(movedColumns));
+        //     debouncedUpdateAllColumns(movedColumns);
+        // }
+
+        dispatch(setLocalColumns(movedColumns));
+        debouncedUpdateAllColumns(movedColumns);
     };
 
     const onDragOver = (e) => {
