@@ -7,27 +7,15 @@ import { resetUserState } from "../../features/users/usersSlice.js";
 import LogoutIcon from "../../icons/LogoutIcon/LogoutIcon.jsx";
 import LightModeIcon from "../../icons/LightModeIcon/LightModeIcon.jsx";
 import DarkModeIcon from "../../icons/DarkModeIcon/DarkModeIcon.jsx";
+import { useTheme } from "../../contexts/ThemeContext.jsx";
 
 const UserSettings = () => {
+    const { theme, toggleTheme } = useTheme();
     const dispatch = useDispatch();
-    const [theme, setTheme] = useState(
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light"
-    );
 
     const handleLogout = async () => {
         await dispatch(logoutAsync());
     };
-
-    const toggleTheme = () => {
-        setTheme(theme === "dark" ? "light" : "dark");
-    };
-
-    useEffect(() => {
-        const root = document.documentElement;
-        root.setAttribute("data-theme", theme);
-    }, [theme]);
 
     return (
         <div className="user-settings-container">
