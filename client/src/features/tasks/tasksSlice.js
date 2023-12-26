@@ -194,10 +194,30 @@ const tasksSlice = createSlice({
                 state.error = null;
             })
             .addCase(updateAllTasksAsync.fulfilled, (state, action) => {
+                function updateTasks(tasks, updatedTasks) {
+                    const updatedTasksMap = new Map(
+                        updatedTasks.map((task) => [task.id, task])
+                    );
+
+                    const updatedResult = tasks.map((task) => {
+                        const updatedTask = updatedTasksMap.get(task.id);
+                        return updatedTask ? { ...task, ...updatedTask } : task;
+                    });
+
+                    // Include new tasks from updatedTasks that don't exist in the original tasks
+                    updatedTasks.forEach((updatedTask) => {
+                        if (!tasks.find((task) => task.id === updatedTask.id)) {
+                            updatedResult.push(updatedTask);
+                        }
+                    });
+
+                    return updatedResult;
+                }
+
                 state.status = "fulfilled";
                 const updatedTasks = action.payload.updatedTasks;
-                state.tasks = updatedTasks;
-                state.localTasks = updatedTasks;
+                state.tasks = updateTasks(state.tasks, updatedTasks);
+                state.localTasks = updateTasks(state.localTasks, updatedTasks);
             })
             .addCase(updateAllTasksAsync.rejected, (state, action) => {
                 state.status = "rejected";

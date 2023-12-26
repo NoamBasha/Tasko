@@ -182,10 +182,40 @@ const columnsSlice = createSlice({
                 state.error = null;
             })
             .addCase(updateAllColumnsAsync.fulfilled, (state, action) => {
+                function updateColumns(columns, updatedColumns) {
+                    const updatedColumnsMap = new Map(
+                        updatedColumns.map((column) => [column.id, column])
+                    );
+
+                    const updatedResult = columns.map((column) => {
+                        const updatedColumn = updatedColumnsMap.get(column.id);
+                        return updatedColumn
+                            ? { ...column, ...updatedColumn }
+                            : column;
+                    });
+
+                    // Include new columns from updatedColumns that don't exist in the original columns
+                    updatedColumns.forEach((updatedColumn) => {
+                        if (
+                            !columns.find(
+                                (column) => column.id === updatedColumn.id
+                            )
+                        ) {
+                            updatedResult.push(updatedColumn);
+                        }
+                    });
+
+                    return updatedResult;
+                }
+
                 state.status = "fulfilled";
                 const updatedColumns = action.payload.updatedColumns;
-                state.columns = updatedColumns;
-                state.localColumns = updatedColumns;
+
+                state.columns = updateColumns(state.columns, updatedColumns);
+                state.localColumns = updateColumns(
+                    state.localColumns,
+                    updatedColumns
+                );
             })
             .addCase(updateAllColumnsAsync.rejected, (state, action) => {
                 state.status = "rejected";
