@@ -66,19 +66,13 @@ const refresh = async (req, res) => {
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
         asyncHandler(async (err, decoded) => {
-            if (err) {
-                res.status(403);
-                throw new Error("Forbidden");
-            }
+            if (err) return res.status(403).json({ message: "Forbidden" });
 
             const user = await prisma.user.findUnique({
                 where: { id: decoded.userId },
             });
 
-            if (!user) {
-                res.status(401);
-                throw new Error("Unauthorized");
-            }
+            if (!user) return res.status(401).json({ message: "Unauthorized" });
 
             const accessToken = jwt.sign(
                 {
