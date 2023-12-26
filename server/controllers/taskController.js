@@ -115,7 +115,7 @@ const updateTask = asyncHandler(async function (req, res) {
     }
 
     const task = await prisma.task.findUnique({
-        where: { id: taskId, columnId: columnId },
+        where: { id: taskId },
     });
 
     if (!task) {
@@ -130,8 +130,10 @@ const updateTask = asyncHandler(async function (req, res) {
                 title: title,
                 description: description,
                 index: +index,
+                columnId: columnId,
             },
         });
+
         res.status(200).json(updatedTask);
     } catch (error) {
         res.status(500);

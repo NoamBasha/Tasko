@@ -61,17 +61,7 @@ const TaskCard = ({ task, deleteTask, updateTask, columnId }) => {
                     placeholder="Task content"
                     onBlur={() => {
                         toggleEditMode();
-                        updateTask(
-                            task.id,
-                            task.title,
-                            description,
-                            columnId,
-                            task.index
-                        );
-                    }}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter" && e.shiftKey) {
-                            toggleEditMode();
+                        if (description !== task.description) {
                             updateTask(
                                 task.id,
                                 task.title,
@@ -79,6 +69,20 @@ const TaskCard = ({ task, deleteTask, updateTask, columnId }) => {
                                 columnId,
                                 task.index
                             );
+                        }
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" && e.shiftKey) {
+                            toggleEditMode();
+                            if (description !== task.description) {
+                                updateTask(
+                                    task.id,
+                                    task.title,
+                                    description,
+                                    columnId,
+                                    task.index
+                                );
+                            }
                         }
                     }}
                     onChange={(e) => {

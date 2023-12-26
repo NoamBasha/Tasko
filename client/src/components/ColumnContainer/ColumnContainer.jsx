@@ -107,15 +107,17 @@ const ColumnContainer = ({
             </div>
             <div className="column-container-content">
                 <SortableContext items={tasksIds}>
-                    {tasks.map((task) => (
-                        <TaskCard
-                            key={task.id}
-                            task={task}
-                            deleteTask={deleteTask}
-                            updateTask={updateTask}
-                            columnId={column.id}
-                        />
-                    ))}
+                    {tasks
+                        .sort((a, b) => a.index - b.index)
+                        .map((task) => (
+                            <TaskCard
+                                key={task.id}
+                                task={task}
+                                deleteTask={deleteTask}
+                                updateTask={updateTask}
+                                columnId={column.id}
+                            />
+                        ))}
                 </SortableContext>
             </div>
             <div className="column-container-footer">

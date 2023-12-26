@@ -228,7 +228,12 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
                 overIndex
             );
 
-            dispatch(setLocalTasks(updatedMovedLocalTasks));
+            const updatedMovedLocalTasksWithIndexes =
+                updatedMovedLocalTasks.map((task, i) => {
+                    return { ...task, index: i };
+                });
+
+            dispatch(setLocalTasks(updatedMovedLocalTasksWithIndexes));
         }
 
         const isOverColumn = over.data.current?.type === "Column";
@@ -243,7 +248,12 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
                 columnId: overId,
             };
 
-            dispatch(setLocalTasks(updatedTasks));
+            //TODO CHECK IF RIGHT!
+            const updatedTasksWithIndexes = updatedTasks.map((task, i) => {
+                return { ...task, index: i };
+            });
+
+            dispatch(setLocalTasks(updatedTasksWithIndexes));
         }
     };
 
@@ -262,20 +272,22 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
                 <div className="task-board-wrapper">
                     <div className="task-board-columns">
                         <SortableContext items={localColumnsIds}>
-                            {localColumns.map((col) => (
-                                <ColumnContainer
-                                    key={col.id}
-                                    column={col}
-                                    deleteColumn={deleteColumn}
-                                    updateColumn={updateColumn}
-                                    createTask={createTask}
-                                    tasks={localTasks.filter(
-                                        (task) => task.columnId === col.id
-                                    )}
-                                    deleteTask={deleteTask}
-                                    updateTask={updateTask}
-                                />
-                            ))}
+                            {[...localColumns]
+                                .sort((a, b) => a.index - b.index)
+                                .map((col) => (
+                                    <ColumnContainer
+                                        key={col.id}
+                                        column={col}
+                                        deleteColumn={deleteColumn}
+                                        updateColumn={updateColumn}
+                                        createTask={createTask}
+                                        tasks={localTasks.filter(
+                                            (task) => task.columnId === col.id
+                                        )}
+                                        deleteTask={deleteTask}
+                                        updateTask={updateTask}
+                                    />
+                                ))}
                         </SortableContext>
                     </div>
                     <button

@@ -45,17 +45,20 @@ export const updateTaskAsync = createAsyncThunk(
     }
 );
 
+const abortAxios = (abortController) => {
+    abortController.abort();
+};
+
 export const updateAllTasksAsync = createAsyncThunk(
     "tasks/updateAllTasksAsync",
     async (newTasks, thunkAPI) => {
         try {
-            const abortAxios = (abortController) => {
-                abortController.abort();
-            };
+            console.log(newTasks);
             const abortAxiosHO = () => abortAxios(abortController);
 
             const abortController = new AbortController();
             const signal = abortController.signal;
+            console.log("Here");
 
             thunkAPI.signal.addEventListener("abort", abortAxiosHO);
 
@@ -200,12 +203,10 @@ const tasksSlice = createSlice({
             })
             .addCase(updateAllTasksAsync.rejected, (state, action) => {
                 state.status = "rejected";
-                if (action.error?.message === "Aborted") {
-                } else {
-                    state.error = action.payload;
-                    state.localTasks = state.tasks;
-                    toast.error(action.payload);
-                }
+                if (action.error?.message === "Aborted") return;
+                state.error = action.payload;
+                state.localTasks = state.tasks;
+                toast.error(action.payload);
             })
             .addCase(deleteColumnAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
