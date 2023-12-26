@@ -23,9 +23,10 @@ export const createBoard = async (newBoard) => {
 
 export const updateBoard = async (newBoard) => {
     try {
-        const response = await api.put(`${BOARDS_BASE}${newBoard.id}`, {
-            name: newBoard.name,
-        });
+        const response = await api.put(
+            `${BOARDS_BASE}${newBoard.id}`,
+            newBoard
+        );
         return { updatedBoard: response.data };
     } catch (error) {
         handleApiError(error);

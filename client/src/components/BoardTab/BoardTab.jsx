@@ -11,7 +11,7 @@ import {
 } from "../../features/boards/boardsSlice";
 import TrashIcon from "../../icons/TrashIcon/TrashIcon";
 
-const BoardTab = ({ name, id }) => {
+const BoardTab = ({ name, id, index }) => {
     const [editMode, setEditMode] = useState(false);
     // const prevName = useRef(name);
     const [newName, setNewName] = useState(name);
@@ -25,7 +25,7 @@ const BoardTab = ({ name, id }) => {
     const handleChangeName = async () => {
         setEditMode(false);
         if (newName === name || newName.localeCompare(name) === 0) return;
-        await dispatch(updateBoardAsync({ id, newName }));
+        await dispatch(updateBoardAsync({ id, newName, newIndex: index }));
     };
 
     const handleBlur = async () => {

@@ -6,6 +6,7 @@
     height: 20px;
 }
 
+/* TODO: change padding here to 10px maybe? so it looks better when entering new name */
 .board-tab-name-input {
     width: 100%;
     background-color: inherit;

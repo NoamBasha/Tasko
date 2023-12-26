@@ -48,12 +48,15 @@ export const updateBoardAsync = createAsyncThunk(
     async (newBoard, thunkAPI) => {
         try {
             const name = newBoard.newName;
+            const index = newBoard.newIndex;
             const boardId = newBoard.id;
-            thunkAPI.dispatch(updateLocalBoard(newBoard));
-            const { updatedBoard } = await updateBoard({
+            const boardToUpdateTo = {
                 name,
+                index,
                 id: boardId,
-            });
+            };
+            thunkAPI.dispatch(updateLocalBoard(boardToUpdateTo));
+            const { updatedBoard } = await updateBoard(boardToUpdateTo);
             return { updatedBoard };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);

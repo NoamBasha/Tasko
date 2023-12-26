@@ -34,13 +34,14 @@ const getBoard = asyncHandler(async function (req, res) {
 
 const createBoard = asyncHandler(async function (req, res) {
     const userId = req.user.id;
-    const { id, name } = req.body;
+    const { id, name, index } = req.body;
 
     try {
         const createdBoard = await prisma.board.create({
             data: {
                 id: id,
                 name: name,
+                index: +index,
                 user: {
                     connect: { id: userId },
                 },
@@ -103,7 +104,7 @@ const deleteBoard = asyncHandler(async function (req, res) {
 const updateBoard = asyncHandler(async function (req, res) {
     const userId = req.user.id;
     const boardId = req.params.boardId;
-    const { name } = req.body;
+    const { name, index } = req.body;
 
     const board = await prisma.board.findUnique({
         where: { id: boardId, userId: userId },
@@ -119,6 +120,7 @@ const updateBoard = asyncHandler(async function (req, res) {
             where: { id: boardId },
             data: {
                 name: name,
+                index: index,
             },
         });
         res.status(200).json(updatedBoard);

@@ -17,6 +17,7 @@ import PlusIcon from "../../icons/PlusIcon/PlusIcon.jsx";
 const BoardsContainer = ({ boards }) => {
     const [createMode, setCreateMode] = useState(false);
     const localBoards = useSelector(selectLocalBoards);
+    console.log(localBoards);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -24,7 +25,9 @@ const BoardsContainer = ({ boards }) => {
     }, []);
 
     const createBoard = async (name) => {
-        await dispatch(createBoardAsync({ id: uuidv4(), name }));
+        await dispatch(
+            createBoardAsync({ id: uuidv4(), name, index: localBoards.length })
+        );
     };
 
     return (
@@ -48,15 +51,18 @@ const BoardsContainer = ({ boards }) => {
                         createBoard={createBoard}
                     />
                 )}
-                {localBoards.map((board) => {
-                    return (
-                        <BoardTab
-                            key={board.id}
-                            name={board.name}
-                            id={board.id}
-                        />
-                    );
-                })}
+                {[...localBoards]
+                    .sort((a, b) => b.index - a.index)
+                    .map((board) => {
+                        return (
+                            <BoardTab
+                                key={board.id}
+                                name={board.name}
+                                id={board.id}
+                                index={board.index}
+                            />
+                        );
+                    })}
             </div>
             <hr className="boards-container-divider" />
         </div>
