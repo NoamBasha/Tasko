@@ -326,7 +326,6 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
                 columnId: overId,
             };
 
-            //TODO CHECK IF RIGHT!
             const updatedTasksWithIndexes = updatedTasks.map((task, i) => {
                 return { ...task, index: i };
             });

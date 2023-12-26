@@ -59,7 +59,7 @@ export const updateAllColumnsAsync = createAsyncThunk(
                 signal
             );
 
-            //TODO: putting this in "finally" won't work!
+            //! putting this in "finally" won't work!
             thunkAPI.signal.removeEventListener("abort", abortAxiosHO);
 
             return { updatedColumns };

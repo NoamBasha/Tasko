@@ -67,7 +67,7 @@ export const updateAllTasksAsync = createAsyncThunk(
                 signal
             );
 
-            //TODO: putting this in "finally" won't work!
+            //! putting this in "finally" won't work!
             thunkAPI.signal.removeEventListener("abort", abortAxiosHO);
 
             return { updatedTasks };
