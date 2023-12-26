@@ -35,9 +35,15 @@ export const deleteTask = async (boardId, columnId, taskId) => {
     }
 };
 
-export const updateAllTasks = async (boardId, newTasks) => {
+export const updateAllTasks = async (boardId, newTasks, signal) => {
     try {
-        const response = await api.put(TASKS_BASE + `${boardId}/all`, newTasks);
+        const response = await api.put(
+            TASKS_BASE + `${boardId}/all`,
+            newTasks,
+            {
+                signal: signal,
+            }
+        );
         return { updatedTasks: response.data };
     } catch (error) {
         handleApiError(error);

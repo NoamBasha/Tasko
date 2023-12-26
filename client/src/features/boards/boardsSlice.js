@@ -152,7 +152,6 @@ const boardsSlice = createSlice({
             state.boardId = null;
         },
         setCurrentBoardId: (state, action) => {
-            console.log(action.payload);
             state.boardId = action.payload;
         },
     },

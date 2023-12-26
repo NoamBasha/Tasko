@@ -32,7 +32,7 @@ export const updateTaskAsync = createAsyncThunk(
     async ({ newTask, columnId }, thunkAPI) => {
         try {
             const boardId = thunkAPI.getState().boards.boardId;
-            thunkAPI.dispatch(updateLocalTask(newTask));
+            // thunkAPI.dispatch(updateLocalTask(newTask));
             const { updatedTask } = await updateTask(
                 boardId,
                 columnId,
@@ -49,8 +49,26 @@ export const updateAllTasksAsync = createAsyncThunk(
     "tasks/updateAllTasksAsync",
     async (newTasks, thunkAPI) => {
         try {
+            const abortAxios = (abortController) => {
+                abortController.abort();
+            };
+            const abortAxiosHO = () => abortAxios(abortController);
+
+            const abortController = new AbortController();
+            const signal = abortController.signal;
+
+            thunkAPI.signal.addEventListener("abort", abortAxiosHO);
+
             const boardId = thunkAPI.getState().boards.boardId;
-            const { updatedTasks } = await updateAllTasks(boardId, newTasks);
+            const { updatedTasks } = await updateAllTasks(
+                boardId,
+                newTasks,
+                signal
+            );
+
+            //TODO: putting this in "finally" won't work!
+            thunkAPI.signal.removeEventListener("abort", abortAxiosHO);
+
             return { updatedTasks };
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
@@ -182,9 +200,12 @@ const tasksSlice = createSlice({
             })
             .addCase(updateAllTasksAsync.rejected, (state, action) => {
                 state.status = "rejected";
-                state.error = action.payload;
-                state.localTasks = state.tasks;
-                toast.error(action.payload);
+                if (action.error?.message === "Aborted") {
+                } else {
+                    state.error = action.payload;
+                    state.localTasks = state.tasks;
+                    toast.error(action.payload);
+                }
             })
             .addCase(deleteColumnAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";

@@ -45,6 +45,8 @@ const debounce = (func, delay) => {
 };
 
 const TaskBoard = ({ boardId, columns, tasks }) => {
+    const [tasksUpdateAllPromise, setTasksUpdateAllPromise] = useState(null);
+
     const localColumns = useSelector(selectLocalColumns);
     const localTasks = useSelector(selectLocalTasks);
 
@@ -133,8 +135,9 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         await dispatch(deleteTaskAsync({ taskId, columnId }));
     };
 
-    const updateAllTasks = async (newTasks) => {
-        await dispatch(updateAllTasksAsync(newTasks));
+    const updateAllTasks = (newTasks) => {
+        const promise = dispatch(updateAllTasksAsync(newTasks));
+        setTasksUpdateAllPromise(promise);
     };
 
     const debouncedUpdateAllTasks = useCallback(
@@ -156,6 +159,10 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     const onDragEnd = (e) => {
         // Updating the tasks in the server at the end of a drag operation if they changed in the dragging
         if (JSON.stringify(localTasks) !== JSON.stringify(tasks)) {
+            if (tasksUpdateAllPromise !== null) {
+                tasksUpdateAllPromise.abort();
+                setTasksUpdateAllPromise(null);
+            }
             debouncedUpdateAllTasks(localTasks);
         }
 
