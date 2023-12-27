@@ -2,3 +2,7 @@
     /* Allowing smooth scrolling */
     user-select: none;
 }
+
+.scrollable-div-container:active {
+    cursor: grab;
+}
