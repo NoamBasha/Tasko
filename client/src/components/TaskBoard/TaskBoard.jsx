@@ -125,7 +125,9 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         const newColumn = {
             boardId: boardId,
             title: `Column ${localColumns.length + 1}`,
-            index: `${localColumns.length}`,
+            index: localColumns.reduce((maxIndex, obj) => {
+                return obj.index > maxIndex ? obj.index : maxIndex;
+            }, 0),
             id: uuidv4(),
         };
         await dispatch(createColumnAsync(newColumn));
@@ -162,7 +164,9 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             title: `Task ${localTasks.length + 1}`,
             description: ``,
             columnId: columnId,
-            index: localTasks.length,
+            index: localTasks.reduce((maxIndex, obj) => {
+                return obj.index > maxIndex ? obj.index : maxIndex;
+            }, 0),
             id: uuidv4(),
         };
         await dispatch(createTaskAsync({ newTask, columnId }));

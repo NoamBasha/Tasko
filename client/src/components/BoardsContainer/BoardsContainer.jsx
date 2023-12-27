@@ -26,7 +26,13 @@ const BoardsContainer = ({ boards }) => {
 
     const createBoard = async (name) => {
         await dispatch(
-            createBoardAsync({ id: uuidv4(), name, index: localBoards.length })
+            createBoardAsync({
+                id: uuidv4(),
+                name,
+                index: localBoards.reduce((maxIndex, obj) => {
+                    return obj.index > maxIndex ? obj.index : maxIndex;
+                }, 0),
+            })
         );
     };
 
