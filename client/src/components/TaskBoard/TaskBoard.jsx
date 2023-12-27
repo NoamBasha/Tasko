@@ -211,73 +211,91 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     };
 
     const onDragEnd = (e) => {
-        //! This won't work because the tasks did not change!
-        //! we would like to compare localTasks and PREVOIUS localTasks!
-        // const areTasksChanged = !areTasksEqualIgnoringIndexes(
-        //     localTasks,
-        //     tasks
-        // );
-        // if (areTasksChanged) {
-        //     if (tasksUpdateAllPromise !== null) {
-        //         tasksUpdateAllPromise.abort();
-        //         setTasksUpdateAllPromise(null);
-        //     }
-        //     debouncedUpdateAllTasks(localTasks);
-        // }
+        setActiveColumn(null);
+        setActiveTask(null);
 
-        //! Instead we just to this every time...
         if (tasksUpdateAllPromise !== null) {
             tasksUpdateAllPromise.abort();
             setTasksUpdateAllPromise(null);
         }
-        //! Switch to denouce if necessary
-        // debouncedUpdateAllTasks(localTasks);
         updateAllTasks(localTasks);
-
-        setActiveColumn(null);
-        setActiveTask(null);
-
-        const { active, over } = e;
-        if (!over) return;
-
-        const activeId = active.id;
-        const overId = over.id;
-
-        if (activeId === overId) return;
-
-        const activeColumnIndex = localColumns.findIndex(
-            (col) => col.id === activeId
-        );
-        const overColumnIndex = localColumns.findIndex(
-            (col) => col.id === overId
-        );
-
-        const movedColumns = arrayMove(
-            localColumns.slice(),
-            activeColumnIndex,
-            overColumnIndex
-        );
-
-        const movedColumnsWithIndexes = movedColumns.map((column, i) => {
-            return { ...column, index: i };
-        });
-
-        //! same for columns
-        // if (JSON.stringify(movedColumnsWithIndexes) !== JSON.stringify(columns)) {
-        //     dispatch(setLocalColumns(movedColumnsWithIndexes));
-        //     debouncedUpdateAllColumns(movedColumnsWithIndexes);
-        // }
 
         if (columnsUpdateAllPromise !== null) {
             columnsUpdateAllPromise.abort();
             setColumnsUpdateAllPromise(null);
         }
 
-        dispatch(setLocalColumns(movedColumnsWithIndexes));
-        //! Switch to denouce if necessary
-        // debouncedUpdateAllColumns(movedColumnsWithIndexes);
-        updateAllColumns(movedColumnsWithIndexes);
+        updateAllColumns(localColumns);
     };
+
+    // const onDragEnd = (e) => {
+    //     //! This won't work because the tasks did not change!
+    //     //! we would like to compare localTasks and PREVOIUS localTasks!
+    //     // const areTasksChanged = !areTasksEqualIgnoringIndexes(
+    //     //     localTasks,
+    //     //     tasks
+    //     // );
+    //     // if (areTasksChanged) {
+    //     //     if (tasksUpdateAllPromise !== null) {
+    //     //         tasksUpdateAllPromise.abort();
+    //     //         setTasksUpdateAllPromise(null);
+    //     //     }
+    //     //     debouncedUpdateAllTasks(localTasks);
+    //     // }
+
+    //     //! Instead we just to this every time...
+    //     if (tasksUpdateAllPromise !== null) {
+    //         tasksUpdateAllPromise.abort();
+    //         setTasksUpdateAllPromise(null);
+    //     }
+    //     //! Switch to denouce if necessary
+    //     // debouncedUpdateAllTasks(localTasks);
+    //     updateAllTasks(localTasks);
+
+    //     setActiveColumn(null);
+    //     setActiveTask(null);
+
+    //     const { active, over } = e;
+    //     if (!over) return;
+
+    //     const activeId = active.id;
+    //     const overId = over.id;
+
+    //     if (activeId === overId) return;
+
+    //     const activeColumnIndex = localColumns.findIndex(
+    //         (col) => col.id === activeId
+    //     );
+    //     const overColumnIndex = localColumns.findIndex(
+    //         (col) => col.id === overId
+    //     );
+
+    //     const movedColumns = arrayMove(
+    //         localColumns.slice(),
+    //         activeColumnIndex,
+    //         overColumnIndex
+    //     );
+
+    //     const movedColumnsWithIndexes = movedColumns.map((column, i) => {
+    //         return { ...column, index: i };
+    //     });
+
+    //     //! same for columns
+    //     // if (JSON.stringify(movedColumnsWithIndexes) !== JSON.stringify(columns)) {
+    //     //     dispatch(setLocalColumns(movedColumnsWithIndexes));
+    //     //     debouncedUpdateAllColumns(movedColumnsWithIndexes);
+    //     // }
+
+    //     if (columnsUpdateAllPromise !== null) {
+    //         columnsUpdateAllPromise.abort();
+    //         setColumnsUpdateAllPromise(null);
+    //     }
+
+    //     dispatch(setLocalColumns(movedColumnsWithIndexes));
+    //     //! Switch to denouce if necessary
+    //     // debouncedUpdateAllColumns(movedColumnsWithIndexes);
+    //     updateAllColumns(movedColumnsWithIndexes);
+    // };
 
     const onDragOver = (e) => {
         const { active, over } = e;
