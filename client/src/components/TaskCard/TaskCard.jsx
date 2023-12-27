@@ -56,7 +56,7 @@ const TaskCard = ({ task, deleteTask, updateTask, columnId }) => {
             >
                 <textarea
                     className="task-card-textarea"
-                    value={task.content}
+                    value={description}
                     autoFocus
                     placeholder="Task content"
                     onBlur={() => {
@@ -88,6 +88,12 @@ const TaskCard = ({ task, deleteTask, updateTask, columnId }) => {
                     onChange={(e) => {
                         setDescription(e.target.value);
                     }}
+                    onFocus={(e) =>
+                        e.currentTarget.setSelectionRange(
+                            e.currentTarget.value.length,
+                            e.currentTarget.value.length
+                        )
+                    }
                 />
             </div>
         );
