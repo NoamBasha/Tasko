@@ -288,8 +288,52 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
 
         if (activeId === overId) return;
 
+        const isActiveColumn = active.data.current?.type === "Column";
+        const isOverColumn = over.data.current?.type === "Column";
+
         const isActiveTask = active.data.current?.type === "Task";
         const isOverTask = over.data.current?.type === "Task";
+
+        if (isActiveColumn && isOverColumn) {
+            const activeIndex = localColumns.findIndex(
+                (c) => c.id === activeId
+            );
+            const overIndex = localColumns.findIndex((c) => c.id === overId);
+
+            const updatedMovedLocalColumns = arrayMove(
+                [...localColumns],
+                activeIndex,
+                overIndex
+            );
+
+            const updatedMovedLocalColumnsWithIndexes =
+                updatedMovedLocalColumns.map((column, i) => {
+                    return { ...column, index: i };
+                });
+
+            dispatch(setLocalColumns(updatedMovedLocalColumnsWithIndexes));
+        }
+
+        if (isActiveColumn && isOverTask) {
+            const activeIndex = localColumns.findIndex(
+                (c) => c.id === activeId
+            );
+
+            const updatedColumns = [...localColumns];
+
+            updatedColumns[activeIndex] = {
+                ...updatedColumns[activeIndex],
+                columnId: overId,
+            };
+
+            const updatedColumnsWithIndexes = updatedColumns.map(
+                (column, i) => {
+                    return { ...column, index: i };
+                }
+            );
+
+            dispatch(setLocalColumns(updatedColumnsWithIndexes));
+        }
 
         if (!isActiveTask) return;
 
@@ -318,8 +362,6 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
 
             dispatch(setLocalTasks(updatedMovedLocalTasksWithIndexes));
         }
-
-        const isOverColumn = over.data.current?.type === "Column";
 
         if (isActiveTask && isOverColumn) {
             const activeIndex = localTasks.findIndex((t) => t.id === activeId);
