@@ -128,7 +128,7 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             index:
                 localColumns.reduce((maxIndex, obj) => {
                     return obj.index > maxIndex ? obj.index : maxIndex;
-                }, 0) + 1,
+                }, -1) + 1,
             id: uuidv4(),
         };
         await dispatch(createColumnAsync(newColumn));
@@ -168,7 +168,7 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             index:
                 localTasks.reduce((maxIndex, obj) => {
                     return obj.index > maxIndex ? obj.index : maxIndex;
-                }, 0) + 1,
+                }, -1) + 1,
             id: uuidv4(),
         };
         await dispatch(createTaskAsync({ newTask, columnId }));

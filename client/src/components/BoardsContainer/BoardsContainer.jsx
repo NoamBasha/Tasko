@@ -32,7 +32,7 @@ const BoardsContainer = ({ boards }) => {
                 index:
                     localBoards.reduce((maxIndex, obj) => {
                         return obj.index > maxIndex ? obj.index : maxIndex;
-                    }, 0) + 1,
+                    }, -1) + 1,
             })
         );
     };
