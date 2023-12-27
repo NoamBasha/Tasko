@@ -7,8 +7,8 @@ import {
     useNavigate,
 } from "react-router-dom";
 import Product from "./pages/Product/Product.jsx";
-import Login from "./pages/Auth/Login/Login.jsx";
-import Register from "./pages/Auth/Register/Register.jsx";
+import Login from "./pages/Login/Login.jsx";
+import Register from "./pages/Register/Register.jsx";
 import { ToastContainer } from "react-toastify";
 import RequireAuth from "./components/RequireAuth/RequireAuth.jsx";
 import { useEffect, useState } from "react";

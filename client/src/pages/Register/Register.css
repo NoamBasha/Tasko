@@ -1,6 +1,6 @@
-@import "../../../variables.css";
+@import "../../variables.css";
 
-.login-container {
+.register-container {
     display: flex;
     width: 100%;
     align-items: center;
@@ -8,7 +8,7 @@
     color: var(--clr-text-primary);
 }
 
-.login-wrapper {
+.register-wrapper {
     background-color: var(--clr-bg-secondary);
     width: 50%;
     aspect-ratio: 4/3;
@@ -20,12 +20,12 @@
 }
 
 :root[data-theme='dark'] {
-    .login-wrapper {
+    .register-wrapper {
         background-image: url("../../../assets/tasko-bg-img-v1-dark.png");
     }
 }
 
-.login-content-wrapper {
+.register-content-wrapper {
     background-color: var(--clr-bg-primary);
     width: 40%;
     margin: 0.5rem;
@@ -37,7 +37,7 @@
     padding: 1rem;
 }
 
-.login-form-wrapper {
+.register-form-wrapper {
     display: flex;
     flex-direction: column;
     gap: 3rem;
@@ -48,7 +48,7 @@
 }
 
 
-.login-title-wrapper {
+.register-title-wrapper {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -56,20 +56,20 @@
     gap: 0.4rem;
 }
 
-.login-title-header{
+.register-title-header{
     font-size: 2rem;  
     font-weight: normal;
 }
 
-.login-title-text{
+.register-title-text{
     font-size: 0.8rem;  
 }
 
-.login-title-header span {
+.register-title-header span {
     color: var(--clr-accent)
 }
 
-.login-form {
+.register-form {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -77,13 +77,13 @@
     gap: 1rem;
 }
 
-.login-form-content {
+.register-form-content {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.login-form-field {
+.register-form-field {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
@@ -96,7 +96,7 @@
     height: 1rem;
 }
 
-.login-input {
+.register-input {
     background-color: transparent;
     border: none;
     border-bottom: 1px solid var(--clr-text-primary);
@@ -105,7 +105,7 @@
     width:100%;
 }
 
-.login-input:focus, .login-input:active {
+.register-input:focus, .register-input:active {
     outline: none;
 }
 
@@ -131,7 +131,7 @@ input:-moz-autofill{
     -moz-text-fill-color: var(--clr-text-primary) !important;
 }
 
-.login-button {
+.register-button {
     background-color: var(--clr-bg-secondary);
     border: none;
     padding: 1rem;
@@ -143,34 +143,28 @@ input:-moz-autofill{
     justify-content: center;
 }
 
-.login-guest-button {
-    background-color: transparent;
-    border: 1px solid var(--clr-bg-secondary);
-    padding: 0.4rem;
-}
-
-.login-button:hover {
+.register-button:hover {
     opacity: 0.8;
 }
 
-.login-button:active {
+.register-button:active {
     background-color: var(--clr-bg-secondary-light);
 }
 
-.login-button:disabled {
+.register-button:disabled {
     background-color: var(--clr-bg-secondary-muted);
 }
 
-.login-footer a{
+.register-footer a{
     font-weight: bold;
 }
 
-.login-form-password {
+.register-form-password {
     width: 100%;
     position: relative;
 }
 
-.login-form-password button {
+.register-form-password button {
     position: absolute;
     top: 50%;
     right: 5px;
@@ -184,6 +178,6 @@ input:-moz-autofill{
 
 }
 
-.login-form-password:hover button {
+.register-form-password:hover button {
     visibility: visible;
 }

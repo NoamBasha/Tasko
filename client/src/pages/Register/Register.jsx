@@ -1,21 +1,25 @@
-import "./Login.css";
+import "./Register.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
-    loginUserAsync,
-    selectAuthStatus,
-    selectIsAuthenticated,
-} from "../../../features/auth/authSlice.js";
+    registerUserAsync,
+    selectUsersStatus,
+} from "../../features/users/usersSlice.js";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-import Spinner from "../../../components/Spinner/Spinner.jsx";
-import { useEffect, useState } from "react";
-import OpenEyeIcon from "../../../icons/OpenEyeIcon/OpenEyeIcon.jsx";
-import CloseEyeIcon from "../../../icons/CloseEyeIcon/CloseEyeIcon.jsx";
+import Spinner from "../../components/Spinner/Spinner.jsx";
+import { useState } from "react";
+import OpenEyeIcon from "../../icons/OpenEyeIcon/OpenEyeIcon.jsx";
+import CloseEyeIcon from "../../icons/CloseEyeIcon/CloseEyeIcon.jsx";
 
-const loginSchema = yup.object().shape({
+const registerSchema = yup.object().shape({
+    name: yup
+        .string()
+        .required("Name is required")
+        .min(2, "Name must be at least 2 characters")
+        .max(36, "Name must not exceed 36 characters"),
     email: yup
         .string()
         .required("Email is required")
@@ -28,18 +32,13 @@ const loginSchema = yup.object().shape({
         .max(20, "Password must not exceed 20 characters"),
 });
 
-const Login = () => {
+const Register = () => {
     const dispatch = useDispatch();
-    const authStatus = useSelector(selectAuthStatus);
-    const isAuthenticated = useSelector(selectIsAuthenticated);
+    const authStatus = useSelector(selectUsersStatus);
 
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const isLoading = authStatus === "pending";
-
-    useEffect(() => {
-        if (isAuthenticated) navigate("/");
-    }, [isAuthenticated]);
 
     const handleToggleVisibility = () => {
         setShowPassword((prevShowPassword) => !prevShowPassword);
@@ -50,35 +49,49 @@ const Login = () => {
         handleSubmit,
         formState: { errors },
     } = useForm({
-        resolver: yupResolver(loginSchema),
+        resolver: yupResolver(registerSchema),
     });
 
     const onSubmit = async (data) => {
-        await dispatch(loginUserAsync(data));
+        const res = await dispatch(registerUserAsync(data));
+        if (!res.error) navigate("/login");
     };
 
     return (
-        <div className="login-container">
-            <div className="login-wrapper">
-                <div className="login-content-wrapper">
-                    <div className="login-form-wrapper">
-                        <div className="login-title-wrapper">
-                            <h1 className="login-title-header">
+        <div className="register-container">
+            <div className="register-wrapper">
+                <div className="register-content-wrapper">
+                    <div className="register-form-wrapper">
+                        <div className="register-title-wrapper">
+                            <h1 className="register-title-header">
                                 Welcome To <span>Tasko</span>
                             </h1>
-                            <p className="login-title-text">
+                            <p className="register-title-text">
                                 Please enter your details below
                             </p>
                         </div>
                         <form
-                            className="login-form"
+                            className="register-form"
                             onSubmit={handleSubmit(onSubmit)}
                         >
-                            <div className="login-form-content">
-                                <div className="login-form-field">
+                            <div className="register-form-content">
+                                <div className="register-form-field">
+                                    <label htmlFor="name">Full Name</label>
+                                    <input
+                                        className="register-input"
+                                        id="name"
+                                        name="name"
+                                        type="text"
+                                        {...register("name")}
+                                    />
+                                    <div className="form-error">
+                                        {errors?.name?.message}
+                                    </div>
+                                </div>
+                                <div className="register-form-field">
                                     <label htmlFor="email">Email</label>
                                     <input
-                                        className="login-input"
+                                        className="register-input"
                                         id="email"
                                         name="email"
                                         type="text"
@@ -88,11 +101,11 @@ const Login = () => {
                                         {errors?.email?.message}
                                     </div>
                                 </div>
-                                <div className="login-form-field">
+                                <div className="register-form-field">
                                     <label htmlFor="password">Password</label>
-                                    <div className="login-form-password">
+                                    <div className="register-form-password">
                                         <input
-                                            className="login-input"
+                                            className="register-input"
                                             id="password"
                                             name="password"
                                             type={
@@ -119,34 +132,22 @@ const Login = () => {
                                 </div>
                             </div>
                             <button
-                                className="login-button"
+                                className="register-button"
                                 type="submit"
                                 disabled={isLoading}
                             >
-                                {isLoading ? <Spinner /> : "Log In"}
-                            </button>
-                            <button
-                                className="login-button login-guest-button"
-                                onClick={() => {
-                                    onSubmit({
-                                        email: "guest@mail.com",
-                                        password: "guest@mail.com",
-                                    });
-                                }}
-                                disabled={isLoading}
-                            >
-                                {isLoading ? <Spinner /> : "Sign In As Guest"}
+                                {isLoading ? <Spinner /> : "Sign Up"}
                             </button>
                         </form>
                     </div>
-                    <p className="login-footer">
-                        Don't have an account?{" "}
+                    <p className="register-footer">
+                        Already have an account?{" "}
                         <Link
                             to={{
-                                pathname: "/register",
+                                pathname: "/login",
                             }}
                         >
-                            Sign Up
+                            Sign In
                         </Link>
                     </p>
                 </div>
@@ -155,4 +156,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Register;

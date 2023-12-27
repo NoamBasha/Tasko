@@ -1,25 +1,21 @@
-import "./Register.css";
+import "./Login.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
-    registerUserAsync,
-    selectUsersStatus,
-} from "../../../features/users/usersSlice.js";
+    loginUserAsync,
+    selectAuthStatus,
+    selectIsAuthenticated,
+} from "../../features/auth/authSlice.js";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-import Spinner from "../../../components/Spinner/Spinner.jsx";
-import { useState } from "react";
-import OpenEyeIcon from "../../../icons/OpenEyeIcon/OpenEyeIcon.jsx";
-import CloseEyeIcon from "../../../icons/CloseEyeIcon/CloseEyeIcon.jsx";
+import Spinner from "../../components/Spinner/Spinner.jsx";
+import { useEffect, useState } from "react";
+import OpenEyeIcon from "../../icons/OpenEyeIcon/OpenEyeIcon.jsx";
+import CloseEyeIcon from "../../icons/CloseEyeIcon/CloseEyeIcon.jsx";
 
-const registerSchema = yup.object().shape({
-    name: yup
-        .string()
-        .required("Name is required")
-        .min(2, "Name must be at least 2 characters")
-        .max(36, "Name must not exceed 36 characters"),
+const loginSchema = yup.object().shape({
     email: yup
         .string()
         .required("Email is required")
@@ -32,13 +28,18 @@ const registerSchema = yup.object().shape({
         .max(20, "Password must not exceed 20 characters"),
 });
 
-const Register = () => {
+const Login = () => {
     const dispatch = useDispatch();
-    const authStatus = useSelector(selectUsersStatus);
+    const authStatus = useSelector(selectAuthStatus);
+    const isAuthenticated = useSelector(selectIsAuthenticated);
 
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const isLoading = authStatus === "pending";
+
+    useEffect(() => {
+        if (isAuthenticated) navigate("/");
+    }, [isAuthenticated]);
 
     const handleToggleVisibility = () => {
         setShowPassword((prevShowPassword) => !prevShowPassword);
@@ -49,49 +50,35 @@ const Register = () => {
         handleSubmit,
         formState: { errors },
     } = useForm({
-        resolver: yupResolver(registerSchema),
+        resolver: yupResolver(loginSchema),
     });
 
     const onSubmit = async (data) => {
-        const res = await dispatch(registerUserAsync(data));
-        if (!res.error) navigate("/login");
+        await dispatch(loginUserAsync(data));
     };
 
     return (
-        <div className="register-container">
-            <div className="register-wrapper">
-                <div className="register-content-wrapper">
-                    <div className="register-form-wrapper">
-                        <div className="register-title-wrapper">
-                            <h1 className="register-title-header">
+        <div className="login-container">
+            <div className="login-wrapper">
+                <div className="login-content-wrapper">
+                    <div className="login-form-wrapper">
+                        <div className="login-title-wrapper">
+                            <h1 className="login-title-header">
                                 Welcome To <span>Tasko</span>
                             </h1>
-                            <p className="register-title-text">
+                            <p className="login-title-text">
                                 Please enter your details below
                             </p>
                         </div>
                         <form
-                            className="register-form"
+                            className="login-form"
                             onSubmit={handleSubmit(onSubmit)}
                         >
-                            <div className="register-form-content">
-                                <div className="register-form-field">
-                                    <label htmlFor="name">Full Name</label>
-                                    <input
-                                        className="register-input"
-                                        id="name"
-                                        name="name"
-                                        type="text"
-                                        {...register("name")}
-                                    />
-                                    <div className="form-error">
-                                        {errors?.name?.message}
-                                    </div>
-                                </div>
-                                <div className="register-form-field">
+                            <div className="login-form-content">
+                                <div className="login-form-field">
                                     <label htmlFor="email">Email</label>
                                     <input
-                                        className="register-input"
+                                        className="login-input"
                                         id="email"
                                         name="email"
                                         type="text"
@@ -101,11 +88,11 @@ const Register = () => {
                                         {errors?.email?.message}
                                     </div>
                                 </div>
-                                <div className="register-form-field">
+                                <div className="login-form-field">
                                     <label htmlFor="password">Password</label>
-                                    <div className="register-form-password">
+                                    <div className="login-form-password">
                                         <input
-                                            className="register-input"
+                                            className="login-input"
                                             id="password"
                                             name="password"
                                             type={
@@ -132,22 +119,34 @@ const Register = () => {
                                 </div>
                             </div>
                             <button
-                                className="register-button"
+                                className="login-button"
                                 type="submit"
                                 disabled={isLoading}
                             >
-                                {isLoading ? <Spinner /> : "Sign Up"}
+                                {isLoading ? <Spinner /> : "Log In"}
+                            </button>
+                            <button
+                                className="login-button login-guest-button"
+                                onClick={() => {
+                                    onSubmit({
+                                        email: "guest@mail.com",
+                                        password: "guest@mail.com",
+                                    });
+                                }}
+                                disabled={isLoading}
+                            >
+                                {isLoading ? <Spinner /> : "Sign In As Guest"}
                             </button>
                         </form>
                     </div>
-                    <p className="register-footer">
-                        Already have an account?{" "}
+                    <p className="login-footer">
+                        Don't have an account?{" "}
                         <Link
                             to={{
-                                pathname: "/login",
+                                pathname: "/register",
                             }}
                         >
-                            Sign In
+                            Sign Up
                         </Link>
                     </p>
                 </div>
@@ -156,4 +155,4 @@ const Register = () => {
     );
 };
 
-export default Register;
+export default Login;
