@@ -1,17 +1,5 @@
 import "./Analytics.css";
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    PieChart,
-    Pie,
-    Cell,
-    ResponsiveContainer,
-} from "recharts";
+import { Tooltip, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { useSelector } from "react-redux";
 import {
     selectCurrentBoardId,
@@ -20,7 +8,7 @@ import {
 import { selectLocalColumns } from "../../features/columns/columnsSlice.js";
 import { selectLocalTasks } from "../../features/tasks/tasksSlice.js";
 
-const extractTaskData = (currentBoardId, columns, tasks) => {
+const extractTaskDataForCurrentBoard = (currentBoardId, columns, tasks) => {
     const data = [];
 
     // Filter columns for the current board
@@ -28,96 +16,154 @@ const extractTaskData = (currentBoardId, columns, tasks) => {
         (column) => column.boardId === currentBoardId
     );
 
+    const columnColors = [
+        "#0088FE",
+        "#00C49F",
+        "#FFBB28",
+        "#FF8042",
+        "#AF19FF",
+        "#FF00FF",
+        "#FFD700",
+        "#7CFC00",
+        "#FF4500",
+        "#4169E1",
+    ];
+
     // Iterate through columns
     currentBoardColumns.forEach((column, index) => {
         // Filter tasks for the current column
         const columnTasks = tasks.filter((task) => task.columnId === column.id);
 
-        // Add data to the array
+        // Add data to the array with color information
         data.push({
-            name: column.title,
+            title: column.title,
             value: columnTasks.length,
+            color: columnColors[index % columnColors.length],
         });
     });
 
     return data;
 };
 
-const TaskChart = () => {
+const BoardTasksChart = () => {
     const currentBoardId = useSelector(selectCurrentBoardId);
     const localBoards = useSelector(selectLocalBoards);
     const localColumns = useSelector(selectLocalColumns);
     const localTasks = useSelector(selectLocalTasks);
 
+    console.log("render");
+    console.log(localColumns);
+
     if (!currentBoardId) {
         return null;
     }
 
-    const data = extractTaskData(currentBoardId, localColumns, localTasks);
-
-    // const legendPayload = data.map((entry) => ({
-    //     value: entry.name,
-    //     type: "circle",
-    //     color: entry.color,
-    // }));
+    const data = extractTaskDataForCurrentBoard(
+        currentBoardId,
+        localColumns,
+        localTasks
+    );
 
     return (
-        <ResponsiveContainer width="100%" height={400}>
-            <PieChart>
-                <Pie
-                    dataKey="value"
-                    data={data}
-                    cx={"50%"}
-                    cy={"50%"}
-                    // innerRadius={"40%"}
-                    outerRadius={"20%"}
-                    fill="#8884d8"
-                    label={({
-                        cx,
-                        cy,
-                        midAngle,
-                        innerRadius,
-                        outerRadius,
-                        value,
-                        index,
-                    }) => {
-                        const RADIAN = Math.PI / 180;
-                        // eslint-disable-next-line
-                        const radius =
-                            25 + innerRadius + (outerRadius - innerRadius);
-                        // eslint-disable-next-line
-                        const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                        // eslint-disable-next-line
-                        const y = cy + radius * Math.sin(-midAngle * RADIAN);
+        <div className="board-tasks-chart-container">
+            <p className="board-tasks-chart-title">Board Analysis</p>
+            <div className="board-tasks-chart-counts">
+                <p>
+                    Columns: <b>{localColumns.length}</b>
+                </p>
+                <p>
+                    Tasks:<b> {localTasks.length}</b>
+                </p>
+            </div>
+            <div className="board-tasks-chart-pie">
+                <ResponsiveContainer>
+                    <PieChart>
+                        <Pie
+                            className="board-tasks-chart-pie-fill"
+                            dataKey="value"
+                            data={data}
+                            cx={"50%"}
+                            cy={"50%"}
+                            innerRadius={"0%"}
+                            outerRadius={"60%"}
+                            fill="#8884d8"
+                            label={({
+                                cx,
+                                cy,
+                                midAngle,
+                                innerRadius,
+                                outerRadius,
+                                value,
+                                index,
+                            }) => {
+                                const RADIAN = Math.PI / 180;
+                                const radius =
+                                    25 +
+                                    innerRadius +
+                                    (outerRadius - innerRadius);
+                                const x =
+                                    cx + radius * Math.cos(-midAngle * RADIAN);
+                                const y =
+                                    cy + radius * Math.sin(-midAngle * RADIAN);
 
-                        return (
-                            <text
-                                x={x}
-                                y={y}
-                                fill="#8884d8"
-                                textAnchor={x > cx ? "start" : "end"}
-                                dominantBaseline="central"
-                            >
-                                {data[index].name} ({value})
-                            </text>
-                        );
-                    }}
-                />
-                {/* {data.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))} */}
-                {/* </Pie> */}
-                {/* <Tooltip /> */}
-                {/* <Legend payload={legendPayload} /> */}
-            </PieChart>
-        </ResponsiveContainer>
+                                return (
+                                    <text
+                                        x={x}
+                                        y={y}
+                                        textAnchor={x > cx ? "start" : "end"}
+                                        dominantBaseline="central"
+                                        fontWeight={100}
+                                    >
+                                        {value}
+                                    </text>
+                                );
+                            }}
+                        >
+                            {data.map((entry, index) => (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={entry.color}
+                                />
+                            ))}
+                        </Pie>
+                        <Tooltip
+                            formatter={(value, name, props) => [
+                                value,
+                                props.payload.title,
+                            ]} // Use props.payload.title to access the column's name
+                        />
+                    </PieChart>
+                </ResponsiveContainer>
+            </div>
+            <div className="board-tasks-chart-legend">
+                {data.map((entry, index) => (
+                    <div
+                        key={`legend-item-${index}`}
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                        }}
+                    >
+                        <div
+                            style={{
+                                width: "10px",
+                                height: "10px",
+                                backgroundColor: entry.color,
+                                marginRight: "5px",
+                            }}
+                        />
+                        <span>{entry.title}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
     );
 };
 
 const Analytics = () => {
     return (
         <div className="analytics-container">
-            <TaskChart />
+            <BoardTasksChart />
         </div>
     );
 };

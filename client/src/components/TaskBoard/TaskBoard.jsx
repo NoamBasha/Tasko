@@ -353,9 +353,6 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             dispatch(setLocalColumns(updatedColumnsWithIndexes));
         }
 
-        if (!isActiveTask) return;
-
-        // Dropping a task over another task
         if (isActiveTask && isOverTask) {
             const activeIndex = localTasks.findIndex((t) => t.id === activeId);
             const overIndex = localTasks.findIndex((t) => t.id === overId);

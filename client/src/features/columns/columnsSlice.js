@@ -97,18 +97,29 @@ const columnsSlice = createSlice({
     reducers: {
         setColumns: (state, action) => {
             state.columns = action.payload;
-            state.localColumns = action.payload;
+            state.localColumns = [...action.payload].sort(
+                (a, b) => a.index - b.index
+            );
         },
         setLocalColumns: (state, action) => {
-            state.localColumns = action.payload;
+            state.localColumns = [...action.payload].sort(
+                (a, b) => a.index - b.index
+            );
         },
         createLocalColumn: (state, action) => {
-            state.localColumns.push(action.payload);
+            const newColumns = [...state.localColumns, action.payload];
+            state.localColumns = [...newColumns].sort(
+                (a, b) => a.index - b.index
+            );
         },
         updateLocalColumn: (state, action) => {
             state.localColumns = state.localColumns.map((column) => {
                 if (column.id === action.payload.id) {
-                    return action.payload;
+                    return {
+                        ...column,
+                        index: action.payload.index,
+                        title: action.payload.title,
+                    };
                 } else {
                     return column;
                 }
