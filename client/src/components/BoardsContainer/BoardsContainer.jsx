@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
     createBoardAsync,
     getUserBoardsAsync,
+    selectCurrentBoardId,
 } from "../../features/boards/boardsSlice.js";
 import {
     selectBoards,
@@ -17,7 +18,6 @@ import PlusIcon from "../../icons/PlusIcon/PlusIcon.jsx";
 const BoardsContainer = ({ boards }) => {
     const [createMode, setCreateMode] = useState(false);
     const localBoards = useSelector(selectLocalBoards);
-    console.log(localBoards);
     const dispatch = useDispatch();
 
     useEffect(() => {

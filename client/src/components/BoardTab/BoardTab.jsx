@@ -17,6 +17,10 @@ const BoardTab = ({ name, id, index }) => {
     const [newName, setNewName] = useState(name);
     const dispatch = useDispatch();
     const currentBoardId = useSelector(selectCurrentBoardId);
+    const boardTabButtonClass =
+        currentBoardId === id
+            ? "board-tab-button board-tab-button-active"
+            : "board-tab-button";
 
     const handleDoubleClick = () => {
         setEditMode(true);
@@ -55,7 +59,7 @@ const BoardTab = ({ name, id, index }) => {
         <div className="board-tab-container">
             {!editMode && (
                 <button
-                    className="board-tab-button"
+                    className={boardTabButtonClass}
                     onClick={handleClick}
                     onDoubleClick={handleDoubleClick}
                 >

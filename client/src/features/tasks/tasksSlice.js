@@ -216,6 +216,7 @@ const tasksSlice = createSlice({
                 state.status = "fulfilled";
                 const updatedTasks = action.payload.updatedTasks;
                 state.tasks = updateTasks(state.tasks, updatedTasks);
+                //TODO is this needed?
                 state.localTasks = updateTasks(state.localTasks, updatedTasks);
             })
             .addCase(updateAllTasksAsync.rejected, (state, action) => {

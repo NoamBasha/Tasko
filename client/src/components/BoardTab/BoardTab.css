@@ -44,3 +44,7 @@
 .board-tab-container:hover .board-tab-delete-button:hover{
     opacity: 1;
 }
+
+.board-tab-button-active {
+    color: var(--clr-accent)
+}
