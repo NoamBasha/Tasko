@@ -81,6 +81,8 @@ const BoardTasksChart = () => {
                 <ResponsiveContainer>
                     <PieChart>
                         <Pie
+                            //TODO maybe activate the animation?
+                            isAnimationActive={false}
                             className="board-tasks-chart-pie-fill"
                             dataKey="value"
                             data={data}
