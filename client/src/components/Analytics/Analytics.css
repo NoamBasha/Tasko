@@ -29,6 +29,7 @@
 }
 
 .board-tasks-chart-title {
+    color: var(--clr-accent);
     font-size: 1.2rem;
     font-weight: 700;
 }

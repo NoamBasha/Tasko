@@ -92,6 +92,7 @@ const ColumnContainer = ({
                                 onChange={(e) => {
                                     setNewTitle(e.target.value);
                                 }}
+                                value={newTitle}
                             />
                         )}
                     </div>

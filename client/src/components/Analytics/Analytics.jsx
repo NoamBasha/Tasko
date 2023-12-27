@@ -51,6 +51,10 @@ const BoardTasksChart = () => {
     const localColumns = useSelector(selectLocalColumns);
     const localTasks = useSelector(selectLocalTasks);
 
+    const currentBoardName = localBoards.find(
+        (board) => board.id === currentBoardId
+    ).name;
+
     console.log("render");
     console.log(localColumns);
 
@@ -66,7 +70,7 @@ const BoardTasksChart = () => {
 
     return (
         <div className="board-tasks-chart-container">
-            <p className="board-tasks-chart-title">Board Analysis</p>
+            <p className="board-tasks-chart-title">{currentBoardName}</p>
             <div className="board-tasks-chart-counts">
                 <p>
                     Columns: <b>{localColumns.length}</b>
