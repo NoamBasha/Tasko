@@ -47,20 +47,18 @@ const extractTaskDataForCurrentBoard = (currentBoardId, columns, tasks) => {
 
 const BoardTasksChart = () => {
     const currentBoardId = useSelector(selectCurrentBoardId);
+
     const localBoards = useSelector(selectLocalBoards);
     const localColumns = useSelector(selectLocalColumns);
     const localTasks = useSelector(selectLocalTasks);
 
-    const currentBoardName = localBoards.find(
-        (board) => board.id === currentBoardId
-    ).name;
-
-    console.log("render");
-    console.log(localColumns);
-
     if (!currentBoardId) {
         return null;
     }
+
+    const currentBoardName = localBoards.find(
+        (board) => board.id === currentBoardId
+    ).name;
 
     const data = extractTaskDataForCurrentBoard(
         currentBoardId,
