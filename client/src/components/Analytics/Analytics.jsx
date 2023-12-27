@@ -58,7 +58,7 @@ const BoardTasksChart = () => {
 
     const currentBoardName = localBoards.find(
         (board) => board.id === currentBoardId
-    ).name;
+    )?.name;
 
     const data = extractTaskDataForCurrentBoard(
         currentBoardId,
