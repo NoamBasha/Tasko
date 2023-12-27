@@ -125,6 +125,18 @@ const Login = () => {
                             >
                                 {isLoading ? <Spinner /> : "Log In"}
                             </button>
+                            <button
+                                className="login-button login-guest-button"
+                                onClick={() => {
+                                    onSubmit({
+                                        email: "guest@mail.com",
+                                        password: "guest@mail.com",
+                                    });
+                                }}
+                                disabled={isLoading}
+                            >
+                                {isLoading ? <Spinner /> : "Sign In As Guest"}
+                            </button>
                         </form>
                     </div>
                     <p className="login-footer">

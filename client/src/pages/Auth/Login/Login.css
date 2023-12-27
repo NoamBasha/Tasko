@@ -143,6 +143,12 @@ input:-moz-autofill{
     justify-content: center;
 }
 
+.login-guest-button {
+    background-color: transparent;
+    border: 1px solid var(--clr-bg-secondary);
+    padding: 0.4rem;
+}
+
 .login-button:hover {
     opacity: 0.8;
 }
