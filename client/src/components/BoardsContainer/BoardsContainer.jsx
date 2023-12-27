@@ -29,9 +29,10 @@ const BoardsContainer = ({ boards }) => {
             createBoardAsync({
                 id: uuidv4(),
                 name,
-                index: localBoards.reduce((maxIndex, obj) => {
-                    return obj.index > maxIndex ? obj.index : maxIndex;
-                }, 0),
+                index:
+                    localBoards.reduce((maxIndex, obj) => {
+                        return obj.index > maxIndex ? obj.index : maxIndex;
+                    }, 0) + 1,
             })
         );
     };
