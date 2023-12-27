@@ -3,6 +3,7 @@ import BoardTab from "../BoardTab/BoardTab.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import {
     createBoardAsync,
+    getBoardAsync,
     getUserBoardsAsync,
     selectCurrentBoardId,
 } from "../../features/boards/boardsSlice.js";
@@ -25,9 +26,10 @@ const BoardsContainer = ({ boards }) => {
     }, []);
 
     const createBoard = async (name) => {
+        const boardId = uuidv4();
         await dispatch(
             createBoardAsync({
-                id: uuidv4(),
+                id: boardId,
                 name,
                 index:
                     localBoards.reduce((maxIndex, obj) => {
@@ -35,6 +37,7 @@ const BoardsContainer = ({ boards }) => {
                     }, -1) + 1,
             })
         );
+        await dispatch(getBoardAsync(boardId));
     };
 
     return (
