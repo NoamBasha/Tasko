@@ -1,6 +1,12 @@
 import axios from "axios";
-import { refreshAccessToken, clearToken } from "../features/auth/authSlice.js";
-import { resetUserState } from "../features/users/usersSlice.js";
+import {
+    refreshAccessToken,
+    reset as resetAuthState,
+} from "../features/auth/authSlice.js";
+import { reset as resetUsersState } from "../features/users/usersSlice.js";
+import { reset as resetBoardsState } from "../features/boards/boardsSlice.js";
+import { reset as resetColumnsState } from "../features/columns/columnsSlice.js";
+import { reset as resetTasksState } from "../features/tasks/tasksSlice.js";
 
 let store;
 
@@ -51,8 +57,11 @@ api.interceptors.response.use(
                 return api(originalRequest);
             } catch (refreshError) {
                 // Handle refresh token failure (e.g., clear tokens and log the user out)
-                store.dispatch(clearToken());
-                store.dispatch(resetUserState());
+                store.dispatch(resetAuthState());
+                store.dispatch(resetUsersState());
+                store.dispatch(resetBoardsState());
+                store.dispatch(resetColumnsState());
+                store.dispatch(resetTasksState());
                 return Promise.reject(refreshError);
             }
         }

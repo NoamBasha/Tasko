@@ -134,6 +134,9 @@ const boardsSlice = createSlice({
     name: "boards",
     initialState,
     reducers: {
+        reset: (state) => {
+            return initialState;
+        },
         createLocalBoard: (state, action) => {
             state.localBoards.push(action.payload);
         },
@@ -242,6 +245,7 @@ const boardsSlice = createSlice({
 });
 
 export const {
+    reset,
     setBoards,
     setLocalBoards,
     createLocalBoard,

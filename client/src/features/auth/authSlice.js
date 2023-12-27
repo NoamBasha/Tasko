@@ -1,8 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { login, refresh, logout } from "./authService.js";
 import Cookies from "js-cookie";
-import { getUserDataAsync, resetUserState } from "../users/usersSlice.js";
+import {
+    getUserDataAsync,
+    reset as resetUsersState,
+} from "../users/usersSlice.js";
 import { toast } from "react-toastify";
+import { reset as resetBoardsState } from "../boards/boardsSlice.js";
+import { reset as resetColumnsState } from "../columns/columnsSlice.js";
+import { reset as resetTasksState } from "../tasks/tasksSlice.js";
 
 export const loginUserAsync = createAsyncThunk(
     "auth/loginUserAsync",
@@ -24,8 +30,11 @@ export const refreshAccessToken = createAsyncThunk(
             const { accessToken } = await refresh();
             return { newAccessToken: accessToken };
         } catch (error) {
-            thunkAPI.dispatch(clearToken());
-            thunkAPI.dispatch(resetUserState());
+            thunkAPI.dispatch(reset());
+            thunkAPI.dispatch(resetUsersState());
+            thunkAPI.dispatch(resetBoardsState());
+            thunkAPI.dispatch(resetColumnsState());
+            thunkAPI.dispatch(resetTasksState());
             return thunkAPI.rejectWithValue(error.message);
         }
     }
@@ -35,9 +44,12 @@ export const logoutAsync = createAsyncThunk(
     "auth/logoutAsync",
     async (_, thunkAPI) => {
         try {
+            thunkAPI.dispatch(reset());
+            thunkAPI.dispatch(resetUsersState());
+            thunkAPI.dispatch(resetBoardsState());
+            thunkAPI.dispatch(resetColumnsState());
+            thunkAPI.dispatch(resetTasksState());
             await logout();
-            thunkAPI.dispatch(clearToken());
-            thunkAPI.dispatch(resetUserState());
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
         }
@@ -54,8 +66,8 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        clearToken: (state) => {
-            state.token = null;
+        reset: (state) => {
+            return initialState;
         },
     },
     extraReducers: (builder) => {
@@ -89,7 +101,7 @@ const authSlice = createSlice({
     },
 });
 
-export const { clearToken } = authSlice.actions;
+export const { reset } = authSlice.actions;
 
 export const selectToken = (state) => state.auth.token;
 export const selectAuthStatus = (state) => state.auth.status;

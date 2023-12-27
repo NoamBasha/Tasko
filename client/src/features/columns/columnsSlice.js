@@ -95,6 +95,9 @@ const columnsSlice = createSlice({
     name: "columns",
     initialState,
     reducers: {
+        reset: (state) => {
+            return initialState;
+        },
         setColumns: (state, action) => {
             state.columns = action.payload;
             state.localColumns = [...action.payload].sort(
@@ -251,6 +254,7 @@ const columnsSlice = createSlice({
 });
 
 export const {
+    reset,
     setColumns,
     setLocalColumns,
     createLocalColumn,

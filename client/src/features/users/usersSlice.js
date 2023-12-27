@@ -35,8 +35,8 @@ const usersSlice = createSlice({
     name: "users",
     initialState,
     reducers: {
-        resetUserState: (state, action) => {
-            state = initialState;
+        reset: (state, action) => {
+            return initialState;
         },
     },
     extraReducers: (builder) => {
@@ -69,7 +69,7 @@ const usersSlice = createSlice({
     },
 });
 
-export const { resetUserState } = usersSlice.actions;
+export const { reset } = usersSlice.actions;
 
 export const selectUser = (state) => state.users.user;
 export const selectName = (state) => state.users.user?.name;

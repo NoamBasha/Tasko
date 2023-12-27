@@ -101,6 +101,9 @@ const tasksSlice = createSlice({
     name: "tasks",
     initialState,
     reducers: {
+        reset: (state) => {
+            return initialState;
+        },
         setTasks: (state, action) => {
             state.tasks = action.payload;
             state.localTasks = action.payload;
@@ -248,6 +251,7 @@ const tasksSlice = createSlice({
 });
 
 export const {
+    reset,
     setTasks,
     setLocalTasks,
     createLocalTask,
