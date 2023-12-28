@@ -107,6 +107,7 @@ const TaskCard = ({
         );
     }
 
+    //TODO: listen to hover using ref instead of mouseIsOver - you stupid lovely bitch.
     return (
         <div
             ref={setNodeRef}
