@@ -1,6 +1,6 @@
 import "./TaskBoard.css";
 import PlusInCircleIcon from "../../icons/PlusInCircleIcon/PlusInCircleIcon.jsx";
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState } from "react";
 import ColumnContainer from "../ColumnContainer/ColumnContainer.jsx";
 import {
     DndContext,
@@ -16,8 +16,6 @@ import ScrollableDiv from "../ScrollableDiv/ScrollableDiv.jsx";
 
 import {
     createColumnAsync,
-    deleteColumnAsync,
-    updateColumnAsync,
     updateAllColumnsAsync,
     selectLocalColumns,
     setLocalColumns,
@@ -25,8 +23,6 @@ import {
 
 import {
     createTaskAsync,
-    updateTaskAsync,
-    deleteTaskAsync,
     updateAllTasksAsync,
     selectLocalTasks,
     setLocalTasks,
@@ -95,21 +91,23 @@ function areTasksEqualIgnoringIndexes(arr1, arr2) {
 //     };
 // };
 
-const TaskBoard = ({ boardId, columns, tasks }) => {
-    const [tasksUpdateAllPromise, setTasksUpdateAllPromise] = useState(null);
-    const [columnsUpdateAllPromise, setColumnsUpdateAllPromise] =
-        useState(null);
+const TaskBoard = ({ boardId }) => {
+    console.log(`TaskBoard - render - ${boardId?.split("-")[0]}`);
 
     const localColumns = useSelector(selectLocalColumns);
     const localTasks = useSelector(selectLocalTasks);
-
-    const [newestTaskId, setNewestTaskId] = useState(null);
-    const [newestColumnId, setNewestColumnId] = useState(null);
 
     const localColumnsIds = useMemo(
         () => localColumns.map((col) => col.id),
         [localColumns]
     );
+
+    const [tasksUpdateAllPromise, setTasksUpdateAllPromise] = useState(null);
+    const [columnsUpdateAllPromise, setColumnsUpdateAllPromise] =
+        useState(null);
+
+    const [newestTaskId, setNewestTaskId] = useState(null);
+    const [newestColumnId, setNewestColumnId] = useState(null);
 
     const [activeColumn, setActiveColumn] = useState(null);
     const [activeTask, setActiveTask] = useState(null);
@@ -123,10 +121,6 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             },
         })
     );
-
-    const resetNewestTaskId = () => {
-        setNewestTaskId(null);
-    };
 
     const resetNewestColumnId = () => {
         setNewestColumnId(null);
@@ -147,19 +141,6 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         await dispatch(createColumnAsync(newColumn));
     };
 
-    const updateColumn = async (id, newIndex, newTitle) => {
-        const newColumn = {
-            id,
-            index: newIndex,
-            title: newTitle,
-        };
-        await dispatch(updateColumnAsync(newColumn));
-    };
-
-    const deleteColumn = async (columnId) => {
-        await dispatch(deleteColumnAsync(columnId));
-    };
-
     const updateAllColumns = async (newColumns) => {
         const promise = dispatch(updateAllColumnsAsync(newColumns));
         setColumnsUpdateAllPromise(promise);
@@ -172,6 +153,10 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     //     ),
     //     []
     // );
+
+    const resetNewestTaskId = () => {
+        setNewestTaskId(null);
+    };
 
     const createTask = async (columnId) => {
         const newTaskId = uuidv4();
@@ -187,27 +172,6 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         };
         setNewestTaskId(newTaskId);
         await dispatch(createTaskAsync({ newTask, columnId }));
-    };
-
-    const updateTask = async (
-        taskId,
-        title,
-        description,
-        columnId,
-        newIndex
-    ) => {
-        const newTask = {
-            title,
-            description,
-            id: taskId,
-            columnId: columnId,
-            index: newIndex,
-        };
-        await dispatch(updateTaskAsync({ newTask, columnId }));
-    };
-
-    const deleteTask = async (taskId, columnId) => {
-        await dispatch(deleteTaskAsync({ taskId, columnId }));
     };
 
     const updateAllTasks = (newTasks) => {
@@ -319,7 +283,9 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     // };
 
     const onDragOver = (e) => {
+        //TODO: understand that and improve performance!!
         const { active, over } = e;
+
         if (!over) return;
 
         const activeId = active.id;
@@ -438,14 +404,10 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
                                     <ColumnContainer
                                         key={col.id}
                                         column={col}
-                                        deleteColumn={deleteColumn}
-                                        updateColumn={updateColumn}
                                         createTask={createTask}
                                         tasks={localTasks.filter(
                                             (task) => task.columnId === col.id
                                         )}
-                                        deleteTask={deleteTask}
-                                        updateTask={updateTask}
                                         initialColumnEditMode={
                                             newestColumnId === col.id
                                         }
@@ -474,26 +436,19 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
                         {activeColumn && (
                             <ColumnContainer
                                 column={activeColumn}
-                                deleteColumn={deleteColumn}
-                                updateColumn={updateColumn}
                                 createTask={createTask}
-                                deleteTask={deleteTask}
-                                updateTask={updateTask}
                                 tasks={localTasks.filter(
                                     (task) => task.columnId === activeColumn.id
                                 )}
+                                initialColumnEditMode={
+                                    newestColumnId === col.id
+                                }
                                 newestTaskId={newestTaskId}
                                 resetNewestTaskId={resetNewestTaskId}
                                 resetNewestColumnId={resetNewestColumnId}
                             />
                         )}
-                        {activeTask && (
-                            <TaskCard
-                                task={activeTask}
-                                deleteTask={deleteTask}
-                                updateTask={updateTask}
-                            />
-                        )}
+                        {activeTask && <TaskCard task={activeTask} />}
                     </DragOverlay>,
                     document.body
                 )}

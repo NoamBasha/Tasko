@@ -4,8 +4,6 @@ import Analytics from "../../components/Analytics/Analytics.jsx";
 import "./product.css";
 
 import { useSelector } from "react-redux";
-import { selectColumns } from "../../features/columns/columnsSlice.js";
-import { selectTasks } from "../../features/tasks/tasksSlice.js";
 import {
     selectBoards,
     selectCurrentBoardId,
@@ -14,15 +12,13 @@ import { selectName } from "../../features/users/usersSlice.js";
 
 const Product = () => {
     const name = useSelector(selectName);
-    const tasks = useSelector(selectTasks);
-    const columns = useSelector(selectColumns);
     const boards = useSelector(selectBoards);
     const boardId = useSelector(selectCurrentBoardId);
 
     return (
         <div className="product-container">
             <Sidebar name={name} boards={boards} />
-            <TaskBoard boardId={boardId} columns={columns} tasks={tasks} />
+            <TaskBoard boardId={boardId} />
             <Analytics />
         </div>
     );

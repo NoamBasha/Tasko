@@ -4,16 +4,40 @@ import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-const TaskCard = ({
-    task,
-    deleteTask,
-    updateTask,
-    columnId,
-    initialEditMode,
-    resetNewestTaskId,
-}) => {
+import {
+    updateTaskAsync,
+    deleteTaskAsync,
+} from "../../features/tasks/tasksSlice.js";
+
+import { useDispatch } from "react-redux";
+
+const TaskCard = ({ task, columnId, initialEditMode, resetNewestTaskId }) => {
+    console.log(`TaskCard - render - ${task.id.split("-")[0]}`);
     const [editMode, setEditMode] = useState(initialEditMode);
     const [description, setDescription] = useState(task.description);
+
+    const dispatch = useDispatch();
+
+    const updateTask = async (
+        taskId,
+        title,
+        description,
+        columnId,
+        newIndex
+    ) => {
+        const newTask = {
+            title,
+            description,
+            id: taskId,
+            columnId: columnId,
+            index: newIndex,
+        };
+        await dispatch(updateTaskAsync({ newTask, columnId }));
+    };
+
+    const deleteTask = async (taskId, columnId) => {
+        await dispatch(deleteTaskAsync({ taskId, columnId }));
+    };
 
     function toggleEditMode() {
         setEditMode((prevEditMode) => !prevEditMode);

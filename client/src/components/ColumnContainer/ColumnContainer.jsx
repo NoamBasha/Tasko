@@ -5,25 +5,48 @@ import { CSS } from "@dnd-kit/utilities";
 import { useState, useMemo } from "react";
 import PlusInCircleIcon from "../../icons/PlusInCircleIcon/PlusInCircleIcon.jsx";
 import TaskCard from "../TaskCard/TaskCard.jsx";
-import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import {
+    updateColumnAsync,
+    deleteColumnAsync,
+} from "../../features/columns/columnsSlice.js";
 
 const ColumnContainer = ({
     column,
-    deleteColumn,
-    updateColumn,
     createTask,
     tasks,
-    deleteTask,
-    updateTask,
     initialColumnEditMode,
     resetNewestColumnId,
     newestTaskId,
     resetNewestTaskId,
 }) => {
+    console.log(`ColumnContainer - render - ${column.id.split("-")[0]}`);
+
     const [editMode, setEditMode] = useState(initialColumnEditMode);
     const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
 
     const [newTitle, setNewTitle] = useState(column.title);
+
+    const dispatch = useDispatch();
+
+    const updateColumn = async (id, newIndex, newTitle) => {
+        const newColumn = {
+            id,
+            index: newIndex,
+            title: newTitle,
+        };
+        await dispatch(updateColumnAsync(newColumn));
+    };
+
+    const deleteColumn = async (columnId) => {
+        await dispatch(deleteColumnAsync(columnId));
+    };
+
+    const handleUpdateColumn = async () => {
+        setEditMode(false);
+        if (newTitle === column.title || newTitle.trim() === "") return;
+        updateColumn(column.id, column.index, newTitle.trim());
+    };
 
     const {
         setNodeRef,
@@ -55,12 +78,6 @@ const ColumnContainer = ({
             />
         );
     }
-
-    const handleUpdateColumn = async () => {
-        setEditMode(false);
-        if (newTitle === column.title || newTitle.trim() === "") return;
-        updateColumn(column.id, column.index, newTitle.trim());
-    };
 
     return (
         <div
@@ -120,8 +137,6 @@ const ColumnContainer = ({
                                 <TaskCard
                                     key={task.id}
                                     task={task}
-                                    deleteTask={deleteTask}
-                                    updateTask={updateTask}
                                     columnId={column.id}
                                     initialEditMode={task.id === newestTaskId}
                                     resetNewestTaskId={resetNewestTaskId}
