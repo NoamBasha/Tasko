@@ -1,6 +1,6 @@
 import "./TaskBoard.css";
 import PlusInCircleIcon from "../../icons/PlusInCircleIcon/PlusInCircleIcon.jsx";
-import { useMemo, useState } from "react";
+import { useMemo, useState, startTransition } from "react";
 import ColumnContainer from "../ColumnContainer/ColumnContainer.jsx";
 import {
     DndContext,
@@ -283,7 +283,7 @@ const TaskBoard = ({ boardId }) => {
     // };
 
     const onDragOver = (e) => {
-        //TODO: understand that and improve performance!!
+        // TODO: understand that and improve performance!!
         const { active, over } = e;
 
         if (!over) return;
@@ -291,96 +291,105 @@ const TaskBoard = ({ boardId }) => {
         const activeId = active.id;
         const overId = over.id;
 
-        if (activeId === overId) return;
+        // Wrap the entire function inside startTransition
+        startTransition(() => {
+            if (activeId === overId) return;
 
-        const isActiveColumn = active.data.current?.type === "Column";
-        const isOverColumn = over.data.current?.type === "Column";
+            const isActiveColumn = active.data.current?.type === "Column";
+            const isOverColumn = over.data.current?.type === "Column";
 
-        const isActiveTask = active.data.current?.type === "Task";
-        const isOverTask = over.data.current?.type === "Task";
+            const isActiveTask = active.data.current?.type === "Task";
+            const isOverTask = over.data.current?.type === "Task";
 
-        if (isActiveColumn && isOverColumn) {
-            const activeIndex = localColumns.findIndex(
-                (c) => c.id === activeId
-            );
-            const overIndex = localColumns.findIndex((c) => c.id === overId);
+            if (isActiveColumn && isOverColumn) {
+                const activeIndex = localColumns.findIndex(
+                    (c) => c.id === activeId
+                );
+                const overIndex = localColumns.findIndex(
+                    (c) => c.id === overId
+                );
 
-            const updatedMovedLocalColumns = arrayMove(
-                [...localColumns],
-                activeIndex,
-                overIndex
-            );
+                const updatedMovedLocalColumns = arrayMove(
+                    [...localColumns],
+                    activeIndex,
+                    overIndex
+                );
 
-            const updatedMovedLocalColumnsWithIndexes =
-                updatedMovedLocalColumns.map((column, i) => {
-                    return { ...column, index: i };
-                });
+                const updatedMovedLocalColumnsWithIndexes =
+                    updatedMovedLocalColumns.map((column, i) => {
+                        return { ...column, index: i };
+                    });
 
-            dispatch(setLocalColumns(updatedMovedLocalColumnsWithIndexes));
-        }
+                dispatch(setLocalColumns(updatedMovedLocalColumnsWithIndexes));
+            }
 
-        if (isActiveColumn && isOverTask) {
-            const activeIndex = localColumns.findIndex(
-                (c) => c.id === activeId
-            );
+            if (isActiveColumn && isOverTask) {
+                const activeIndex = localColumns.findIndex(
+                    (c) => c.id === activeId
+                );
 
-            const updatedColumns = [...localColumns];
+                const updatedColumns = [...localColumns];
 
-            updatedColumns[activeIndex] = {
-                ...updatedColumns[activeIndex],
-                columnId: overId,
-            };
+                updatedColumns[activeIndex] = {
+                    ...updatedColumns[activeIndex],
+                    columnId: overId,
+                };
 
-            const updatedColumnsWithIndexes = updatedColumns.map(
-                (column, i) => {
-                    return { ...column, index: i };
-                }
-            );
+                const updatedColumnsWithIndexes = updatedColumns.map(
+                    (column, i) => {
+                        return { ...column, index: i };
+                    }
+                );
 
-            dispatch(setLocalColumns(updatedColumnsWithIndexes));
-        }
+                dispatch(setLocalColumns(updatedColumnsWithIndexes));
+            }
 
-        if (isActiveTask && isOverTask) {
-            const activeIndex = localTasks.findIndex((t) => t.id === activeId);
-            const overIndex = localTasks.findIndex((t) => t.id === overId);
+            if (isActiveTask && isOverTask) {
+                const activeIndex = localTasks.findIndex(
+                    (t) => t.id === activeId
+                );
+                const overIndex = localTasks.findIndex((t) => t.id === overId);
 
-            const updatedTasks = [...localTasks];
+                const updatedTasks = [...localTasks];
 
-            updatedTasks[activeIndex] = {
-                ...updatedTasks[activeIndex],
-                columnId: updatedTasks[overIndex].columnId,
-            };
+                updatedTasks[activeIndex] = {
+                    ...updatedTasks[activeIndex],
+                    columnId: updatedTasks[overIndex].columnId,
+                };
 
-            const updatedMovedLocalTasks = arrayMove(
-                updatedTasks,
-                activeIndex,
-                overIndex
-            );
+                const updatedMovedLocalTasks = arrayMove(
+                    updatedTasks,
+                    activeIndex,
+                    overIndex
+                );
 
-            const updatedMovedLocalTasksWithIndexes =
-                updatedMovedLocalTasks.map((task, i) => {
+                const updatedMovedLocalTasksWithIndexes =
+                    updatedMovedLocalTasks.map((task, i) => {
+                        return { ...task, index: i };
+                    });
+
+                dispatch(setLocalTasks(updatedMovedLocalTasksWithIndexes));
+            }
+
+            if (isActiveTask && isOverColumn) {
+                const activeIndex = localTasks.findIndex(
+                    (t) => t.id === activeId
+                );
+
+                const updatedTasks = [...localTasks];
+
+                updatedTasks[activeIndex] = {
+                    ...updatedTasks[activeIndex],
+                    columnId: overId,
+                };
+
+                const updatedTasksWithIndexes = updatedTasks.map((task, i) => {
                     return { ...task, index: i };
                 });
 
-            dispatch(setLocalTasks(updatedMovedLocalTasksWithIndexes));
-        }
-
-        if (isActiveTask && isOverColumn) {
-            const activeIndex = localTasks.findIndex((t) => t.id === activeId);
-
-            const updatedTasks = [...localTasks];
-
-            updatedTasks[activeIndex] = {
-                ...updatedTasks[activeIndex],
-                columnId: overId,
-            };
-
-            const updatedTasksWithIndexes = updatedTasks.map((task, i) => {
-                return { ...task, index: i };
-            });
-
-            dispatch(setLocalTasks(updatedTasksWithIndexes));
-        }
+                dispatch(setLocalTasks(updatedTasksWithIndexes));
+            }
+        });
     };
 
     if (boardId === null || boardId === undefined) {
