@@ -103,6 +103,8 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     const localColumns = useSelector(selectLocalColumns);
     const localTasks = useSelector(selectLocalTasks);
 
+    const [newestTaskId, setNewestTaskId] = useState(null);
+
     const localColumnsIds = useMemo(
         () => localColumns.map((col) => col.id),
         [localColumns]
@@ -120,6 +122,10 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
             },
         })
     );
+
+    const resetNewestTaskId = () => {
+        setNewestTaskId(null);
+    };
 
     const createColumn = async () => {
         const newColumn = {
@@ -161,6 +167,7 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     // );
 
     const createTask = async (columnId) => {
+        const newTaskId = uuidv4();
         const newTask = {
             title: `Task ${localTasks.length + 1}`,
             description: ``,
@@ -169,8 +176,9 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
                 localTasks.reduce((maxIndex, obj) => {
                     return obj.index > maxIndex ? obj.index : maxIndex;
                 }, -1) + 1,
-            id: uuidv4(),
+            id: newTaskId,
         };
+        setNewestTaskId(newTaskId);
         await dispatch(createTaskAsync({ newTask, columnId }));
     };
 
@@ -431,6 +439,8 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
                                         )}
                                         deleteTask={deleteTask}
                                         updateTask={updateTask}
+                                        newestTaskId={newestTaskId}
+                                        resetNewestTaskId={resetNewestTaskId}
                                     />
                                 ))}
                         </SortableContext>
@@ -459,6 +469,8 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
                                 tasks={localTasks.filter(
                                     (task) => task.columnId === activeColumn.id
                                 )}
+                                newestTaskId={newestTaskId}
+                                resetNewestTaskId={resetNewestTaskId}
                             />
                         )}
                         {activeTask && (

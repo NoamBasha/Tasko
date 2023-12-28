@@ -4,9 +4,16 @@ import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-const TaskCard = ({ task, deleteTask, updateTask, columnId }) => {
+const TaskCard = ({
+    task,
+    deleteTask,
+    updateTask,
+    columnId,
+    initialEditMode,
+    resetNewestTaskId,
+}) => {
     const [mouseIsOver, setMouseIsOver] = useState(false);
-    const [editMode, setEditMode] = useState(false);
+    const [editMode, setEditMode] = useState(initialEditMode);
     const [description, setDescription] = useState(task.description);
 
     function toggleEditMode() {
@@ -61,6 +68,7 @@ const TaskCard = ({ task, deleteTask, updateTask, columnId }) => {
                     placeholder="Task content"
                     onBlur={() => {
                         toggleEditMode();
+                        resetNewestTaskId();
                         if (description !== task.description) {
                             updateTask(
                                 task.id,

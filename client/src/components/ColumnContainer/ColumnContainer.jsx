@@ -15,6 +15,8 @@ const ColumnContainer = ({
     tasks,
     deleteTask,
     updateTask,
+    newestTaskId,
+    resetNewestTaskId,
 }) => {
     const [editMode, setEditMode] = useState(false);
     const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
@@ -110,15 +112,19 @@ const ColumnContainer = ({
                 <SortableContext items={tasksIds}>
                     {tasks
                         .sort((a, b) => a.index - b.index)
-                        .map((task) => (
-                            <TaskCard
-                                key={task.id}
-                                task={task}
-                                deleteTask={deleteTask}
-                                updateTask={updateTask}
-                                columnId={column.id}
-                            />
-                        ))}
+                        .map((task) => {
+                            return (
+                                <TaskCard
+                                    key={task.id}
+                                    task={task}
+                                    deleteTask={deleteTask}
+                                    updateTask={updateTask}
+                                    columnId={column.id}
+                                    initialEditMode={task.id === newestTaskId}
+                                    resetNewestTaskId={resetNewestTaskId}
+                                />
+                            );
+                        })}
                 </SortableContext>
             </div>
             <div className="column-container-footer">
