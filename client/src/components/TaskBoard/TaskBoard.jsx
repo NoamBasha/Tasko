@@ -104,6 +104,7 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
     const localTasks = useSelector(selectLocalTasks);
 
     const [newestTaskId, setNewestTaskId] = useState(null);
+    const [newestColumnId, setNewestColumnId] = useState(null);
 
     const localColumnsIds = useMemo(
         () => localColumns.map((col) => col.id),
@@ -127,7 +128,12 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
         setNewestTaskId(null);
     };
 
+    const resetNewestColumnId = () => {
+        setNewestColumnId(null);
+    };
+
     const createColumn = async () => {
+        const newColumnId = uuidv4();
         const newColumn = {
             boardId: boardId,
             title: `Column ${localColumns.length + 1}`,
@@ -135,8 +141,9 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
                 localColumns.reduce((maxIndex, obj) => {
                     return obj.index > maxIndex ? obj.index : maxIndex;
                 }, -1) + 1,
-            id: uuidv4(),
+            id: newColumnId,
         };
+        setNewestColumnId(newColumnId);
         await dispatch(createColumnAsync(newColumn));
     };
 
@@ -439,6 +446,12 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
                                         )}
                                         deleteTask={deleteTask}
                                         updateTask={updateTask}
+                                        initialColumnEditMode={
+                                            newestColumnId === col.id
+                                        }
+                                        resetNewestColumnId={
+                                            resetNewestColumnId
+                                        }
                                         newestTaskId={newestTaskId}
                                         resetNewestTaskId={resetNewestTaskId}
                                     />
@@ -471,6 +484,7 @@ const TaskBoard = ({ boardId, columns, tasks }) => {
                                 )}
                                 newestTaskId={newestTaskId}
                                 resetNewestTaskId={resetNewestTaskId}
+                                resetNewestColumnId={resetNewestColumnId}
                             />
                         )}
                         {activeTask && (

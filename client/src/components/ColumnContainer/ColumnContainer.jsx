@@ -15,10 +15,12 @@ const ColumnContainer = ({
     tasks,
     deleteTask,
     updateTask,
+    initialColumnEditMode,
+    resetNewestColumnId,
     newestTaskId,
     resetNewestTaskId,
 }) => {
-    const [editMode, setEditMode] = useState(false);
+    const [editMode, setEditMode] = useState(initialColumnEditMode);
     const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
 
     const [newTitle, setNewTitle] = useState(column.title);
@@ -86,6 +88,7 @@ const ColumnContainer = ({
                                 autoFocus
                                 onBlur={() => {
                                     handleUpdateColumn();
+                                    resetNewestColumnId();
                                 }}
                                 onKeyDown={(e) => {
                                     if (e.key !== "Enter") return;
