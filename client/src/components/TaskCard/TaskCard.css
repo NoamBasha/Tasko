@@ -25,6 +25,7 @@
 }
 
 .task-card-delete-button {
+    display: none;
     position: absolute;
     right: 12px;
     cursor: pointer;
@@ -35,6 +36,10 @@
 
 .task-card-delete-button:hover {
     opacity: 1;
+}
+
+.task-card-container:hover .task-card-delete-button {
+    display:block;
 }
 
 .task-card-textarea {

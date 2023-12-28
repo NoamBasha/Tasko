@@ -12,13 +12,11 @@ const TaskCard = ({
     initialEditMode,
     resetNewestTaskId,
 }) => {
-    const [mouseIsOver, setMouseIsOver] = useState(false);
     const [editMode, setEditMode] = useState(initialEditMode);
     const [description, setDescription] = useState(task.description);
 
     function toggleEditMode() {
         setEditMode((prevEditMode) => !prevEditMode);
-        setMouseIsOver(false);
     }
 
     const {
@@ -107,7 +105,6 @@ const TaskCard = ({
         );
     }
 
-    //TODO: listen to hover using ref instead of mouseIsOver.
     return (
         <div
             ref={setNodeRef}
@@ -115,25 +112,17 @@ const TaskCard = ({
             {...attributes}
             {...listeners}
             className="task-card-container"
-            onMouseEnter={() => {
-                setMouseIsOver(true);
-            }}
-            onMouseLeave={() => {
-                setMouseIsOver(false);
-            }}
             onClick={toggleEditMode}
         >
             <p className="task-card-content">{task.description}</p>
-            {mouseIsOver && (
-                <button
-                    className="task-card-delete-button"
-                    onClick={() => {
-                        deleteTask(task.id, task.columnId);
-                    }}
-                >
-                    <TrashIcon />
-                </button>
-            )}
+            <button
+                className="task-card-delete-button"
+                onClick={() => {
+                    deleteTask(task.id, task.columnId);
+                }}
+            >
+                <TrashIcon />
+            </button>
         </div>
     );
 };
