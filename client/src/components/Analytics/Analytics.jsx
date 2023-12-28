@@ -112,6 +112,7 @@ const BoardTasksChart = () => {
 
                                 return (
                                     <text
+                                        key={index}
                                         x={x}
                                         y={y}
                                         textAnchor={x > cx ? "start" : "end"}
