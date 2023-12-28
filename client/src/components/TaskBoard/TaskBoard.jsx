@@ -449,9 +449,6 @@ const TaskBoard = ({ boardId }) => {
                                 tasks={localTasks.filter(
                                     (task) => task.columnId === activeColumn.id
                                 )}
-                                initialColumnEditMode={
-                                    newestColumnId === col.id
-                                }
                                 newestTaskId={newestTaskId}
                                 resetNewestTaskId={resetNewestTaskId}
                                 resetNewestColumnId={resetNewestColumnId}
