@@ -44,9 +44,3 @@ model Task {
   columnId    String  @db.Uuid
   column      Column  @relation(fields: [columnId], references: [id])
 }
-
-// enum Priority {
-//   LOW
-//   MEDIUM
-//   HIGH
-// }

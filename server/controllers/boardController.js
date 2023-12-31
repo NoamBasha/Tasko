@@ -167,7 +167,6 @@ const updateAllBoards = asyncHandler(async function (req, res) {
         });
     });
 
-    // Use a Prisma transaction to update all boards in the array
     try {
         const transactionResults = await prisma.$transaction(
             prismaPromisesArray

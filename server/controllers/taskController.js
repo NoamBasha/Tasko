@@ -25,7 +25,6 @@ const createTask = asyncHandler(async function (req, res) {
         throw new Error("Column not found");
     }
 
-    // Create a new task in the specified column
     try {
         const createdTask = await prisma.task.create({
             data: {

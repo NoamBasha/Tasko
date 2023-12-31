@@ -70,12 +70,10 @@ const deleteColumn = asyncHandler(async function (req, res) {
 
     try {
         await prisma.$transaction([
-            // Delete tasks associated with the column
             prisma.task.deleteMany({
                 where: { columnId: columnId },
             }),
 
-            // Delete the column
             prisma.column.delete({
                 where: { id: columnId },
             }),
@@ -170,7 +168,6 @@ const updateAllColumns = asyncHandler(async function (req, res) {
         });
     });
 
-    // Use a Prisma transaction to update all columns in the array
     try {
         const transactionResults = await prisma.$transaction(
             prismaPromisesArray
