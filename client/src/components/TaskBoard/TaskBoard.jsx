@@ -8,6 +8,10 @@ import {
     useSensors,
     useSensor,
     PointerSensor,
+    closestCorners,
+    pointerWithin,
+    closestCenter,
+    rectIntersection,
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
@@ -29,6 +33,20 @@ import {
 } from "../../features/tasks/tasksSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
+
+function closestConrnersAndCenter(args) {
+    const closestCornersCollisions = closestCorners(args);
+    const closestCenterCollisions = closestCenter(args);
+
+    if (
+        closestCornersCollisions.length > 0 &&
+        closestCenterCollisions.length > 0
+    ) {
+        return closestCornersCollisions;
+    }
+
+    return null;
+}
 
 function areTasksEqualIgnoringIndexes(arr1, arr2) {
     if (arr1.length !== arr2.length) {
@@ -403,6 +421,7 @@ const TaskBoard = ({ boardId }) => {
                 onDragEnd={onDragEnd}
                 onDragOver={onDragOver}
                 sensors={sensors}
+                collisionDetection={closestConrnersAndCenter}
             >
                 <div className="task-board-wrapper">
                     <div className="task-board-columns">
