@@ -14,8 +14,18 @@ export const injectStore = (_store) => {
     store = _store;
 };
 
+const ENV = import.meta.env.VITE_REACT_ENV;
+let baseUrl;
+if (ENV === "development") {
+    baseUrl = import.meta.env.VITE_REACT_DEV_URL;
+} else {
+    baseUrl = import.meta.env.VITE_REACT_PROD_URL;
+}
+
+baseUrl += "api/v1/";
+
 const api = axios.create({
-    baseURL: "http://localhost:3000/api/v1/",
+    baseURL: baseUrl,
     withCredentials: true,
 });
 

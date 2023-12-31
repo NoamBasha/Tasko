@@ -14,7 +14,8 @@ const PORT = 3000;
 
 app.use(
     cors({
-        origin: "http://localhost:5173",
+        //TODO add here
+        origin: ["http://localhost:5173", "https://tasko-fe.onrender.com/"],
         credentials: true,
     })
 );
