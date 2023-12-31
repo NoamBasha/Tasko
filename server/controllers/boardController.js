@@ -130,4 +130,60 @@ const updateBoard = asyncHandler(async function (req, res) {
     }
 });
 
-export { getBoards, getBoard, createBoard, deleteBoard, updateBoard };
+const updateAllBoards = asyncHandler(async function (req, res) {
+    const userId = req.user.id;
+    const newBoards = req.body;
+
+    const databaseBoards = [];
+
+    for (const board of newBoards) {
+        const boardId = board.id;
+
+        try {
+            const existingBoard = await prisma.board.findUnique({
+                where: { id: boardId, userId: userId },
+            });
+
+            if (!existingBoard) {
+                res.status(500);
+                throw new Error("Could not update boards");
+            }
+
+            databaseBoards.push(board);
+        } catch (err) {
+            // res.status(500);
+            // throw new Error("Could not update columns");
+        }
+    }
+
+    const prismaPromisesArray = databaseBoards.map((board) => {
+        const boardId = board.id;
+
+        return prisma.board.update({
+            where: { id: boardId },
+            data: {
+                index: +board.index,
+            },
+        });
+    });
+
+    // Use a Prisma transaction to update all boards in the array
+    try {
+        const transactionResults = await prisma.$transaction(
+            prismaPromisesArray
+        );
+        res.status(200).json(transactionResults);
+    } catch (error) {
+        res.status(500);
+        throw new Error("Could not update boards");
+    }
+});
+
+export {
+    getBoards,
+    getBoard,
+    createBoard,
+    deleteBoard,
+    updateBoard,
+    updateAllBoards,
+};

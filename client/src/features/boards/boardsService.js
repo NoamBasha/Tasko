@@ -49,3 +49,14 @@ export const getBoard = async (boardId) => {
         handleApiError(error);
     }
 };
+
+export const updateAllBoards = async (newBoards, signal) => {
+    try {
+        const response = await api.put(`${BOARDS_BASE}all`, newBoards, {
+            signal: signal,
+        });
+        return { updatedBoards: response.data };
+    } catch (error) {
+        handleApiError(error);
+    }
+};

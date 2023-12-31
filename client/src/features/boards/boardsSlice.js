@@ -5,6 +5,7 @@ import {
     updateBoard,
     createBoard,
     deleteBoard,
+    updateAllBoards,
 } from "./boardsService.js";
 import {
     setColumns,
@@ -122,6 +123,29 @@ export const getBoardAsync = createAsyncThunk(
     }
 );
 
+export const updateAllBoardsAsync = createAsyncThunk(
+    "boards/updateAllBoardsAsync",
+    async (newBoards, thunkAPI) => {
+        try {
+            const abortAxiosHO = () => abortAxios(abortController);
+
+            const abortController = new AbortController();
+            const signal = abortController.signal;
+
+            thunkAPI.signal.addEventListener("abort", abortAxiosHO);
+
+            const { updatedBoards } = await updateAllBoards(newBoards, signal);
+
+            //! putting this in "finally" won't work!
+            thunkAPI.signal.removeEventListener("abort", abortAxiosHO);
+
+            return { updatedBoards };
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
+
 const initialState = {
     boards: [],
     localBoards: [],
@@ -136,6 +160,11 @@ const boardsSlice = createSlice({
     reducers: {
         reset: (state) => {
             return initialState;
+        },
+        setLocalBoards: (state, action) => {
+            state.localBoards = [...action.payload].sort(
+                (a, b) => b.index - a.index
+            );
         },
         createLocalBoard: (state, action) => {
             state.localBoards.push(action.payload);
@@ -239,6 +268,56 @@ const boardsSlice = createSlice({
             .addCase(getBoardAsync.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload;
+                toast.error(action.payload);
+            })
+
+            .addCase(updateAllBoardsAsync.pending, (state, action) => {
+                state.status = "pending";
+                state.error = null;
+            })
+            .addCase(updateAllBoardsAsync.fulfilled, (state, action) => {
+                function updateBoards(boards, updatedBoards) {
+                    const updatedBoardsMap = new Map(
+                        updatedBoards.map((board) => [board.id, board])
+                    );
+
+                    const updatedResult = boards.map((board) => {
+                        const updatedBoard = updatedBoardsMap.get(board.id);
+                        return updatedBoard
+                            ? { ...board, ...updatedBoard }
+                            : board;
+                    });
+
+                    updatedBoards.forEach((updatedBoard) => {
+                        if (
+                            !boards.find(
+                                (voard) => voard.id === updatedBoard.id
+                            )
+                        ) {
+                            updatedResult.push(updatedBoard);
+                        }
+                    });
+
+                    return updatedResult;
+                }
+
+                state.status = "fulfilled";
+                const updatedBoards = action.payload.updatedBoards;
+
+                state.boards = updateBoards(state.boards, updatedBoards);
+
+                //TODO is this needed?
+
+                state.localBoards = updateBoards(
+                    state.localBoards,
+                    updatedBoards
+                );
+            })
+            .addCase(updateAllBoardsAsync.rejected, (state, action) => {
+                state.status = "rejected";
+                if (action.error?.message === "Aborted") return;
+                state.error = action.payload;
+                state.localBoards = state.boards;
                 toast.error(action.payload);
             });
     },

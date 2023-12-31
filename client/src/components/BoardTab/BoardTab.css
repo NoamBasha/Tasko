@@ -6,6 +6,11 @@
     height: 20px;
 }
 
+.board-tab-placeholder {
+    opacity: 0.4;
+    border: 2px solid var(--clr-accent);
+}
+
 .board-tab-name-input {
     width: 100%;
     background-color: inherit;
