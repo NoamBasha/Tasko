@@ -285,15 +285,26 @@ const TaskBoard = ({ boardId }) => {
                                 ))}
                         </SortableContext>
                     </div>
-                    <button
-                        className="task-board-button"
-                        onClick={() => {
-                            createColumn();
-                        }}
-                    >
-                        <PlusInCircleIcon />
-                        Add Column
-                    </button>
+                    {localColumns.length === 0 ? (
+                        <button
+                            className="task-board-button"
+                            onClick={() => {
+                                createColumn();
+                            }}
+                        >
+                            <PlusInCircleIcon />
+                            Add Column
+                        </button>
+                    ) : (
+                        <button
+                            className="task-board-button-small"
+                            onClick={() => {
+                                createColumn();
+                            }}
+                        >
+                            <PlusInCircleIcon />
+                        </button>
+                    )}
                 </div>
 
                 {createPortal(

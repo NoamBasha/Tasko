@@ -44,3 +44,19 @@
     display: flex;
     gap: var(--column-gap);
 }
+
+.task-board-button-small {
+    cursor: pointer;
+    border-radius: 6px;
+    background-color: var(--clr-bg-primary);
+    border: 2px solid var(--clr-bg-secondary);
+    color: var(--clr-text-primary);
+    display:flex;
+    align-items:start;
+    padding: 1rem;
+    height: 12%;
+}
+
+.task-board-button-small:hover {
+    box-shadow: 0px 0px 0px 2px var(--clr-accent);
+}
