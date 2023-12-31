@@ -28,12 +28,11 @@ app.use("/api/v1/boards", boardRouter);
 app.use("/api/v1/columns", columnRouter);
 app.use("/api/v1/tasks", taskRouter);
 
-//TODO remove
-// // RESETTING DATABASE
-// await prisma.user.deleteMany({});
-// await prisma.board.deleteMany({});
-// await prisma.column.deleteMany({});
+// // DATABASE RESETTING
 // await prisma.task.deleteMany({});
+// await prisma.column.deleteMany({});
+// await prisma.board.deleteMany({});
+// await prisma.user.deleteMany({});
 // const remainingUsers = await prisma.user.findMany();
 // console.log("Remaining users:", remainingUsers);
 // const remainingBoards = await prisma.board.findMany();

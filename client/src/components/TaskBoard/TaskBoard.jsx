@@ -141,7 +141,7 @@ const TaskBoard = ({ boardId }) => {
     };
 
     const onDragOver = (e) => {
-        // TODO: understand that and improve performance!!
+        // TODO: Check Preformence
         const { active, over } = e;
 
         if (!over) return;
@@ -149,7 +149,6 @@ const TaskBoard = ({ boardId }) => {
         const activeId = active.id;
         const overId = over.id;
 
-        // Wrap the entire function inside startTransition
         startTransition(() => {
             if (activeId === overId) return;
 
