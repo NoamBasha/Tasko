@@ -32,8 +32,6 @@ import { v4 as uuidv4 } from "uuid";
 import { closestConrnersAndCenterAndPointer } from "../../utils/dndUtils.js";
 
 const TaskBoard = ({ boardId }) => {
-    console.log(`TaskBoard - render - ${boardId?.split("-")[0]}`);
-
     const localColumns = useSelector(selectLocalColumns);
     const localTasks = useSelector(selectLocalTasks);
 

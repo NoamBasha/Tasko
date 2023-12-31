@@ -12,7 +12,6 @@ import {
 import { useDispatch } from "react-redux";
 
 const TaskCard = ({ task, columnId, initialEditMode, resetNewestTaskId }) => {
-    console.log(`TaskCard - render - ${task.id.split("-")[0]}`);
     const [editMode, setEditMode] = useState(initialEditMode);
     const [description, setDescription] = useState(task.description);
 

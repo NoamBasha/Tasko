@@ -20,8 +20,6 @@ const ColumnContainer = ({
     newestTaskId,
     resetNewestTaskId,
 }) => {
-    console.log(`ColumnContainer - render - ${column.id.split("-")[0]}`);
-
     const [editMode, setEditMode] = useState(initialColumnEditMode);
     const tasksIds = useMemo(() => tasks.map((task) => task.id), [tasks]);
 
