@@ -226,11 +226,6 @@ const columnsSlice = createSlice({
                 const updatedColumns = action.payload.updatedColumns;
 
                 state.columns = updateColumns(state.columns, updatedColumns);
-                //TODO is this needed?
-                state.localColumns = updateColumns(
-                    state.localColumns,
-                    updatedColumns
-                );
             })
             .addCase(updateAllColumnsAsync.rejected, (state, action) => {
                 state.status = "rejected";

@@ -305,13 +305,6 @@ const boardsSlice = createSlice({
                 const updatedBoards = action.payload.updatedBoards;
 
                 state.boards = updateBoards(state.boards, updatedBoards);
-
-                //TODO is this needed?
-
-                state.localBoards = updateBoards(
-                    state.localBoards,
-                    updatedBoards
-                );
             })
             .addCase(updateAllBoardsAsync.rejected, (state, action) => {
                 state.status = "rejected";
