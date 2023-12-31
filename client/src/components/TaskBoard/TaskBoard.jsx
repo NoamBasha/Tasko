@@ -29,7 +29,7 @@ import {
 } from "../../features/tasks/tasksSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import { closestConrnersAndCenter } from "../../utils/dndUtils.js";
+import { closestConrnersAndCenterAndPointer } from "../../utils/dndUtils.js";
 
 const TaskBoard = ({ boardId }) => {
     console.log(`TaskBoard - render - ${boardId?.split("-")[0]}`);
@@ -260,7 +260,7 @@ const TaskBoard = ({ boardId }) => {
                 onDragEnd={onDragEnd}
                 onDragOver={onDragOver}
                 sensors={sensors}
-                collisionDetection={closestConrnersAndCenter}
+                collisionDetection={closestConrnersAndCenterAndPointer}
             >
                 <div className="task-board-wrapper">
                     <div className="task-board-columns">

@@ -23,7 +23,7 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
-import { closestConrnersAndCenter } from "../../utils/dndUtils.js";
+import { closestConrnersAndCenterAndPointer } from "../../utils/dndUtils.js";
 
 const BoardsContainer = () => {
     const dispatch = useDispatch();
@@ -149,7 +149,7 @@ const BoardsContainer = () => {
                     onDragEnd={onDragEnd}
                     onDragOver={onDragOver}
                     sensors={sensors}
-                    collisionDetection={closestConrnersAndCenter}
+                    collisionDetection={closestConrnersAndCenterAndPointer}
                 >
                     <SortableContext items={localBoardsIds}>
                         {[...localBoards]
