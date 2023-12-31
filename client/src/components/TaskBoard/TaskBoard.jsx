@@ -8,10 +8,6 @@ import {
     useSensors,
     useSensor,
     PointerSensor,
-    closestCorners,
-    pointerWithin,
-    closestCenter,
-    rectIntersection,
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
@@ -33,81 +29,7 @@ import {
 } from "../../features/tasks/tasksSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-
-function closestConrnersAndCenter(args) {
-    const closestCornersCollisions = closestCorners(args);
-    const closestCenterCollisions = closestCenter(args);
-
-    if (
-        closestCornersCollisions.length > 0 &&
-        closestCenterCollisions.length > 0
-    ) {
-        return closestCornersCollisions;
-    }
-
-    return null;
-}
-
-function areTasksEqualIgnoringIndexes(arr1, arr2) {
-    if (arr1.length !== arr2.length) {
-        return false;
-    }
-
-    const getColumnTasks = (arr) => {
-        const columnTasks = new Map();
-        arr.forEach((task) => {
-            const columnId = task.columnId;
-            if (!columnTasks.has(columnId)) {
-                columnTasks.set(columnId, []);
-            }
-            columnTasks.get(columnId).push(task);
-        });
-        return columnTasks;
-    };
-
-    const columnTasks1 = getColumnTasks(arr1);
-    const columnTasks2 = getColumnTasks(arr2);
-
-    for (const [columnId, tasks1] of columnTasks1) {
-        const tasks2 = columnTasks2.get(columnId);
-
-        if (!tasks2 || tasks1.length !== tasks2.length) {
-            return false;
-        }
-
-        // Sort tasks by index and compare
-        const sortedTasks1 = tasks1.slice().sort((a, b) => a.index - b.index);
-        const sortedTasks2 = tasks2.slice().sort((a, b) => a.index - b.index);
-
-        for (let i = 0; i < sortedTasks1.length; i++) {
-            const task1 = sortedTasks1[i];
-            const task2 = sortedTasks2[i];
-
-            // Compare all fields except for 'index'
-            const fieldsToCompare = Object.keys(task1).filter(
-                (field) => field !== "index"
-            );
-
-            for (const field of fieldsToCompare) {
-                if (task1[field] !== task2[field]) {
-                    return false;
-                }
-            }
-        }
-    }
-
-    return true;
-}
-
-// const DEBOUNCE_INTERVAL = 0;
-
-// const debounce = (func, delay) => {
-//     let timeoutId;
-//     return function (...args) {
-//         clearTimeout(timeoutId);
-//         timeoutId = setTimeout(() => func.apply(this, args), delay);
-//     };
-// };
+import { closestConrnersAndCenter } from "../../utils/dndUtils.js";
 
 const TaskBoard = ({ boardId }) => {
     console.log(`TaskBoard - render - ${boardId?.split("-")[0]}`);
@@ -164,14 +86,6 @@ const TaskBoard = ({ boardId }) => {
         setColumnsUpdateAllPromise(promise);
     };
 
-    // const debouncedUpdateAllColumns = useCallback(
-    //     debounce(
-    //         (newColumns) => updateAllColumns(newColumns),
-    //         DEBOUNCE_INTERVAL
-    //     ),
-    //     []
-    // );
-
     const resetNewestTaskId = () => {
         setNewestTaskId(null);
     };
@@ -196,11 +110,6 @@ const TaskBoard = ({ boardId }) => {
         const promise = dispatch(updateAllTasksAsync(newTasks));
         setTasksUpdateAllPromise(promise);
     };
-
-    // const debouncedUpdateAllTasks = useCallback(
-    //     debounce((newTasks) => updateAllTasks(newTasks), DEBOUNCE_INTERVAL),
-    //     []
-    // );
 
     const onDragStart = (e) => {
         if (e.active.data.current.type === "Column") {
@@ -230,75 +139,6 @@ const TaskBoard = ({ boardId }) => {
 
         updateAllColumns(localColumns);
     };
-
-    // const onDragEnd = (e) => {
-    //     //! This won't work because the tasks did not change!
-    //     //! we would like to compare localTasks and PREVOIUS localTasks!
-    //     // const areTasksChanged = !areTasksEqualIgnoringIndexes(
-    //     //     localTasks,
-    //     //     tasks
-    //     // );
-    //     // if (areTasksChanged) {
-    //     //     if (tasksUpdateAllPromise !== null) {
-    //     //         tasksUpdateAllPromise.abort();
-    //     //         setTasksUpdateAllPromise(null);
-    //     //     }
-    //     //     debouncedUpdateAllTasks(localTasks);
-    //     // }
-
-    //     //! Instead we just to this every time...
-    //     if (tasksUpdateAllPromise !== null) {
-    //         tasksUpdateAllPromise.abort();
-    //         setTasksUpdateAllPromise(null);
-    //     }
-    //     //! Switch to denouce if necessary
-    //     // debouncedUpdateAllTasks(localTasks);
-    //     updateAllTasks(localTasks);
-
-    //     setActiveColumn(null);
-    //     setActiveTask(null);
-
-    //     const { active, over } = e;
-    //     if (!over) return;
-
-    //     const activeId = active.id;
-    //     const overId = over.id;
-
-    //     if (activeId === overId) return;
-
-    //     const activeColumnIndex = localColumns.findIndex(
-    //         (col) => col.id === activeId
-    //     );
-    //     const overColumnIndex = localColumns.findIndex(
-    //         (col) => col.id === overId
-    //     );
-
-    //     const movedColumns = arrayMove(
-    //         localColumns.slice(),
-    //         activeColumnIndex,
-    //         overColumnIndex
-    //     );
-
-    //     const movedColumnsWithIndexes = movedColumns.map((column, i) => {
-    //         return { ...column, index: i };
-    //     });
-
-    //     //! same for columns
-    //     // if (JSON.stringify(movedColumnsWithIndexes) !== JSON.stringify(columns)) {
-    //     //     dispatch(setLocalColumns(movedColumnsWithIndexes));
-    //     //     debouncedUpdateAllColumns(movedColumnsWithIndexes);
-    //     // }
-
-    //     if (columnsUpdateAllPromise !== null) {
-    //         columnsUpdateAllPromise.abort();
-    //         setColumnsUpdateAllPromise(null);
-    //     }
-
-    //     dispatch(setLocalColumns(movedColumnsWithIndexes));
-    //     //! Switch to denouce if necessary
-    //     // debouncedUpdateAllColumns(movedColumnsWithIndexes);
-    //     updateAllColumns(movedColumnsWithIndexes);
-    // };
 
     const onDragOver = (e) => {
         // TODO: understand that and improve performance!!

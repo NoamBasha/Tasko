@@ -5,14 +5,10 @@ import {
     createBoardAsync,
     getBoardAsync,
     getUserBoardsAsync,
-    selectCurrentBoardId,
     updateAllBoardsAsync,
     setLocalBoards,
 } from "../../features/boards/boardsSlice.js";
-import {
-    selectBoards,
-    selectLocalBoards,
-} from "../../features/boards/boardsSlice.js";
+import { selectLocalBoards } from "../../features/boards/boardsSlice.js";
 import { useEffect, useState, useMemo } from "react";
 import NewBoardTab from "../NewBoardTab/NewBoardTab.jsx";
 import { v4 as uuidv4 } from "uuid";
@@ -24,41 +20,21 @@ import {
     useSensors,
     useSensor,
     PointerSensor,
-    closestCorners,
-    pointerWithin,
-    closestCenter,
-    rectIntersection,
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
+import { closestConrnersAndCenter } from "../../utils/dndUtils.js";
 
-function closestConrnersAndCenter(args) {
-    const closestCornersCollisions = closestCorners(args);
-    const closestCenterCollisions = closestCenter(args);
-
-    if (
-        closestCornersCollisions.length > 0 &&
-        closestCenterCollisions.length > 0
-    ) {
-        return closestCornersCollisions;
-    }
-
-    return null;
-}
-
-const BoardsContainer = ({ boards }) => {
+const BoardsContainer = () => {
+    const dispatch = useDispatch();
     const [createMode, setCreateMode] = useState(false);
-
     const localBoards = useSelector(selectLocalBoards);
-
     const [boardsUpdateAllPromise, setBoardsUpdateAllPromise] = useState(null);
-
+    const [activeBoard, setActiveBoard] = useState(null);
     const localBoardsIds = useMemo(
         () => localBoards.map((board) => board.id),
         [localBoards]
     );
-
-    const [activeBoard, setActiveBoard] = useState(null);
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -67,8 +43,6 @@ const BoardsContainer = ({ boards }) => {
             },
         })
     );
-
-    const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(getUserBoardsAsync());

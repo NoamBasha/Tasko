@@ -1,8 +1,6 @@
-import { logoutAsync } from "../../features/auth/authSlice.js";
 import "./UserSettings.css";
-import UserSettingsIcon from "../../icons/UserSettingsIcon/UserSettingsIcon.jsx";
+import { logoutAsync } from "../../features/auth/authSlice.js";
 import { useDispatch } from "react-redux";
-import { useRef, useState, useEffect } from "react";
 import LogoutIcon from "../../icons/LogoutIcon/LogoutIcon.jsx";
 import LightModeIcon from "../../icons/LightModeIcon/LightModeIcon.jsx";
 import DarkModeIcon from "../../icons/DarkModeIcon/DarkModeIcon.jsx";
@@ -13,9 +11,7 @@ const UserSettings = () => {
     const dispatch = useDispatch();
 
     const handleLogout = async () => {
-        console.log("1");
         await dispatch(logoutAsync());
-        console.log("2");
     };
 
     return (

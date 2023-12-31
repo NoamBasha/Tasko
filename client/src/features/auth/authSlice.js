@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { login, refresh, logout } from "./authService.js";
-import Cookies from "js-cookie";
 import {
     getUserDataAsync,
     reset as resetUsersState,

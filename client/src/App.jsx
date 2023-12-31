@@ -1,28 +1,18 @@
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
-import {
-    BrowserRouter as Router,
-    Routes,
-    Route,
-    useNavigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Product from "./pages/Product/Product.jsx";
 import Login from "./pages/Login/Login.jsx";
 import Register from "./pages/Register/Register.jsx";
 import { ToastContainer } from "react-toastify";
 import RequireAuth from "./components/RequireAuth/RequireAuth.jsx";
 import { useEffect, useState } from "react";
-import {
-    refreshAccessToken,
-    selectIsAuthenticated,
-    selectToken,
-} from "./features/auth/authSlice.js";
-import { useDispatch, useSelector } from "react-redux";
+import { refreshAccessToken } from "./features/auth/authSlice.js";
+import { useDispatch } from "react-redux";
 import { getUserDataAsync } from "./features/users/usersSlice.js";
 import Spinner from "./components/Spinner/Spinner.jsx";
-import Cookies from "js-cookie";
 
-function AppRoutes() {
+const AppRoutes = () => {
     return (
         <Router>
             <Routes>
@@ -35,9 +25,9 @@ function AppRoutes() {
             </Routes>
         </Router>
     );
-}
+};
 
-function App() {
+const App = () => {
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(true);
 
@@ -77,5 +67,5 @@ function App() {
             />
         </div>
     );
-}
+};
 export default App;

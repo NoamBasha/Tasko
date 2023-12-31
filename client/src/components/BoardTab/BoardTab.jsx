@@ -7,16 +7,13 @@ import {
     updateBoardAsync,
     deleteBoardAsync,
     getBoardAsync,
-    getUserBoardsAsync,
 } from "../../features/boards/boardsSlice";
 import TrashIcon from "../../icons/TrashIcon/TrashIcon";
-
-import { SortableContext, useSortable } from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 const BoardTab = ({ board, name, id, index }) => {
     const [editMode, setEditMode] = useState(false);
-    // const prevName = useRef(name);
     const [newName, setNewName] = useState(name);
     const dispatch = useDispatch();
     const currentBoardId = useSelector(selectCurrentBoardId);

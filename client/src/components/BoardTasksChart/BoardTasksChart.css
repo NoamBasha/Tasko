@@ -1,0 +1,44 @@
+@import "../../variables.css";
+
+.board-tasks-chart-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 100%;
+    max-height: 100%;
+    color: inherit;
+}
+
+.board-tasks-chart-counts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.board-tasks-chart-title {
+    color: var(--clr-accent);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.board-tasks-chart-pie {
+   height: 300px;
+}
+
+.board-tasks-chart-legend {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    margin: auto;
+    gap: 0.2rem;
+    height: 100%;
+    max-height: 100%;
+    overflow-x: hidden;
+    padding: 0 10px;
+}
+
+.board-tasks-chart-pie-fill {
+    stroke: var(--clr-text-primary);
+    stroke-width: 1px;
+}

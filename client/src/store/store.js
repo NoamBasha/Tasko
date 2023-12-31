@@ -4,6 +4,7 @@ import usersReducer from "../features/users/usersSlice.js";
 import boardsReducer from "../features/boards/boardsSlice.js";
 import columnsReducer from "../features/columns/columnsSlice.js";
 import tasksReducer from "../features/tasks/tasksSlice.js";
+import { injectStore } from "../services/apiService.js";
 
 const store = configureStore({
     reducer: {
@@ -14,5 +15,7 @@ const store = configureStore({
         tasks: tasksReducer,
     },
 });
+
+injectStore(store);
 
 export default store;

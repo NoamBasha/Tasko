@@ -4,20 +4,16 @@ import Analytics from "../../components/Analytics/Analytics.jsx";
 import "./product.css";
 
 import { useSelector } from "react-redux";
-import {
-    selectBoards,
-    selectCurrentBoardId,
-} from "../../features/boards/boardsSlice.js";
+import { selectCurrentBoardId } from "../../features/boards/boardsSlice.js";
 import { selectName } from "../../features/users/usersSlice.js";
 
 const Product = () => {
     const name = useSelector(selectName);
-    const boards = useSelector(selectBoards);
     const boardId = useSelector(selectCurrentBoardId);
 
     return (
         <div className="product-container">
-            <Sidebar name={name} boards={boards} />
+            <Sidebar name={name} />
             <TaskBoard boardId={boardId} />
             <Analytics />
         </div>
