@@ -136,7 +136,6 @@ export const updateAllBoardsAsync = createAsyncThunk(
 
             const { updatedBoards } = await updateAllBoards(newBoards, signal);
 
-            //! putting this in "finally" won't work!
             thunkAPI.signal.removeEventListener("abort", abortAxiosHO);
 
             return { updatedBoards };
@@ -263,7 +262,6 @@ const boardsSlice = createSlice({
             .addCase(getBoardAsync.fulfilled, (state, action) => {
                 state.status = "fulfilled";
                 state.boardId = action.payload.board.id;
-                // setColumns(action.payload.board.columns);
             })
             .addCase(getBoardAsync.rejected, (state, action) => {
                 state.status = "rejected";

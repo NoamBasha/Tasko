@@ -19,7 +19,6 @@ const api = axios.create({
     withCredentials: true,
 });
 
-// Request interceptor
 api.interceptors.request.use(
     (config) => {
         const accessToken = store.getState().auth.token;
@@ -35,14 +34,12 @@ api.interceptors.request.use(
     }
 );
 
-// Response interceptor
 api.interceptors.response.use(
     (response) => {
         return response;
     },
     async (error) => {
         const originalRequest = error.config;
-        // Check if the error is due to an expired token
         if (
             error?.response?.data?.message === "Invalid access token" &&
             !originalRequest._retry
@@ -52,7 +49,6 @@ api.interceptors.response.use(
             try {
                 // Trigger token refresh
                 await store.dispatch(refreshAccessToken());
-
                 // Retry the original request with the new token
                 return api(originalRequest);
             } catch (refreshError) {

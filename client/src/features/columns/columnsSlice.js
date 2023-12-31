@@ -59,7 +59,6 @@ export const updateAllColumnsAsync = createAsyncThunk(
                 signal
             );
 
-            //! putting this in "finally" won't work!
             thunkAPI.signal.removeEventListener("abort", abortAxiosHO);
 
             return { updatedColumns };
@@ -208,7 +207,6 @@ const columnsSlice = createSlice({
                             : column;
                     });
 
-                    // Include new columns from updatedColumns that don't exist in the original columns
                     updatedColumns.forEach((updatedColumn) => {
                         if (
                             !columns.find(

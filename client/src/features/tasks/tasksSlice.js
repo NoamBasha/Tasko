@@ -66,7 +66,6 @@ export const updateAllTasksAsync = createAsyncThunk(
                 signal
             );
 
-            //! putting this in "finally" won't work!
             thunkAPI.signal.removeEventListener("abort", abortAxiosHO);
 
             return { updatedTasks };
@@ -206,7 +205,6 @@ const tasksSlice = createSlice({
                         return updatedTask ? { ...task, ...updatedTask } : task;
                     });
 
-                    // Include new tasks from updatedTasks that don't exist in the original tasks
                     updatedTasks.forEach((updatedTask) => {
                         if (!tasks.find((task) => task.id === updatedTask.id)) {
                             updatedResult.push(updatedTask);
