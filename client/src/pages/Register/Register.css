@@ -15,13 +15,13 @@
     display: flex;
     border-radius: 10px;
     min-width: 850px;
-    background-image: url("../../../assets/tasko-bg-img-v1-light.png");
+    background-image: url("../../../tasko-bg-img-v1-light.png");
     background-size: cover;
 }
 
 :root[data-theme='dark'] {
     .register-wrapper {
-        background-image: url("../../../assets/tasko-bg-img-v1-dark.png");
+        background-image: url("../../../tasko-bg-img-v1-dark.png");
     }
 }
 
