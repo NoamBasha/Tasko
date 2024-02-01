@@ -25,7 +25,7 @@ export const getUserData = async (accessToken) => {
         const user = response.data;
         return { user };
     } catch (error) {
-        console.erro(error);
+        console.error(error);
         handleApiError(error);
     }
 };
